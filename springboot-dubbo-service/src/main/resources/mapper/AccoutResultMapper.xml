@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzq.dubboservice.mapper.AccountResultMapper">
+
+    <sql id="AccountResult">
+        a.username, name, email, contact_email, password, user_picture,
+          description, fan, follow
+    </sql>
+
+    <select id="getFollowList" resultType="com.lzq.api.dto.AccountResult">
+        select
+            <include refid="AccountResult"/>
+        from account a left join follow b
+        on
+            a.username=b.follow_username
+        where
+            b.username=#{username}
+    </select>
+
+    <select id="getFanList" resultType="com.lzq.api.dto.AccountResult">
+        select
+            <include refid="AccountResult"/>
+        from account a left join follow b
+        on
+            a.username=b.username
+        where
+            b.follow_username=#{username}
+    </select>
+</mapper>

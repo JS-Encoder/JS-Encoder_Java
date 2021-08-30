@@ -1,0 +1,49 @@
+User:
+  data: F:/项目/MyDemo/data/
+
+
+spring:
+  application:
+    #项目名称
+    name: web
+  #mybatis配置
+  datasource:
+    username: root
+    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
+    url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #rdis配置
+  redis:
+    host: 49.235.126.19
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 500
+        min-idle: 0
+  #静态资源访问
+  resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,classpath:/templates/,file:${User.data}
+dubbo:
+  application:
+    name: dubbo_web
+  registry:
+    protocol: zookeeper
+    address: zookeeper://49.235.126.19:2181
+#  consumer:
+#    retries: 0
+#    timeout: 60000
+
+#数据加密
+jasypt:
+  encryptor:
+    # 密钥
+    password: WXRANDLZQ1998
+    # 指定加密方式
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
+server:
+  #服务器接口
+  port: 8090

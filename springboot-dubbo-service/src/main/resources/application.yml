@@ -1,0 +1,66 @@
+spring:
+  application:
+    #项目名称
+    name: service
+  #mybatis配置
+  datasource:
+    username: root
+    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
+    url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #durid配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+
+  mail:
+    host: smtp.qq.com
+    username: 1275096074@qq.com
+    password: nbybixepsvogjgdi
+
+#dubbo配置
+dubbo:
+  application:
+    name: dubbo_service
+  registry:
+    protocol: zookeeper
+    address: zookeeper://49.235.126.19:2181
+    timeout: 60000
+  protocol:
+    name: dubbo
+    port: 20880
+  consumer:
+    retries: 0
+    timeout: 60000
+
+  #扫描包的位置
+  scan:
+    base-packages: com.lzq.dubboservice.service
+server:
+  #服务器接口
+  port: 8089
+
+
+#数据加密
+jasypt:
+  encryptor:
+    # 密钥
+    password: WXRANDLZQ1998
+    # 指定加密方式
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
+#配置日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*xml

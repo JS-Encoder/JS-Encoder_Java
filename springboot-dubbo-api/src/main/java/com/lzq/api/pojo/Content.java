@@ -1,0 +1,97 @@
+package com.lzq.api.pojo;
+
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author ：LZQ
+ * @description：TODO
+ * @date ：2021/8/27 9:56
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("content")
+public class Content implements Serializable {
+
+    private static final long serialVersionUID = -7724715365676117052L;
+    /**
+     * 用例主键
+     */
+    @TableId(value = "example_id")
+    @JsonProperty("exampleId")
+    private Integer exampleId;
+    /**
+     * css代码
+     */
+    @TableField(value = "css")
+    @JsonProperty("css")
+    private String css;
+    /**
+     * css外部链接
+     */
+    @TableField(value = "css_out")
+    @JsonProperty("cssOut")
+    private String cssOut;
+    /**
+     * js代码
+     */
+    @TableField(value = "js")
+    @JsonProperty("js")
+    private String js;
+    /**
+     * js外部链接
+     */
+    @TableField(value = "js_out")
+    @JsonProperty("jsOut")
+    private String jsOut;
+    /**
+     * html代码
+     */
+    @TableField(value = "html")
+    @JsonProperty("html")
+    private String html;
+    /**
+     * html head 代码
+     */
+    @TableField(value = "html_head")
+    @JsonProperty("htmlHead")
+    private String htmlHead;
+    /**
+     * html预处理语言
+     */
+    @TableField(value = "html_style")
+    @JsonProperty("htmlStyle")
+    private String htmlStyle;
+    /**
+     * css预处理语言
+     */
+    @TableField(value = "css_style")
+    @JsonProperty("cssStyle")
+    private String cssStyle;
+    /**
+     * js预处理语言
+     */
+    @TableField(value = "js_style")
+    @JsonProperty("jsStyle")
+    private String jsStyle;
+    /**
+     * 创建时间
+     */
+    @JsonIgnore
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+    /**
+     * 更新时间
+     */
+    @JsonIgnore
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
+}

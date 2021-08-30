@@ -1,0 +1,7 @@
+/springboot-dubbo-api/target/
+/springboot-dubbo-service/target/
+/springboot-dubbo-web/target/
+/springboot-dubbo-service/src/main/resources/rebel.xml
+/springboot-dubbo-web/src/test/
+/springboot-dubbo-web/src/main/resources/rebel.xml
+/springboot-dubbo-service/src/test/

@@ -1,0 +1,85 @@
+package com.lzq.dubboservice.service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lzq.api.pojo.Account;
+import com.lzq.api.service.AccountService;
+import com.lzq.dubboservice.mapper.AccountMapper;
+import org.apache.commons.lang.StringUtils;
+import org.apache.dubbo.config.annotation.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @author ：LZQ
+ * @description：AccountService实现类
+ * @date ：2021/8/23 15:52
+ */
+@Component
+@Service(interfaceClass = AccountService.class)
+public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> implements AccountService {
+
+
+    @Override
+    public Account queryByEmail(String email) {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        wrapper.eq("email",email);
+        return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Account queryAccount(Account account) {
+        return null;
+    }
+
+
+    @Override
+    public void insert(Account account) {
+        baseMapper.insert(account);
+    }
+
+    @Override
+    public void update(Account account) throws NullPointerException {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        //当同时存在时则修改邮箱
+        if (StringUtils.isNotBlank(account.getEmail())
+                && StringUtils.isNotBlank(account.getUsername())){
+            wrapper.eq("username",account.getUsername());
+        }else if (StringUtils.isNotBlank(account.getEmail())){
+            wrapper.eq("email",account.getEmail());
+        }else if (StringUtils.isNotBlank(account.getUsername())){
+            wrapper.eq("username",account.getUsername());
+        }else {
+            throw new NullPointerException();
+        }
+        baseMapper.update(account,wrapper);
+    }
+
+    @Override
+    public Account queryByGitId(String githubId, String giteeId) {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(githubId)){
+            wrapper.eq("github_id",githubId);
+        }
+        if (StringUtils.isNotBlank(giteeId)){
+            wrapper.eq("gitee_id",giteeId);
+        }
+        return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Account queryByUsername(String username) {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",username);
+        return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public void deleteAccount(Account account) {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",account.getUsername());
+        baseMapper.delete(wrapper);
+    }
+
+
+}
