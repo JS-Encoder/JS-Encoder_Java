@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,9 @@ import java.util.Date;
  */
 @Data
 @TableName("favorites")
-public class Favorites {
+public class Favorites implements Serializable {
+
+    private static final long serialVersionUID = -5315062089881708528L;
 
     /**
      * 用户名

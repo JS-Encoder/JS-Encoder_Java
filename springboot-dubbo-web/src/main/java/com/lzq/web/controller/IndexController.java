@@ -16,8 +16,10 @@ import com.lzq.web.utils.VerifyCodeUtils;
 import com.qiniu.util.Auth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.slf4j.ILoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @description：主页面接口
  * @date ：2021/8/23 15:40
  */
+@Slf4j
 @RestController
 @RequestMapping({"/index"})
 @Api(value = "主页面接口",description = "主页面接口")
@@ -162,7 +165,7 @@ public class IndexController {
         String s = stringRedisTemplate.opsForValue().get(account.getEmail());
         if (code.equals(s)) {
             try {
-                System.out.println("我到了");
+                log.info("我到了");
                 accountService.insert(account);
                 //注册成功
                 return ResultMapUtils.ResultMap(true,0,null);

@@ -3,8 +3,10 @@ package com.lzq.web.controller;
 
 import com.lzq.api.pojo.Example;
 import com.lzq.api.pojo.Content;
+import com.lzq.api.pojo.Favorites;
 import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
+import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.ExampleUtils;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.QiniuyunUtils;
@@ -37,10 +39,11 @@ public class ExampleController {
     @Reference
     private ExampleService exampleService;
 
-
     @Reference
     private ContentService contentService;
 
+    @Reference
+    private FavoritesService favoritesService;
 
     /**
      * 创建一个实例
@@ -78,7 +81,6 @@ public class ExampleController {
             return ResultMapUtils.ResultMap(false, 1, example);
         }
     }
-
 
     /**
      * 保存实例内容和编译后的html代码
@@ -134,7 +136,6 @@ public class ExampleController {
         }
     }
 
-
     /**
      * 根据用户名查询全部实例
      * @return
@@ -159,6 +160,23 @@ public class ExampleController {
     public Map<String,Object> getPublicExample(String username){
         List<Example> list = exampleService.queryByPublic(username);
         return ResultMapUtils.ResultMap(true,0,list);
+    }
+
+    /**
+     * 添加喜爱
+     * @param favorites
+     * @return
+     */
+    @PostMapping("/addFavorites")
+    @ApiOperation("添加喜爱")
+    public Map<String,Object> addFavorites(Favorites favorites){
+        //判断是否用户已登录，登录则进行数据插入，否则则不做任何操作
+        if (!StringUtils.isNullOrEmpty(favorites.getUsername())){
+            Boolean bol = favoritesService.addFavorites(favorites);
+            return ResultMapUtils.ResultMap(bol,0,null);
+        }else {
+            return ResultMapUtils.ResultMap(false,1,null);
+        }
     }
 
 

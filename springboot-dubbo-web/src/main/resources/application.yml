@@ -31,9 +31,10 @@ dubbo:
   registry:
     protocol: zookeeper
     address: zookeeper://49.235.126.19:2181
-#  consumer:
-#    retries: 0
-#    timeout: 60000
+    timeout: 600000
+  consumer:
+    retries: 0
+    timeout: 600000
 
 #数据加密
 jasypt:
@@ -47,3 +48,6 @@ jasypt:
 server:
   #服务器接口
   port: 8090
+
+logging:
+  config: classpath:logback.xml

@@ -24,7 +24,7 @@ import javax.annotation.Resource;
  * @date ：2021/8/25 10:48
  */
 @Component
-@Service(interfaceClass = FollowService.class)
+@Service(interfaceClass = FavoritesService.class)
 public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites> implements FavoritesService {
 
     @Resource
@@ -39,7 +39,7 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
             do {
                 //用来查询关注人
                 QueryWrapper<Example> wrapper = new QueryWrapper<>();
-                wrapper.eq("exampleId", favorites.getExampleId());
+                wrapper.eq("example_id", favorites.getExampleId());
                 //获取喜爱的用例
                 Example example = exampleMapper.selectOne(wrapper);
                 example.setFavorites(example.getFavorites() + 1);
