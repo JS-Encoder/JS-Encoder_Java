@@ -16,6 +16,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FileUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +46,9 @@ public class ExampleController {
 
     @Reference
     private FavoritesService favoritesService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 创建一个实例
@@ -173,6 +178,10 @@ public class ExampleController {
         //判断是否用户已登录，登录则进行数据插入，否则则不做任何操作
         if (!StringUtils.isNullOrEmpty(favorites.getUsername())){
             Boolean bol = favoritesService.addFavorites(favorites);
+            //添加到缓存
+            if (bol){
+                redisTemplate.opsForList().leftPush(favorites.getUsername()+"fav",favorites.getExampleId());
+            }
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
             return ResultMapUtils.ResultMap(false,1,null);

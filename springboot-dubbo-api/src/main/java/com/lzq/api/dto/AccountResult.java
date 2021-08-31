@@ -57,7 +57,7 @@ public class AccountResult implements Serializable{
      */
     @TableField(value = "user_picture")
     @JsonProperty("userPicture")
-    private String userPicture="http://images.lliiooiill.cn/defAvatar.png";
+    private String userPicture;
     /**
      * github主键id
      */
@@ -94,6 +94,12 @@ public class AccountResult implements Serializable{
     @TableField("follow")
     @JsonProperty("follow")
     private Integer follow;
+    @TableField(exist = false)
+    /**
+     * 我的关注
+     */
+    @JsonProperty("myFollow")
+    private Boolean myFollow;
     /**
      * 创建时间
      */
@@ -104,7 +110,7 @@ public class AccountResult implements Serializable{
      * 乐观锁
      */
     @JsonIgnore
-    @Version //乐观锁注解
+    @Version
     private Integer version;
     /**
      * 更新时间

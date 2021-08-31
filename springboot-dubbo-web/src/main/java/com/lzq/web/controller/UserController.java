@@ -9,6 +9,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -28,6 +31,9 @@ public class UserController {
 
     @Reference
     private FollowService followService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     /**
@@ -126,6 +132,10 @@ public class UserController {
     public Map<String,Object> addFollow(Follow follow){
         if (StringUtils.isNotBlank(follow.getUsername())){
             boolean bol = followService.addFollow(follow);
+            if (bol){
+                //把数据存到redis缓存中
+                redisTemplate.opsForList().leftPush(follow.getUsername(),follow.getFollowUsername());
+            }
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
             return ResultMapUtils.ResultMap(false,0,null);
@@ -141,6 +151,10 @@ public class UserController {
     @ApiOperation("取消关注")
     public Map<String,Object> cancelFollow(Follow follow){
         boolean bol = followService.cancelFollow(follow);
+        if (bol){
+            //移除缓存
+            redisTemplate.opsForList().remove(follow.getUsername(),0,follow.getFollowUsername());
+        }
         return ResultMapUtils.ResultMap(bol,0,null);
     }
 

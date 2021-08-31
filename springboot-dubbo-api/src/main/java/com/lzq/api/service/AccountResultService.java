@@ -13,13 +13,6 @@ import java.util.List;
 public interface AccountResultService {
 
     /**
-     * 查询用户
-     * @param result
-     * @return
-     */
-    public List<AccountResult> searchUserByName(AccountResult result);
-
-    /**
      * 获取关注列表
      */
     List<AccountResult> getFollowList(AccountResult result);

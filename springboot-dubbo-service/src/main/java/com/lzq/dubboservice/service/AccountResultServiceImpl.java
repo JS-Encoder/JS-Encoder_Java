@@ -20,17 +20,6 @@ import java.util.List;
 @Service(interfaceClass = AccountResultService.class)
 public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, AccountResult> implements AccountResultService {
 
-    @Override
-    public List<AccountResult> searchUserByName(AccountResult result) {
-        QueryWrapper<AccountResult> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(result.getName())){
-            wrapper.like("name",result.getName());
-            return baseMapper.selectList(wrapper);
-        }else {
-            return null;
-        }
-
-    }
 
     @Override
     public List<AccountResult> getFollowList(AccountResult result) {

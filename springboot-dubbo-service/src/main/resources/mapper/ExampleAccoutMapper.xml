@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzq.dubboservice.mapper.ExampleAccountMapper">
+
+    <select id="queryByExampleName" resultType="com.lzq.api.dto.ExampleAccount">
+        select
+               a.username,
+               name,
+               user_picture,
+               description,
+               example_id,
+               example_name,
+               label,
+               img,
+               favorites
+        from account a left join example b on a.username=b.username
+        where b.example_name like concat('%',#{exampleName},'%')
+        order by b.favorites desc
+    </select>
+</mapper>
