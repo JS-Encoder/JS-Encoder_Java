@@ -47,7 +47,7 @@ public class ExampleAccount implements Serializable {
      */
     @TableField(exist = false)
     @JsonProperty("myFollow")
-    private Boolean myFollow;
+    private Boolean myFollow=false;
     /**
      * 主键
      */
@@ -81,5 +81,5 @@ public class ExampleAccount implements Serializable {
 
     @TableField(exist = false)
     @JsonProperty("myFavorites")
-    private Boolean myFavorites;
+    private Boolean myFavorites=false;
 }

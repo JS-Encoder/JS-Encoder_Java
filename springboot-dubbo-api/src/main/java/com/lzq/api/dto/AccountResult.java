@@ -99,7 +99,7 @@ public class AccountResult implements Serializable{
      * 我的关注
      */
     @JsonProperty("myFollow")
-    private Boolean myFollow;
+    private Boolean myFollow=false;
     /**
      * 创建时间
      */
