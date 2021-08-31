@@ -1,11 +1,12 @@
 package com.lzq.web.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
 import com.lzq.api.dto.ExampleAccount;
 import com.lzq.api.service.AccountResultService;
 import com.lzq.api.service.ExampleAccountService;
-import com.lzq.api.service.ExampleService;
 import com.lzq.web.utils.ResultMapUtils;
+import com.sun.istack.internal.NotNull;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,10 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,14 +43,27 @@ public class SearchController {
 
 
     /**
+     * 根据用户名查询用户信息
+     * @param username
+     * @return
+     */
+    @GetMapping("/queryByUsername")
+    @ApiOperation("根据用户名查询用户信息")
+    public Map<String,Object> queryByUsername(String username){
+        AccountResult result = accountResultService.queryByUsername(username);
+        return ResultMapUtils.ResultMap(true,0,result);
+    }
+
+
+    /**
      * 获取关注列表
      * @param result
      * @return
      */
     @GetMapping("/getFollow")
     @ApiOperation("获取关注列表")
-    public Map<String,Object> getFollowList(AccountResult result){
-        List<AccountResult> list = accountResultService.getFollowList(result);
+    public Map<String,Object> getFollowList(AccountResult result,Integer currentPage){
+        PageInfo<AccountResult> list = accountResultService.getFollowList(result, currentPage);
         return ResultMapUtils.ResultMap(true,0,list);
     }
 
@@ -60,10 +74,11 @@ public class SearchController {
      */
     @GetMapping("/getFan")
     @ApiOperation("获取粉丝列表")
-    public Map<String,Object> getFanList(AccountResult result){
-        List<AccountResult> list = accountResultService.getFanList(result);
+    public Map<String,Object> getFanList(AccountResult result,Integer currentPage){
+        PageInfo<AccountResult> list = accountResultService.getFanList(result, currentPage);
         return ResultMapUtils.ResultMap(true,0,list);
     }
+
 
     /**
      * 根据实例名查询实例
@@ -73,9 +88,10 @@ public class SearchController {
      */
     @GetMapping("/queryByExampleName")
     @ApiOperation("根据实例名查询实例")
-    public Map<String,Object> queryByExampleName(String exampleName,String username){
+    public Map<String,Object> queryByExampleName(String exampleName, String username, Integer currentPage){
         //先查询实例用户集合
-        List<ExampleAccount> list = exampleAccountService.queryByExampleName(exampleName);
+        PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryByExampleName(exampleName, currentPage);
+        List<ExampleAccount> list = pageInfo.getList();
         List<String> followlist = redisTemplate.opsForList().range(username, 0, -1);
         List<String> favoriteslist = redisTemplate.opsForList().range(username+"fav", 0, -1);
         //遍历修改数组
@@ -93,8 +109,10 @@ public class SearchController {
                 exampleAccount.setMyFavorites(false);
             }
         }
+        //把修改好的数据重新放入分页中
+        pageInfo.setList(list);
         log.info(list.toString());
-        return ResultMapUtils.ResultMap(true,0,list);
+        return ResultMapUtils.ResultMap(true,0,pageInfo);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.lzq.api.service;
 
+import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.ExampleAccount;
 
-import java.util.List;
 
 /**
  * @author ：LZQ
@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface ExampleAccountService {
 
-    public List<ExampleAccount> queryByExampleName(String exampleName);
+    PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage);
 }

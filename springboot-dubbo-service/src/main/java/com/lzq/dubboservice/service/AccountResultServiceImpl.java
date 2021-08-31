@@ -2,6 +2,9 @@ package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
 import com.lzq.api.service.AccountResultService;
 import com.lzq.dubboservice.mapper.AccountResultMapper;
@@ -22,20 +25,26 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
 
 
     @Override
-    public List<AccountResult> getFollowList(AccountResult result) {
-        if (StringUtils.isNotBlank(result.getUsername())){
-            return baseMapper.getFollowList(result);
-        }else {
-            return null;
-        }
+    public AccountResult queryByUsername(String username) {
+        QueryWrapper<AccountResult> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",username);
+        return baseMapper.selectOne(wrapper);
     }
 
     @Override
-    public List<AccountResult> getFanList(AccountResult result) {
-        if (StringUtils.isNotBlank(result.getUsername())){
-            return baseMapper.getFanList(result);
-        }else {
-            return null;
-        }
+    public PageInfo<AccountResult> getFollowList(AccountResult result, Integer currentPage) {
+        Page<AccountResult> page = new Page<>();
+        PageHelper.startPage(currentPage,24);
+        List<AccountResult> list = baseMapper.getFollowList(result);
+        return new PageInfo<>(list);
+
+    }
+
+    @Override
+    public PageInfo<AccountResult> getFanList(AccountResult result,Integer currentPage) {
+        Page<AccountResult> page = new Page<>();
+        PageHelper.startPage(currentPage,24);
+        List<AccountResult> list = baseMapper.getFanList(result);
+        return new PageInfo<>(list);
     }
 }
