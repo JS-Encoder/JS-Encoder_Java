@@ -1,7 +1,6 @@
 package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.ExampleAccount;
@@ -23,11 +22,18 @@ public class ExampleAccountServiceImpl extends ServiceImpl<ExampleAccountMapper,
 
     @Override
     public PageInfo<ExampleAccount> queryByExampleName(String exampleName,Integer currentPage) {
-        Page<ExampleAccount> page = new Page<>();
         //当前页和每页条数
         PageHelper.startPage(currentPage,12);
         //获取全部数据
         List<ExampleAccount> list = baseMapper.queryByExampleName(exampleName);
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage) {
+        //当前页和每页条数
+        PageHelper.startPage(currentPage,12);
+        List<ExampleAccount> list = baseMapper.queryPersonFavorites(username);
         return new PageInfo<>(list);
     }
 }

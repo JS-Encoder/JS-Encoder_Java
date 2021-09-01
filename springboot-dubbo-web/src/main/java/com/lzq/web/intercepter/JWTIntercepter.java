@@ -29,16 +29,12 @@ public class JWTIntercepter implements HandlerInterceptor {
             JWTUtils.verify(token);
             return true;
         } catch (SignatureVerificationException e) {
-            // e.printStackTrace();
             map.put("msg", "无效签名");
         } catch (TokenExpiredException e) {
-            // e.printStackTrace();
             map.put("msg", "签名过期");
         } catch (AlgorithmMismatchException e) {
-            // e.printStackTrace();
             map.put("msg", "token算法不一致");
         } catch (Exception e) {
-            // e.printStackTrace();
             map.put("msg", "未知错误");
         }
 

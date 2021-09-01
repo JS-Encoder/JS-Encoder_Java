@@ -4,7 +4,7 @@
 
     <sql id="AccountResult">
         a.username, name, email, contact_email, password, user_picture,
-          description, fan, follow
+          description, fan, following
     </sql>
 
     <select id="getFollowList" resultType="com.lzq.api.dto.AccountResult">

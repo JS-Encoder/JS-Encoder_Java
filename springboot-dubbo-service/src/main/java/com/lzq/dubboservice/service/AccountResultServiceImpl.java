@@ -33,7 +33,6 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
 
     @Override
     public PageInfo<AccountResult> getFollowList(AccountResult result, Integer currentPage) {
-        Page<AccountResult> page = new Page<>();
         PageHelper.startPage(currentPage,24);
         List<AccountResult> list = baseMapper.getFollowList(result);
         return new PageInfo<>(list);
@@ -42,7 +41,6 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
 
     @Override
     public PageInfo<AccountResult> getFanList(AccountResult result,Integer currentPage) {
-        Page<AccountResult> page = new Page<>();
         PageHelper.startPage(currentPage,24);
         List<AccountResult> list = baseMapper.getFanList(result);
         return new PageInfo<>(list);

@@ -91,9 +91,9 @@ public class AccountResult implements Serializable{
     /**
      * 关注
      */
-    @TableField("follow")
-    @JsonProperty("follow")
-    private Integer follow;
+    @TableField("following")
+    @JsonProperty("following")
+    private Integer following;
     @TableField(exist = false)
     /**
      * 我的关注

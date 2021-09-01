@@ -136,7 +136,6 @@ public class QueryController {
             if (username.equals(result.getUsername())) {
                 list = accountResultService.getFanList(result, currentPage);
                 List<AccountResult> results = list.getList();
-                log.info("我到了 哈哈哈");
                 //获取缓存中的所有关注的用户
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
                 for (AccountResult accountResult : results) {
@@ -185,7 +184,7 @@ public class QueryController {
         if (request.getHeader("token") != null) {
             //获取token中的用户名
             username = JWTUtils.verify(request.getHeader("token"))
-                    .getClaim("username").toString();
+                    .getClaim("username").asString();
         }
         //先查询实例用户集合
         PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryByExampleName(exampleName, currentPage);
@@ -210,7 +209,6 @@ public class QueryController {
             //把修改好的数据重新放入分页中
             pageInfo.setList(list);
         }
-        log.info(list.toString());
         return ResultMapUtils.ResultMap(true, 0, pageInfo);
     }
 
@@ -227,24 +225,89 @@ public class QueryController {
         if (request.getHeader("token") != null) {
             //获取token中的用户名
             username = JWTUtils.verify(request.getHeader("token"))
-                    .getClaim("username").toString();
+                    .getClaim("username").asString();
         }
-        //用户名相同则查询自己的实例，不同则查询他人的公开实例
-        if (username.equals(account.getUsername())) {
-            list = exampleService.queryByAccount(account.getUsername(),currentPage);
-        } else {
-            //获取redis缓存中所喜欢的实例id列表
-            List<Integer> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
-            list = exampleService.queryByPublic(account.getUsername(),currentPage);
-            //获取实例集合
-            List<Example> exampleList = list.getList();
-            for (Example example : exampleList) {
-                if (favoriteslist.contains(example.getExampleId())){
-                    example.setMyFavorites(true);
+        //用户登录的状态下
+        if (username != null) {
+            //用户名相同则查询自己的实例，不同则查询他人的公开实例
+            if (username.equals(account.getUsername())) {
+                list = exampleService.queryByAccount(account.getUsername(), currentPage);
+            } else {
+                //获取redis缓存中所喜欢的实例id列表
+                List<Integer> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
+                list = exampleService.queryByPublic(account.getUsername(), currentPage);
+                //获取实例集合
+                List<Example> exampleList = list.getList();
+                for (Example example : exampleList) {
+                    if (favoriteslist.contains(example.getExampleId())) {
+                        example.setMyFavorites(true);
+                    }
                 }
             }
+        } else {
+            list = exampleService.queryByPublic(account.getUsername(), currentPage);
         }
+
         return ResultMapUtils.ResultMap(true, 0, list);
     }
 
+    /**
+     * 获取喜爱实例列表
+     *
+     * @param request
+     * @param account
+     * @param currentPage
+     * @return
+     */
+    @GetMapping("/getFavorites")
+    @ApiOperation("获取喜爱实例列表")
+    public Map<String, Object> getFavorites(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage) {
+        String username = null;
+        PageInfo<ExampleAccount> list;
+        if (request.getHeader("token") != null) {
+            //获取token中的用户名
+            username = JWTUtils.verify(request.getHeader("token"))
+                    .getClaim("username").asString();
+        }
+        //用户登录的状态下
+        if (username != null) {
+            //判断用户是否查看他人的喜爱实例
+            if (username.equals(account.getUsername())) {
+                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+                //关注列表
+                List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
+                List<ExampleAccount> exampleList = list.getList();
+                for (ExampleAccount exampleAccount : exampleList) {
+                    //判断该用户是否被关注
+                    if (followList.contains(exampleAccount.getUsername())) {
+                        exampleAccount.setMyFollow(true);
+                    }
+                    exampleAccount.setMyFavorites(true);
+                }
+                list.setList(exampleList);
+            } else {
+                //获取缓存中用户的喜爱实例id
+                List<Integer> favoritesList = redisTemplate.opsForList().range(username + "fav", 0, -1);
+                //获取缓存中用户的关注用户名
+                List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
+                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+                List<ExampleAccount> exampleList = list.getList();
+                for (ExampleAccount exampleAccount : exampleList) {
+                    //判断该用户是否被关注，该用户是否是自己
+                    if (followList.contains(exampleAccount.getUsername())) {
+                        exampleAccount.setMyFollow(true);
+                    } else if (username.equals(exampleAccount.getUsername())) {
+                        exampleAccount.setMyFollow(null);
+                    }
+                    if (favoritesList.contains(exampleAccount.getExampleId())) {
+                        exampleAccount.setMyFavorites(true);
+                    }
+                }
+                list.setList(exampleList);
+            }
+        } else {
+            list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+        }
+        return ResultMapUtils.ResultMap(true, 0, list);
+    }
 }

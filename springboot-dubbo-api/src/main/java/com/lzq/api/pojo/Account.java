@@ -112,9 +112,9 @@ public class Account implements Serializable, UserDetails {
     /**
      * 关注
      */
-    @TableField("follow")
-    @JsonProperty("follow")
-    private Integer follow;
+    @TableField("following")
+    @JsonProperty("following")
+    private Integer following;
     /**
      * 创建时间
      */

@@ -11,5 +11,20 @@ import com.lzq.api.dto.ExampleAccount;
  */
 public interface ExampleAccountService {
 
+
+    /**
+     * 通过实例名查询实例
+     * @param exampleName 实例名
+     * @param currentPage 当前页
+     * @return
+     */
     PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage);
+
+    /**
+     * 查询个人喜爱实例
+     * @param username 用户名
+     * @param currentPage 当前页
+     * @return
+     */
+    PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage);
 }

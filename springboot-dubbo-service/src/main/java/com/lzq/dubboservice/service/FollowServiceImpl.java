@@ -39,7 +39,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                 wrapperO.eq("username", follow.getUsername());
                 //获取关注人信息
                 Account accountO = accountMapper.selectOne(wrapperO);
-                accountO.setFollow(accountO.getFollow() + 1);
+                accountO.setFollowing(accountO.getFollowing() + 1);
                 //更新关注数
                 i1 = accountMapper.update(accountO, wrapperO);
             } while (i1 == 0);
@@ -73,7 +73,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                 wrapperO.eq("username", follow.getUsername());
                 //获取关注人信息
                 Account accountO = accountMapper.selectOne(wrapperO);
-                accountO.setFollow(accountO.getFollow() - 1);
+                accountO.setFollowing(accountO.getFollowing() - 1);
                 //更新关注数
                 i1 = accountMapper.update(accountO, wrapperO);
             } while (i1 == 0);

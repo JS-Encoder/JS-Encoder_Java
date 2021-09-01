@@ -39,7 +39,6 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public PageInfo<Example> queryByAccount(String username, Integer currentPage) {
-        Page<Example> page = new Page<>();
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         //当前页和每页条数
@@ -50,7 +49,6 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public PageInfo<Example> queryByPublic(String username, Integer currentPage) {
-        Page<Example> page = new Page<>();
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         wrapper.eq("ispublic", 0);
@@ -59,4 +57,6 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
         List<Example> list = baseMapper.selectList(wrapper);
         return new PageInfo<>(list);
     }
+
+
 }

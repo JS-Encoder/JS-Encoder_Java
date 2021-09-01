@@ -40,10 +40,10 @@ public interface ExampleService {
     boolean deleteById(Integer exampleId);
 
 
-
     /**
      * 通过用户名查询实例
-     * @param username 用户名
+     *
+     * @param username    用户名
      * @param currentPage 当前页
      * @return
      */
@@ -52,11 +52,12 @@ public interface ExampleService {
 
     /**
      * 查询用户公开的实例
-     * @param username 用户名
+     *
+     * @param username    用户名
      * @param currentPage 当前页
      * @return
      */
-    PageInfo<Example> queryByPublic(String username,Integer currentPage);
+    PageInfo<Example> queryByPublic(String username, Integer currentPage);
 
 
 

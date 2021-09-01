@@ -64,7 +64,7 @@ public class Example implements Serializable {
      */
     @TableField(value = "favorites")
     @JsonProperty("favorites")
-    private String favorites;
+    private Integer favorites;
 
     @TableField(exist = false)
     @JsonProperty("myFavorites")
@@ -91,9 +91,14 @@ public class Example implements Serializable {
      * 乐观锁
      */
     @JsonIgnore
-    @Version //乐观锁注解
+    @Version
     private Integer version;
-
+    /**
+     * 是否删除
+     */
+    @JsonIgnore
+    @TableLogic
+    private Integer deleted;
 
 
 }

@@ -2,6 +2,7 @@ package com.lzq.dubboservice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lzq.api.dto.ExampleAccount;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,5 +14,8 @@ import java.util.List;
  */
 @Repository
 public interface ExampleAccountMapper extends BaseMapper<ExampleAccount> {
+
     public List<ExampleAccount> queryByExampleName(String exampleName);
+
+    List<ExampleAccount> queryPersonFavorites(@Param("username") String username);
 }
