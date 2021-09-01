@@ -79,6 +79,7 @@ public class ExampleAccount implements Serializable {
     @JsonProperty("favorites")
     private String favorites;
 
+
     @TableField(exist = false)
     @JsonProperty("myFavorites")
     private Boolean myFavorites=false;

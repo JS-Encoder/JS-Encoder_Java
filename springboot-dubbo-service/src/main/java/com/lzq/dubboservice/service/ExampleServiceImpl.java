@@ -2,6 +2,9 @@ package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.lzq.api.pojo.Example;
 import com.lzq.api.service.ExampleService;
 import com.lzq.dubboservice.mapper.ExampleMapper;
@@ -18,15 +21,6 @@ import java.util.List;
 @Component
 @Service(interfaceClass = ExampleService.class)
 public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> implements ExampleService {
-    @Override
-    public Example queryById(Integer exampleId) {
-        return null;
-    }
-
-    @Override
-    public List<Example> queryAllByLimit(int offset, int limit) {
-        return null;
-    }
 
     @Override
     public Boolean insert(Example example) {
@@ -44,17 +38,25 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     }
 
     @Override
-    public List<Example> queryByAccount(String username) {
+    public PageInfo<Example> queryByAccount(String username, Integer currentPage) {
+        Page<Example> page = new Page<>();
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
-        wrapper.eq("username",username);
-        return baseMapper.selectList(wrapper);
+        wrapper.eq("username", username);
+        //当前页和每页条数
+        PageHelper.startPage(currentPage, 12);
+        List<Example> list = baseMapper.selectList(wrapper);
+        return new PageInfo<>(list);
     }
 
     @Override
-    public List<Example> queryByPublic(String username) {
+    public PageInfo<Example> queryByPublic(String username, Integer currentPage) {
+        Page<Example> page = new Page<>();
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
-        wrapper.eq("username",username);
-        wrapper.eq("ispublic",0);
-        return baseMapper.selectList(wrapper);
+        wrapper.eq("username", username);
+        wrapper.eq("ispublic", 0);
+        //当前页和每页条数
+        PageHelper.startPage(currentPage, 12);
+        List<Example> list = baseMapper.selectList(wrapper);
+        return new PageInfo<>(list);
     }
 }

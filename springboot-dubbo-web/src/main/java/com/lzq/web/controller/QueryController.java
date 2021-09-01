@@ -3,8 +3,11 @@ package com.lzq.web.controller;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
 import com.lzq.api.dto.ExampleAccount;
+import com.lzq.api.pojo.Account;
+import com.lzq.api.pojo.Example;
 import com.lzq.api.service.AccountResultService;
 import com.lzq.api.service.ExampleAccountService;
+import com.lzq.api.service.ExampleService;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +32,9 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/query")
 @Api(value = "搜索接口", description = "搜索接口")
-public class SearchController {
+public class QueryController {
 
     @Reference
     private AccountResultService accountResultService;
@@ -38,9 +42,11 @@ public class SearchController {
     @Reference
     private ExampleAccountService exampleAccountService;
 
+    @Reference
+    private ExampleService exampleService;
+
     @Autowired
     private RedisTemplate redisTemplate;
-
 
     /**
      * 根据用户名查询用户信息
@@ -55,7 +61,6 @@ public class SearchController {
         return ResultMapUtils.ResultMap(true, 0, result);
     }
 
-
     /**
      * 获取关注列表
      *
@@ -65,7 +70,7 @@ public class SearchController {
      */
     @GetMapping("/getFollow")
     @ApiOperation("获取关注列表")
-    public Map<String, Object> getFollowList(HttpServletRequest request, AccountResult result, Integer currentPage) {
+    public Map<String, Object> getFollowList(HttpServletRequest request, AccountResult result, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         PageInfo<AccountResult> list = null;
         //判断用户是否登录
@@ -117,7 +122,7 @@ public class SearchController {
      */
     @GetMapping("/getFan")
     @ApiOperation("获取粉丝列表")
-    public Map<String, Object> getFanList(HttpServletRequest request, AccountResult result, Integer currentPage) {
+    public Map<String, Object> getFanList(HttpServletRequest request, AccountResult result, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         PageInfo<AccountResult> list = null;
         //判断用户是否登录
@@ -165,7 +170,6 @@ public class SearchController {
         return ResultMapUtils.ResultMap(true, 0, list);
     }
 
-
     /**
      * 根据实例名查询实例
      *
@@ -176,7 +180,7 @@ public class SearchController {
      */
     @GetMapping("/queryByExampleName")
     @ApiOperation("根据实例名查询实例")
-    public Map<String, Object> queryByExampleName(HttpServletRequest request, String exampleName, Integer currentPage) {
+    public Map<String, Object> queryByExampleName(HttpServletRequest request, String exampleName, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         if (request.getHeader("token") != null) {
             //获取token中的用户名
@@ -188,8 +192,10 @@ public class SearchController {
         List<ExampleAccount> list = pageInfo.getList();
         //当用户不登陆时不需要进行任何操作查询数据直接返回
         if (username != null) {
+            //获取redis缓存中所关注的用户名列表
             List<String> followlist = redisTemplate.opsForList().range(username, 0, -1);
-            List<String> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
+            //获取redis缓存中所喜欢的实例id列表
+            List<Integer> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
             //遍历修改数组
             for (ExampleAccount exampleAccount : list) {
                 //当该用户被当前用户关注时设置为true,否则为false
@@ -206,6 +212,39 @@ public class SearchController {
         }
         log.info(list.toString());
         return ResultMapUtils.ResultMap(true, 0, pageInfo);
+    }
+
+    /**
+     * 根据用户名查询全部实例
+     *
+     * @return
+     */
+    @GetMapping("/getExample")
+    @ApiOperation("查询个人全部实例")
+    public Map<String, Object> getExample(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage) {
+        String username = null;
+        PageInfo<Example> list;
+        if (request.getHeader("token") != null) {
+            //获取token中的用户名
+            username = JWTUtils.verify(request.getHeader("token"))
+                    .getClaim("username").toString();
+        }
+        //用户名相同则查询自己的实例，不同则查询他人的公开实例
+        if (username.equals(account.getUsername())) {
+            list = exampleService.queryByAccount(account.getUsername(),currentPage);
+        } else {
+            //获取redis缓存中所喜欢的实例id列表
+            List<Integer> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
+            list = exampleService.queryByPublic(account.getUsername(),currentPage);
+            //获取实例集合
+            List<Example> exampleList = list.getList();
+            for (Example example : exampleList) {
+                if (favoriteslist.contains(example.getExampleId())){
+                    example.setMyFavorites(true);
+                }
+            }
+        }
+        return ResultMapUtils.ResultMap(true, 0, list);
     }
 
 }

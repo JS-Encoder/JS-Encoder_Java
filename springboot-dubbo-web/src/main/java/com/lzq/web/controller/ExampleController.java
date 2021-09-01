@@ -142,32 +142,6 @@ public class ExampleController {
     }
 
     /**
-     * 根据用户名查询全部实例
-     * @return
-     */
-    @GetMapping("/getExample")
-    @ApiOperation("查询个人全部实例")
-    public Map<String,Object> getExample(HttpServletRequest request){
-        //获取用户名
-        String username = JWTUtils.verify(request.getHeader("token"))
-                .getClaim("username").asString();
-        List<Example> list = exampleService.queryByAccount(username);
-        return ResultMapUtils.ResultMap(true,0,list);
-    }
-
-    /**
-     * 获取其他用户的公开实例
-     * @param username
-     * @return
-     */
-    @GetMapping("/getPublicExample")
-    @ApiOperation("获取其他用户的公开实例")
-    public Map<String,Object> getPublicExample(String username){
-        List<Example> list = exampleService.queryByPublic(username);
-        return ResultMapUtils.ResultMap(true,0,list);
-    }
-
-    /**
      * 添加喜爱
      * @param favorites
      * @return

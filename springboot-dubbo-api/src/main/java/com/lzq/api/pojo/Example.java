@@ -65,6 +65,10 @@ public class Example implements Serializable {
     @TableField(value = "favorites")
     @JsonProperty("favorites")
     private String favorites;
+
+    @TableField(exist = false)
+    @JsonProperty("myFavorites")
+    private Boolean myFavorites=false;
     /**
      * 用户名
      */
