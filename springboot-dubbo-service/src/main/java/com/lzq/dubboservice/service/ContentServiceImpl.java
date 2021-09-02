@@ -35,4 +35,9 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
         wrapper.eq("example_id",exampleId);
         return baseMapper.selectOne(wrapper);
     }
+
+    @Override
+    public void deleteContent(Integer exampleId) {
+        baseMapper.deleteContent(exampleId);
+    }
 }

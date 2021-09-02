@@ -2,6 +2,7 @@ package com.lzq.dubboservice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lzq.api.pojo.Account;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,5 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AccountMapper extends BaseMapper<Account> {
-
+    Integer updateFavorites(@Param("username") String username);
 }

@@ -8,7 +8,6 @@ import com.lzq.dubboservice.mapper.AccountMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author ：LZQ
@@ -28,18 +27,12 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public Account queryAccount(Account account) {
-        return null;
-    }
-
-
-    @Override
     public void insert(Account account) {
         baseMapper.insert(account);
     }
 
     @Override
-    public void update(Account account) throws NullPointerException {
+    public Boolean update(Account account) throws NullPointerException {
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         //当同时存在时则修改邮箱
         if (StringUtils.isNotBlank(account.getEmail())
@@ -52,7 +45,12 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         }else {
             throw new NullPointerException();
         }
-        baseMapper.update(account,wrapper);
+        return baseMapper.update(account,wrapper)>0?true:false;
+    }
+
+    @Override
+    public Boolean updateFavorites(String username) {
+        return baseMapper.updateFavorites(username)>0?true:false;
     }
 
     @Override

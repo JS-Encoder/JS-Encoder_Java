@@ -21,11 +21,18 @@ spring:
     testOnBorrow: false
     testOnReturn: false
     poolPreparedStatements: true
-
+  #邮箱配置
   mail:
     host: smtp.qq.com
     username: 1275096074@qq.com
     password: nbybixepsvogjgdi
+  #rabbitmq配置
+  rabbitmq:
+    host: 49.235.126.19
+    port: 5672
+    username: user
+    password: wxr19980304
+
 
 #dubbo配置
 dubbo:

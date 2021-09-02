@@ -83,6 +83,12 @@ public class AccountResult implements Serializable{
     @JsonProperty("description")
     private String description;
     /**
+     * 喜爱人数
+     */
+    @TableField("favorites")
+    @JsonProperty("favorites")
+    private Integer favorites;
+    /**
      * 粉丝
      */
     @TableField("fan")

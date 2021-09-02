@@ -51,4 +51,16 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
             return false;
         }
     }
+
+    @Override
+    public void deleteFavorites(Integer exampleId) {
+        baseMapper.deleteFavorites(exampleId);
+    }
+
+    @Override
+    public Integer getCount(String username) {
+        QueryWrapper<Favorites> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",username);
+        return baseMapper.selectCount(wrapper);
+    }
 }

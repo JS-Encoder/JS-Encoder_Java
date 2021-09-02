@@ -114,11 +114,11 @@ public class UserController {
     @ApiOperation("更新注册邮箱")
     public Map<String,Object> updatEmail(Account account){
         try {
-            accountService.update(account);
-            return ResultMapUtils.ResultMapWithToken(true,0,null,null);
+            Boolean bol = accountService.update(account);
+            return ResultMapUtils.ResultMapWithToken(bol,0,null,null);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResultMapUtils.ResultMapWithToken(false,0,null,null);
+            return ResultMapUtils.ResultMapWithToken(false,1,null,null);
         }
     }
 

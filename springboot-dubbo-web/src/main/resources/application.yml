@@ -23,6 +23,12 @@ spring:
         max-idle: 500
         min-idle: 0
     password: wxr19980304
+  #rabbitmq配置
+  rabbitmq:
+    host: 49.235.126.19
+    port: 5672
+    username: user
+    password: wxr19980304
   #静态资源访问
   resources:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,classpath:/templates/,file:${User.data}

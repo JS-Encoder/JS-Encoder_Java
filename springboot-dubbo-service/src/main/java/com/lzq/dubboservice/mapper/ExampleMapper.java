@@ -18,5 +18,5 @@ import java.util.List;
 @Repository
 public interface ExampleMapper extends BaseMapper<Example> {
 
-
+    void deleteExample(@Param("exampleId")Integer exampleId);
 }

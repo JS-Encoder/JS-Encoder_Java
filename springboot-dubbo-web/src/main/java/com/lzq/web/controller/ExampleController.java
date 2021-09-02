@@ -4,6 +4,7 @@ package com.lzq.web.controller;
 import com.lzq.api.pojo.Example;
 import com.lzq.api.pojo.Content;
 import com.lzq.api.pojo.Favorites;
+import com.lzq.api.service.AccountService;
 import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.lzq.api.service.FavoritesService;
@@ -14,25 +15,29 @@ import com.lzq.web.utils.ResultMapUtils;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/example")
 @Api(value = "实例接口",description = "实例接口")
@@ -47,8 +52,14 @@ public class ExampleController {
     @Reference
     private FavoritesService favoritesService;
 
+    @Reference
+    private AccountService accountService;
+
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 创建一个实例
@@ -156,11 +167,39 @@ public class ExampleController {
             if (bol){
                 redisTemplate.opsForList().leftPush(favorites.getUsername()+"fav",favorites.getExampleId());
             }
+            //更新用户喜爱数量
+            Boolean aBoolean = accountService.updateFavorites(favorites.getUsername());
+            log.info(aBoolean.toString());
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
             return ResultMapUtils.ResultMap(false,1,null);
         }
     }
-
-
+    /**
+     * 放入回收站
+     * @param example
+     * @return
+     */
+    @DeleteMapping("/")
+    @ApiOperation("放入回收站")
+    public Map<String,Object> deleteExample(Example example){
+        //逻辑删除实例放入回收站中
+        boolean b = exampleService.deleteById(example.getExampleId());
+        if (b){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            log.info("消息接收时间:"+sdf.format(new Date()));
+            //发送消息到队列中
+            rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
+                @Override
+                public Message postProcessMessage(Message message) throws AmqpException {
+                    //设置延迟时间
+                    message.getMessageProperties().setHeader("x-delay",1000*15);
+                    return message;
+                }
+            });
+            return ResultMapUtils.ResultMap(b,0,null);
+        }else {
+            return ResultMapUtils.ResultMap(b,0,null);
+        }
+    }
 }

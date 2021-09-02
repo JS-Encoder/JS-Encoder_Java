@@ -2,7 +2,6 @@ package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.pojo.Example;
@@ -34,7 +33,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public boolean deleteById(Integer exampleId) {
-        return false;
+        return baseMapper.deleteById(exampleId)>0?true:false;
     }
 
     @Override
@@ -56,6 +55,11 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
         PageHelper.startPage(currentPage, 12);
         List<Example> list = baseMapper.selectList(wrapper);
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public void deleteExample(Integer exampleId) {
+         baseMapper.deleteExample(exampleId);
     }
 
 

@@ -3,6 +3,7 @@ package com.lzq.dubboservice.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Favorites;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,4 +14,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FavoritesMapper extends BaseMapper<Favorites> {
 
+    void deleteFavorites(@Param("exampleId") Integer exampleId);
 }

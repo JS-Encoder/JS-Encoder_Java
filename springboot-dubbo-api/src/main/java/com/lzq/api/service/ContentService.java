@@ -29,4 +29,11 @@ public interface ContentService {
      * @return
      */
     public Content getContent(Integer exampleId);
+
+    /**
+     * 删除实例内容
+     * @param exampleId 实例id
+     * @return
+     */
+    void deleteContent(Integer exampleId);
 }

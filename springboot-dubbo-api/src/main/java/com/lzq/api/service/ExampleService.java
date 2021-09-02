@@ -4,8 +4,6 @@ package com.lzq.api.service;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.pojo.Example;
 
-import java.util.List;
-
 /**
  * (Example)表服务接口
  *
@@ -32,7 +30,7 @@ public interface ExampleService {
     Boolean update(Example example);
 
     /**
-     * 通过主键删除数据
+     * 通过主键逻辑删除数据（放入回收站）
      *
      * @param exampleId 主键
      * @return 是否成功
@@ -59,6 +57,10 @@ public interface ExampleService {
      */
     PageInfo<Example> queryByPublic(String username, Integer currentPage);
 
-
+    /**
+     * 删除实例（物理删除实例）
+     * @param exampleId 实例id
+     */
+    void deleteExample(Integer exampleId);
 
 }

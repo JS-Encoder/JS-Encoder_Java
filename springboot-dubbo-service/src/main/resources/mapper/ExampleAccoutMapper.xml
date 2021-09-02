@@ -33,7 +33,7 @@
             example_name,
             label,
             img,
-            favorites
+            a.favorites
         from example a left join favorites b
         on
             a.example_id=b.example_id

@@ -3,6 +3,7 @@ package com.lzq.web.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lzq.api.pojo.Account;
 import com.lzq.api.service.AccountService;
+import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import com.lzq.web.utils.UserUtils;
@@ -34,6 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private PersistentTokenRepository tokenRepository;
 
     @Reference
+    FavoritesService favoritesService;
+
+    @Reference
     AccountService accountService;
 
     @Override
@@ -44,6 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler((httpServletRequest, httpServletResponse, authentication) -> {
                     //获取用户信息
                     Account account = (Account) authentication.getPrincipal();
+                    Integer count = favoritesService.getCount(account.getUsername());
+                    if (!count.equals(account.getFavorites())){
+
+                    }
                     //是否需要进行第三方绑定
                     String token = httpServletRequest.getHeader("token");
                     httpServletResponse.setContentType("application/json;charset=utf-8");
