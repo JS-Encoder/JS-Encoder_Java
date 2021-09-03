@@ -60,6 +60,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     @Override
     public void deleteExample(Integer exampleId) {
          baseMapper.deleteExample(exampleId);
+
     }
 
 

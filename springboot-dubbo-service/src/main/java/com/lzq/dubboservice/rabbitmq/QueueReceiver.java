@@ -1,6 +1,7 @@
 package com.lzq.dubboservice.rabbitmq;
 
 import com.lzq.api.pojo.Example;
+import com.lzq.api.service.AccountService;
 import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.lzq.api.service.FavoritesService;
@@ -34,6 +35,9 @@ public class QueueReceiver {
     @Autowired
     FavoritesService favoritesService;
 
+    @Autowired
+    AccountService accountService;
+
     @RabbitHandler
     public void process(Example example){
         log.info(example.toString());
@@ -50,6 +54,9 @@ public class QueueReceiver {
         QiniuyunUtils.deleteFiles(example.getImg());
         //删除用户的喜爱
         favoritesService.deleteFavorites(example.getExampleId());
+        //减少回收站数量（删除实例）
+        accountService.reduceRecycle(example.getUsername());
+
     }
 
 }

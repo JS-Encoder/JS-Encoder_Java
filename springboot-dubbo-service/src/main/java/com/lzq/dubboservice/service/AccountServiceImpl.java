@@ -49,8 +49,23 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public Boolean updateFavorites(String username) {
-        return baseMapper.updateFavorites(username)>0?true:false;
+    public Boolean addWorks(String username) {
+        return baseMapper.addWorks(username)>0?true:false;
+    }
+
+    @Override
+    public Boolean reduceWorks(String username) {
+        return baseMapper.reduceWorks(username)>0?true:false;
+    }
+
+    @Override
+    public Boolean addFavorites(String username) {
+        return baseMapper.addFavorites(username)>0?true:false;
+    }
+
+    @Override
+    public Boolean updateFavorites(Account account) {
+        return baseMapper.updateFavorites(account)>0?true:false;
     }
 
     @Override
@@ -77,6 +92,16 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username",account.getUsername());
         baseMapper.delete(wrapper);
+    }
+
+    @Override
+    public Boolean increaseRecycle(String username) {
+        return baseMapper.increaseRecycle(username)>0?true:false;
+    }
+
+    @Override
+    public Boolean reduceRecycle(String username) {
+        return baseMapper.reduceRecycle(username)>0?true:false;
     }
 
 

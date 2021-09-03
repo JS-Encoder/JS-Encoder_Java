@@ -5,9 +5,7 @@ import com.lzq.api.dto.AccountResult;
 import com.lzq.api.dto.ExampleAccount;
 import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Example;
-import com.lzq.api.service.AccountResultService;
-import com.lzq.api.service.ExampleAccountService;
-import com.lzq.api.service.ExampleService;
+import com.lzq.api.service.*;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
@@ -45,6 +43,12 @@ public class QueryController {
     @Reference
     private ExampleService exampleService;
 
+    @Reference
+    private FavoritesService favoritesService;
+
+    @Reference
+    private AccountService accountService;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -57,7 +61,20 @@ public class QueryController {
     @GetMapping("/queryByUsername")
     @ApiOperation("根据用户名查询用户信息")
     public Map<String, Object> queryByUsername(String username) {
+        //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
+        //获取喜爱人数
+        Integer count = favoritesService.getCount(username);
+        //当喜爱数不匹配时进行更新
+        if (!result.getFavorites().equals(count)){
+            result.setFavorites(count);
+            Account account = new Account();
+            account.setUsername(result.getUsername());
+            account.setFavorites(count);
+            //更新数据
+            Boolean aBoolean = accountService.updateFavorites(account);
+            log.info(aBoolean.toString());
+        }
         return ResultMapUtils.ResultMap(true, 0, result);
     }
 

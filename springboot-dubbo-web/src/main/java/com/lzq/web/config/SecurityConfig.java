@@ -7,6 +7,7 @@ import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import com.lzq.web.utils.UserUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-
+@Slf4j
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -50,7 +51,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     Account account = (Account) authentication.getPrincipal();
                     Integer count = favoritesService.getCount(account.getUsername());
                     if (!count.equals(account.getFavorites())){
-
+                        account.setFavorites(count);
+                        //更新（校正）我的喜爱数
+                        Boolean aBoolean = accountService.updateFavorites(account);
+                        log.info(aBoolean.toString());
                     }
                     //是否需要进行第三方绑定
                     String token = httpServletRequest.getHeader("token");

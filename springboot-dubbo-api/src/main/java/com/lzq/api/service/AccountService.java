@@ -33,7 +33,33 @@ public interface AccountService {
      */
     Boolean update(Account account) throws Exception;
 
-    Boolean updateFavorites(String username);
+    /**
+     * 增加作品数
+     * @param username
+     * @return
+     */
+    Boolean addWorks(String username);
+
+    /**
+     * 减少作品数
+     * @param username
+     * @return
+     */
+    Boolean reduceWorks(String username);
+
+    /**
+     * 添加喜爱数
+     * @param username
+     * @return
+     */
+    Boolean addFavorites(String username);
+
+    /**
+     * 更新喜爱数（校正喜爱数）
+     * @param account
+     * @return
+     */
+    Boolean updateFavorites(Account account);
 
     /**
      * 根据第三方id查询用户
@@ -56,8 +82,19 @@ public interface AccountService {
      */
     void deleteAccount(Account account);
 
+    /**
+     * 增加回收站作品数
+     * @param username
+     * @return
+     */
+    Boolean increaseRecycle(String username);
 
-
+    /**
+     * 删除回收站作品
+     * @param username
+     * @return
+     */
+    Boolean reduceRecycle(String username);
 
 
 }

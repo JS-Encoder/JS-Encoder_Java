@@ -104,6 +104,12 @@ public class Account implements Serializable, UserDetails {
     @JsonProperty("description")
     private String description;
     /**
+     * 作品数
+     */
+    @TableField("works")
+    @JsonProperty("works")
+    private Integer works;
+    /**
      * 喜爱人数
      */
     @TableField("favorites")
@@ -121,6 +127,12 @@ public class Account implements Serializable, UserDetails {
     @TableField("following")
     @JsonProperty("following")
     private Integer following;
+    /**
+     * 回收站
+     */
+    @TableField("recycle")
+    @JsonProperty("recycle")
+    private Integer recycle;
     /**
      * 创建时间
      */

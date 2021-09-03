@@ -36,6 +36,7 @@ public class UserController {
     private RedisTemplate redisTemplate;
 
 
+
     /**
      * 更新用户信息
      * @param account

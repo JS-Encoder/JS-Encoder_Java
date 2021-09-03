@@ -12,5 +12,16 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AccountMapper extends BaseMapper<Account> {
-    Integer updateFavorites(@Param("username") String username);
+
+    Integer addFavorites(@Param("username") String username);
+
+    Integer updateFavorites(Account account);
+
+    Integer addWorks(@Param("username") String username);
+
+    Integer reduceWorks(@Param("username") String username);
+
+    Integer increaseRecycle(@Param("username") String username);
+
+    Integer reduceRecycle(@Param("username") String username);
 }

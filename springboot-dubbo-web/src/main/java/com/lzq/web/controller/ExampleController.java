@@ -9,7 +9,6 @@ import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.ExampleUtils;
-import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.QiniuyunUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import com.qiniu.util.StringUtils;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -90,6 +87,8 @@ public class ExampleController {
             example.setFileName(Long.toString(time));
             //把文件信息插入到数据库中
             Boolean bol = exampleService.insert(example);
+            Boolean aBoolean = accountService.addWorks(example.getUsername());
+            log.info(aBoolean.toString());
             return ResultMapUtils.ResultMap(bol, 0, example);
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,13 +167,15 @@ public class ExampleController {
                 redisTemplate.opsForList().leftPush(favorites.getUsername()+"fav",favorites.getExampleId());
             }
             //更新用户喜爱数量
-            Boolean aBoolean = accountService.updateFavorites(favorites.getUsername());
+            Boolean aBoolean = accountService.addFavorites(favorites.getUsername());
             log.info(aBoolean.toString());
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
             return ResultMapUtils.ResultMap(false,1,null);
         }
     }
+
+
     /**
      * 放入回收站
      * @param example
@@ -192,11 +193,15 @@ public class ExampleController {
             rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
                 @Override
                 public Message postProcessMessage(Message message) throws AmqpException {
-                    //设置延迟时间
-                    message.getMessageProperties().setHeader("x-delay",1000*15);
+                    //设置延迟时间 1天
+                    message.getMessageProperties().setHeader("x-delay",1000*60*60*24*1);
                     return message;
                 }
             });
+            //减少用户作品数
+            accountService.reduceWorks(example.getUsername());
+            //回收站数量增加
+            accountService.increaseRecycle(example.getUsername());
             return ResultMapUtils.ResultMap(b,0,null);
         }else {
             return ResultMapUtils.ResultMap(b,0,null);

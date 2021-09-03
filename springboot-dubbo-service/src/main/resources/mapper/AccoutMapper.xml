@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzq.dubboservice.mapper.AccountMapper">
-    <update id="updateFavorites">
+
+
+    <update id="addFavorites">
         update account set favorites=favorites+1 where username=#{username}
+    </update>
+    <update id="updateFavorites">
+        update account set favorites=#{favorites} where username=#{username}
+    </update>
+    <update id="addWorks">
+        update account set works=works+1 where username=#{username}
+    </update>
+    <update id="reduceWorks">
+        update account set works=works-1 where username=#{username}
+    </update>
+    <update id="increaseRecycle">
+        update account set recycle=recycle+1 where username=#{username}
+    </update>
+    <update id="reduceRecycle">
+        update account set recycle=recycle-1 where username=#{username}
     </update>
 </mapper>
