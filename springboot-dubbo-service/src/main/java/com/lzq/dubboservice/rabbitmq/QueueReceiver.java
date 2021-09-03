@@ -52,7 +52,7 @@ public class QueueReceiver {
         contentService.deleteContent(example.getExampleId());
         //删除实例图片（七牛云）
         QiniuyunUtils.deleteFiles(example.getImg());
-        //删除用户的喜爱
+        //删除所有用户的对该作品的喜爱
         favoritesService.deleteFavorites(example.getExampleId());
         //减少回收站数量（删除实例）
         accountService.reduceRecycle(example.getUsername());

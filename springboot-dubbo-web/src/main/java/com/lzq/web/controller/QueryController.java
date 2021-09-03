@@ -327,4 +327,5 @@ public class QueryController {
         }
         return ResultMapUtils.ResultMap(true, 0, list);
     }
+
 }
