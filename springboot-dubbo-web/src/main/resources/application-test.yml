@@ -6,6 +6,7 @@ qiniuyun:
   accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
   secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
   bucket: lzqwxr
+  url: firstbird.asia/
 
 chorme:
   value: F:/ChormeDriver/chromedriver.exe

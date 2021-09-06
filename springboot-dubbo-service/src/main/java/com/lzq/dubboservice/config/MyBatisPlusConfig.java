@@ -34,14 +34,4 @@ public class MyBatisPlusConfig {
         return new LogicSqlInjector();
     }
 
-    // /**
-    //  * sql执行效率插件
-    //  */
-    // @Bean
-    // public PerformanceInterceptor performanceInterceptor(){
-    //     PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
-    //     performanceInterceptor.setMaxTime(1000); //ms 设置sql执行的最大时间，如果超过了则不执行
-    //     performanceInterceptor.setFormat(true);
-    //     return performanceInterceptor;
-    // }
 }

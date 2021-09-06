@@ -22,6 +22,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -58,6 +60,12 @@ public class ExampleController {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Value("${resources.route}")
+    public String fileLocation;
+
+    @Value("${qiniuyun.url}")
+    public String url;
+
     /**
      * 创建一个实例
      *
@@ -66,88 +74,60 @@ public class ExampleController {
      */
     @PostMapping("/createExample")
     @ApiOperation("创建一个实例")
-    public Map<String, Object> CreateFile(Example example) {
-        Map<String, Object> map = new HashMap<>();
-        //获取当前时间毫秒
-        long time = System.currentTimeMillis();
-        //创建编译后的html文件
-        String file = ExampleUtils.filelocation + example.getUsername() + "/" + time + ".html";
-        //初始化模板
-        File initfile = new File(ExampleUtils.InitHtml);
-        File existfile = new File(file);
-        try {
-            //创建文件
-            if (!existfile.getParentFile().exists()) {
-                existfile.getParentFile().mkdirs();
+    public Map<String, Object> CreateFile(Example example, Content exampleContent, String content) {
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        Boolean bol =false;
+        //随机生成uuid
+        //判断用户是保存实例还是第一次创建实例
+        if (example.getExampleId()!=null){
+            try {
+                //通过id查询实例信息
+                Example query = exampleService.queryById(example.getExampleId());
+                //获取实例的文件名和图片key
+                example.setFileName(query.getFileName());
+                example.setImg(query.getImg());
+                //用户保存实例
+                bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
+                return ResultMapUtils.ResultMap(bol,0,"保存实例内容");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResultMapUtils.ResultMap(false,0,"修改文件失败");
             }
-            existfile.createNewFile();
-            //把初始化模板拷贝到新建的html中
-            FileUtils.copyFile(initfile, existfile);
-            //插入编译后的文件名称time
-            example.setFileName(Long.toString(time));
-            //把文件信息插入到数据库中
-            Boolean bol = exampleService.insert(example);
-            Boolean aBoolean = accountService.addWorks(example.getUsername());
-            log.info(aBoolean.toString());
-            return ResultMapUtils.ResultMap(bol, 0, example);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("创建文件失败");
-            return ResultMapUtils.ResultMap(false, 1, example);
-        }
-    }
-
-    /**
-     * 保存实例内容和编译后的html代码
-     *
-     * @param example
-     * @param exampleContent
-     * @param content
-     * @return
-     * @throws FileNotFoundException
-     */
-    @PostMapping("/saveExample")
-    @ApiOperation("保存实例")
-    public Map<String, Object> SaveExample(Example example, Content exampleContent, String content) throws IOException {
-        HashMap<String, Object> map = new HashMap<>();
-        //获取html文件路劲
-        String file = ExampleUtils.filelocation + example.getUsername() + "/" + example.getFileName() + ".html";
-        System.out.println(file);
-        FileOutputStream fos = new FileOutputStream(new File(file));
-        String screenshot = null;
-        Boolean bol = false;
-        try {
-            //包编译后的html内容覆盖原来的内容
-            fos.write(content.getBytes("GBK"));
-            //第一次保存时生成图片
-            if (StringUtils.isNullOrEmpty(example.getImg())) {
-                //把当前时间戳设置为图片名称
-                example.setImg(Long.toString(System.currentTimeMillis()));
-                //截图后进行保存
-                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName(), example.getImg());
-            } else {
-                //先删除图片后上传新图片
-                QiniuyunUtils.deleteFiles(example.getImg());
-                example.setImg(Long.toString(System.currentTimeMillis()));
-                //截图后进行保存
-                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName(), example.getImg());
+        }else {
+            example.setExampleId(uuid);
+            //用户第一次创建实例
+            //获取当前时间毫秒
+            long time = System.currentTimeMillis();
+            //创建编译后的html文件
+            String file = ExampleUtils.filelocation + example.getUsername() + "/" + time + ".html";
+            //初始化模板
+            File initfile = new File(ExampleUtils.InitHtml);
+            File existfile = new File(file);
+            try {
+                //创建文件
+                if (!existfile.getParentFile().exists()) {
+                    existfile.getParentFile().mkdirs();
+                }
+                existfile.createNewFile();
+                //把初始化模板拷贝到新建的html中
+                FileUtils.copyFile(initfile, existfile);
+                //插入编译后的文件名称time
+                example.setFileName(Long.toString(time));
+                //把文件信息插入到数据库中
+                bol = exampleService.insert(example);
+                log.info("获取exampleId:"+example);
+                if (bol){
+                    bol = accountService.addWorks(example.getUsername());
+                    example.setExampleId(example.getExampleId());
+                    //保存实例内容
+                    bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
+                }
+                log.info(bol.toString());
+                return ResultMapUtils.ResultMap(bol, 0, example.getExampleId());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultMapUtils.ResultMap(false, 1, "创建文件失败");
             }
-            //修改图片地址
-            example.setImg("firstbird.asia/" + screenshot);
-            //更新实例
-            bol = exampleService.update(example);
-            //修改实例内容 当表无该数据时插入数据
-            bol = contentService.updateContent(exampleContent);
-            if (!bol){
-                //第一次保存时在表中添加实例内容
-                bol = contentService.addContent(exampleContent);
-            }
-            return ResultMapUtils.ResultMap(bol, 0, screenshot);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResultMapUtils.ResultMap(false, 1, null);
-        }finally {
-            fos.close();
         }
     }
 
@@ -207,4 +187,32 @@ public class ExampleController {
             return ResultMapUtils.ResultMap(b,0,null);
         }
     }
+
+    /**
+     * 立即删除回收站
+     * @param example
+     * @return
+     */
+    @DeleteMapping("/example")
+    @ApiOperation("立即删除回收站")
+    public Map<String,Object> deleteRightNow(Example example){
+        //立即删除实例
+        Boolean bol = exampleService.deleteExample(example.getExampleId());
+        if (bol){
+            File file = new File(fileLocation + example.getUsername() + "/" + example.getFileName()+".html");
+            //删除文件
+            file.delete();
+            //删除实例内容
+            contentService.deleteContent(example.getExampleId());
+            //删除实例图片（七牛云）
+            QiniuyunUtils.deleteFiles(example.getImg());
+            //删除所有用户的对该作品的喜爱
+            favoritesService.deleteFavorites(example.getExampleId());
+            //减少回收站数量（删除实例）
+            accountService.reduceRecycle(example.getUsername());
+        }
+        return ResultMapUtils.ResultMap(bol,0,null);
+    }
+
+
 }

@@ -23,7 +23,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public Boolean insert(Example example) {
-        return baseMapper.insert(example) > 0 ? true : false;
+        return baseMapper.insert(example)>0?true:false;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     }
 
     @Override
-    public boolean deleteById(Integer exampleId) {
+    public boolean deleteById(String exampleId) {
         return baseMapper.deleteById(exampleId)>0?true:false;
     }
 
@@ -58,9 +58,16 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     }
 
     @Override
-    public void deleteExample(Integer exampleId) {
-         baseMapper.deleteExample(exampleId);
+    public Boolean deleteExample(String exampleId) {
+         return baseMapper.deleteExample(exampleId)>0?true:false;
 
+    }
+
+    @Override
+    public Example queryById(String exampleId) {
+        QueryWrapper<Example> wrapper = new QueryWrapper<>();
+        wrapper.eq("example_id",exampleId);
+        return baseMapper.selectOne(wrapper);
     }
 
 

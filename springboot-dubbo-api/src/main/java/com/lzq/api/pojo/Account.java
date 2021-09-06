@@ -46,13 +46,13 @@ public class Account implements Serializable, UserDetails {
      * 邮箱
      */
     @TableField(value = "email")
-    @JsonProperty("email")
+    @JsonIgnore
     private String email;
     /**
      * 联系邮箱
      */
     @TableField(value = "contact_email")
-    @JsonProperty("contactEmail")
+    @JsonIgnore
     private String contactEmail;
     /**
      * 密码
@@ -69,27 +69,25 @@ public class Account implements Serializable, UserDetails {
      * 背景颜色
      */
     @TableField(value = "backgroud_color")
-    @JsonProperty("backgroudColor")
+    @JsonIgnore
     private String backgroudColor;
     /**
      * github主键id
      */
     @TableField(value = "github_id")
-    @JsonProperty("githubId")
     @JsonIgnore
     private String githubId;
     /**
      * gitee主键id
      */
     @TableField(value = "gitee_id")
-    @JsonProperty("giteeId")
     @JsonIgnore
     private String giteeId;
     /**
      * 角色id
      */
     @TableField(value = "role_id")
-    @JsonProperty("roleId")
+    @JsonIgnore
     private int roleId=1;
     /**
      * 角色类
@@ -101,37 +99,37 @@ public class Account implements Serializable, UserDetails {
      * 描述
      */
     @TableField("description")
-    @JsonProperty("description")
+    @JsonIgnore
     private String description;
     /**
      * 作品数
      */
     @TableField("works")
-    @JsonProperty("works")
+    @JsonIgnore
     private Integer works;
     /**
      * 喜爱人数
      */
     @TableField("favorites")
-    @JsonProperty("favorites")
+    @JsonIgnore
     private Integer favorites;
     /**
      * 粉丝
      */
     @TableField("fan")
-    @JsonProperty("fan")
+    @JsonIgnore
     private Integer fan;
     /**
      * 关注
      */
     @TableField("following")
-    @JsonProperty("following")
+    @JsonIgnore
     private Integer following;
     /**
      * 回收站
      */
     @TableField("recycle")
-    @JsonProperty("recycle")
+    @JsonIgnore
     private Integer recycle;
     /**
      * 创建时间

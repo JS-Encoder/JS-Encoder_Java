@@ -35,7 +35,7 @@ public interface ExampleService {
      * @param exampleId 主键
      * @return 是否成功
      */
-    boolean deleteById(Integer exampleId);
+    boolean deleteById(String exampleId);
 
 
     /**
@@ -60,7 +60,15 @@ public interface ExampleService {
     /**
      * 删除实例（物理删除实例）
      * @param exampleId 实例id
+     * @return
      */
-    void deleteExample(Integer exampleId);
+    Boolean deleteExample(String exampleId);
+
+    /**
+     * 通过实例id查询实例信息
+     * @param exampleId
+     * @return
+     */
+    Example queryById(String exampleId);
 
 }

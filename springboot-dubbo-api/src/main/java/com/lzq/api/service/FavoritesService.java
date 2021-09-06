@@ -20,7 +20,7 @@ public interface FavoritesService {
      * 删除喜爱（物理）
      * @param exampleId
      */
-    void deleteFavorites(Integer exampleId);
+    void deleteFavorites(String exampleId);
 
     /**
      * 获取用户的喜爱总数

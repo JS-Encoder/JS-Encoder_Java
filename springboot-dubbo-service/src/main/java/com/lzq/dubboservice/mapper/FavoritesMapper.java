@@ -14,5 +14,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FavoritesMapper extends BaseMapper<Favorites> {
 
-    void deleteFavorites(@Param("exampleId") Integer exampleId);
+    void deleteFavorites(@Param("exampleId") String exampleId);
 }

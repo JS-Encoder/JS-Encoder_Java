@@ -37,7 +37,7 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
     }
 
     @Override
-    public void deleteContent(Integer exampleId) {
+    public void deleteContent(String exampleId) {
         baseMapper.deleteContent(exampleId);
     }
 }

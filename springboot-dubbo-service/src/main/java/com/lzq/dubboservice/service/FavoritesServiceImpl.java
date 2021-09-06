@@ -2,16 +2,11 @@ package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Example;
 import com.lzq.api.pojo.Favorites;
-import com.lzq.api.pojo.Follow;
 import com.lzq.api.service.FavoritesService;
-import com.lzq.api.service.FollowService;
-import com.lzq.dubboservice.mapper.AccountMapper;
 import com.lzq.dubboservice.mapper.ExampleMapper;
 import com.lzq.dubboservice.mapper.FavoritesMapper;
-import com.lzq.dubboservice.mapper.FollowMapper;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +48,7 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
     }
 
     @Override
-    public void deleteFavorites(Integer exampleId) {
+    public void deleteFavorites(String exampleId) {
         baseMapper.deleteFavorites(exampleId);
     }
 

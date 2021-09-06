@@ -35,5 +35,5 @@ public interface ContentService {
      * @param exampleId 实例id
      * @return
      */
-    void deleteContent(Integer exampleId);
+     void deleteContent(String exampleId);
 }

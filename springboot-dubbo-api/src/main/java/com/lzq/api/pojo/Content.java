@@ -27,7 +27,7 @@ public class Content implements Serializable {
      */
     @TableId(value = "example_id")
     @JsonProperty("exampleId")
-    private Integer exampleId;
+    private String exampleId;
     /**
      * css代码
      */

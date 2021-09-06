@@ -9,6 +9,8 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 
@@ -17,19 +19,36 @@ import java.io.ByteArrayInputStream;
  * @description：TODO
  * @date ：2021/8/26 10:53
  */
+@Component
 public class QiniuyunUtils {
 
-    private static final String accessKey = "fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY";
-    public static final String secretKey = "ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C";
-    public static final String bucket = "lzqwxr";
+    private static String accessKey;
+    public static String secretKey;
+    public static String bucket;
+
+    @Value("${qiniuyun.accessKey}")
+    public void setAccessKey(String accessKey) {
+        QiniuyunUtils.accessKey = accessKey;
+    }
+
+    @Value("${qiniuyun.secretKey}")
+    public void setSecretKey(String secretKey) {
+        QiniuyunUtils.secretKey = secretKey;
+    }
+
+    @Value("${qiniuyun.bucket}")
+    public void setBucket(String bucket) {
+        QiniuyunUtils.bucket = bucket;
+    }
 
     /**
      * 上传图片到七牛云
+     *
      * @param bytes
      * @param imgname 图片名称
      * @return
      */
-    public static String uploadFiles(byte[] bytes,String imgname) {
+    public static String uploadFiles(byte[] bytes, String imgname) {
         //构造一个带指定 Region 对象的配置类
         Configuration cfg = new Configuration(Region.huanan());
         //...其他参数参考类注释
@@ -63,9 +82,10 @@ public class QiniuyunUtils {
 
     /**
      * 删除七牛云图片
+     *
      * @param imgname
      */
-    public static void deleteFiles(String imgname){
+    public static void deleteFiles(String imgname) {
         //构造一个带指定 Region 对象的配置类
         Configuration cfg = new Configuration(Region.region0());
         //...其他参数参考类注释

@@ -26,9 +26,9 @@ public class Example implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "example_id",type = IdType.AUTO)
+    @TableId(value = "example_id")
     @JsonProperty("exampleId")
-    private Integer exampleId;
+    private String exampleId;
     /**
      * 实列名称
      */

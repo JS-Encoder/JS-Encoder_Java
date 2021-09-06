@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: test
   application:
     #项目名称
     name: service

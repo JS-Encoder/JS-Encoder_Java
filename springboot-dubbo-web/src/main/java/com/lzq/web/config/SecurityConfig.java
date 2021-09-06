@@ -12,10 +12,13 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -23,6 +26,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 @Slf4j
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -77,8 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //放行index接口
                 .antMatchers("/").permitAll()
-                // .antMatchers("/index/**").permitAll()
-                .antMatchers("/user/**","/example/**").authenticated()
+                .antMatchers("/user/**","/example/**","/index/verify").authenticated()
                 //所有请求都需要登录验证
                 // .anyRequest().authenticated()
                 .and()
@@ -99,8 +102,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     String token = JWTUtils.getToken(jwtmap);
                     //获取用户
                     Account account=(Account) authentication.getPrincipal();
-                    ResultMapUtils.ResultMapWithToken(true,0,account,token);
-                    UserUtils.responseMessage(httpServletResponse, map, objectMapper);
+                    Map<String, Object> withToken = ResultMapUtils.ResultMapWithToken(true, 0, account, token);
+                    httpServletRequest.getSession().setAttribute("map",withToken);
+                    UserUtils.responseMessage(httpServletResponse, withToken, objectMapper);
                 })
                 .and()
                 //退出登录
@@ -111,6 +115,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, null, null);
                     UserUtils.responseMessage(httpServletResponse, map, objectMapper);
                 })
+                .and()
+                .exceptionHandling().authenticationEntryPoint(macLoginUrlAuthenticationEntryPoint())
                 .and()
                 .csrf()
                 .disable()
@@ -123,6 +129,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public AuthenticationEntryPoint macLoginUrlAuthenticationEntryPoint() {
+        return new MacLoginUrlAuthenticationEntryPoint();
+    }
+
+    @Bean
     public PersistentTokenRepository tokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
@@ -130,4 +141,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // tokenRepository.setCreateTableOnStartup(true);
         return tokenRepository;
     }
+
+    /**
+     * 认证管理器
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+
 }
