@@ -4,6 +4,7 @@ import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Follow;
 import com.lzq.api.service.AccountService;
 import com.lzq.api.service.FollowService;
+import com.lzq.api.service.MailService;
 import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -31,6 +31,9 @@ public class UserController {
 
     @Reference
     private FollowService followService;
+
+    @Reference
+    private MailService mailService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -160,6 +163,7 @@ public class UserController {
         }
         return ResultMapUtils.ResultMap(bol,0,null);
     }
+
 
 
 }

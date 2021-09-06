@@ -138,17 +138,17 @@ public class Account implements Serializable, UserDetails {
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     /**
-     * 乐观锁
-     */
-    @JsonIgnore
-    @Version //乐观锁注解
-    private Integer version;
-    /**
      * 更新时间
      */
     @JsonIgnore
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
+    /**
+     * 乐观锁
+     */
+    @JsonIgnore
+    @Version //乐观锁注解
+    private Integer version;
     /**
      * 是否删除
      */

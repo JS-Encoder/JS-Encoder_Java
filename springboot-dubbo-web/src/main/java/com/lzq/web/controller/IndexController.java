@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lzq.api.pojo.*;
 import com.lzq.api.service.AccountService;
 import com.lzq.api.service.MailService;
 import com.lzq.api.service.RoleService;
 import com.lzq.api.service.ouath.BaseOuathService;
-import com.lzq.web.utils.HttpClientUtil;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import com.lzq.web.utils.VerifyCodeUtils;
@@ -33,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +69,11 @@ public class IndexController {
     private AuthenticationManager authenticationManager;
 
 
-    //验证免登录
+    /**
+     * 免登录后直接请求的接口
+     * @param request
+     * @return
+     */
     @ApiOperation("免登录后直接请求的接口")
     @GetMapping({"/verify"})
     public Map<String, Object> getverify(HttpServletRequest request) {
@@ -91,6 +92,7 @@ public class IndexController {
     @ApiOperation("gituhub第三方登录调用接口")
     public Map<String, Object> callback(HttpServletRequest request) throws JsonProcessingException {
         Map<String, String> jwtmap = new HashMap();
+        //获取code  和 state
         String code = request.getParameter("code");
         String state = request.getParameter("state");
         //获取github返回的信息
@@ -112,7 +114,7 @@ public class IndexController {
             jwtmap.put("githubId", info.getId().toString());
             token = JWTUtils.getToken(jwtmap);
             //返回token 用来绑定第三方账号
-            return ResultMapUtils.ResultMapWithToken(false, 0, null, token);
+            return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
         }
 
     }
@@ -148,87 +150,15 @@ public class IndexController {
         }
     }
 
-    /**
-     * 发送邮箱
-     *
-     * @param email
-     * @return
-     */
-    @GetMapping({"/send"})
-    @ApiOperation("发送邮箱验证")
-    public Map<String, Object> sendEmail(String email) {
-        String code = VerifyCodeUtils.getCode();
-        Mail mail = new Mail();
-        mail.setTo(email);
-        mail.setSubject("验证码");
-        mail.setMailContent(code);
-        boolean bol = mailService.sendActiveMail(mail);
-        //把验证码存储到redis中
-        stringRedisTemplate.opsForValue().set(email, code, 300L, TimeUnit.SECONDS);
-        return ResultMapUtils.ResultMap(bol, 0, null);
-    }
 
     /**
-     * 注册
-     *
-     * @param account
-     * @param code
-     * @return
-     */
-    @PostMapping({"/register"})
-    @ApiOperation("用户注册")
-    public Map<String, Object> register(Account account, String code) {
-        Account result = accountService.queryByUsername(account.getUsername());
-        if (result != null) {
-            //用户名已存在
-            return ResultMapUtils.ResultMap(false, 2, null);
-        } else {
-            //获取redis中的验证码
-            String s = stringRedisTemplate.opsForValue().get(account.getEmail());
-            if (code.equals(s)) {
-                try {
-                    log.info("我到了");
-                    accountService.insert(account);
-                    //注册成功
-                    return ResultMapUtils.ResultMap(true, 0, null);
-                } catch (DuplicateKeyException e) {
-                    e.printStackTrace();
-                    //注册失败,用户名已存在
-                    return ResultMapUtils.ResultMap(false, 1, null);
-                }
-            } else {
-                //注册失败，验证码不存在
-                return ResultMapUtils.ResultMap(false, 0, null);
-            }
-        }
-    }
-
-
-    /**
-     * 查询用户名是否已注册
-     * @param username 用户名
-     * @return
-     */
-    @GetMapping({"/isDuplicate"})
-    @ApiOperation("用户是否已存在")
-    public Boolean isDup(String username) {
-        Map<String, String> hashMap = new HashMap();
-        //存储用户用于登录请求的信息
-        hashMap.put("username", "1275096074");
-        hashMap.put("password", "wxr19980304");
-        //通过第三方登录获取用户信息后 进行登录验证
-        HttpClientUtil.doPost("http://127.0.0.1:8090/index/login", hashMap);
-        return true;
-    }
-
-    /**
-     * 发送修改链接到邮箱
+     * 发送修改密码链接到邮箱
      *
      * @param account
      * @return
      */
     @PostMapping("/sendPasswordEmail")
-    @ApiOperation("发送修改链接到邮箱")
+    @ApiOperation("发送修改密码链接到邮箱")
     public Map<String, Object> sendPasswordEmail(Account account) {
         HashMap<String, String> map = new HashMap<>();
         //判断用户名是否不为空
@@ -248,7 +178,6 @@ public class IndexController {
             return ResultMapUtils.ResultMap(false, 0, null);
         }
     }
-
 
     /**
      * 修改用户密码
@@ -285,6 +214,65 @@ public class IndexController {
 
     }
 
+    /**
+     * 发送邮箱验证码
+     *
+     * @param email
+     * @return
+     */
+    @GetMapping({"/send"})
+    @ApiOperation("发送邮箱验证码")
+    public Map<String, Object> sendEmail(String email) {
+        String code = VerifyCodeUtils.getCode();
+        Mail mail = new Mail();
+        mail.setTo(email);
+        mail.setSubject("验证码");
+        mail.setMailContent(code);
+        boolean bol = mailService.sendActiveMail(mail);
+        //把验证码存储到redis中
+        stringRedisTemplate.opsForValue().set(email, code, 300L, TimeUnit.SECONDS);
+        return ResultMapUtils.ResultMap(bol, 0, null);
+    }
+
+    /**
+     * 注册
+     *
+     * @param account
+     * @param code
+     * @return
+     */
+    @PostMapping({"/register"})
+    @ApiOperation("用户注册")
+    public Map<String, Object> register(Account account, String code) {
+        Account result = accountService.queryByUsername(account.getUsername());
+        if (result != null) {
+            //用户名已存在
+            return ResultMapUtils.ResultMap(false, 2, null);
+        } else {
+            //获取redis中的验证码
+            String s = stringRedisTemplate.opsForValue().get(account.getEmail());
+            if (code.equals(s)) {
+                Account email = accountService.queryByEmail(account.getEmail());
+                if (email!=null){
+                    return ResultMapUtils.ResultMap(false, 2, "该邮箱已被注册");
+                }else {
+                    try {
+                        log.info("我到了");
+                        accountService.insert(account);
+                        //注册成功
+                        return ResultMapUtils.ResultMap(true, 0, null);
+                    } catch (DuplicateKeyException e) {
+                        e.printStackTrace();
+                        //注册失败,用户名已存在
+                        return ResultMapUtils.ResultMap(false, 1, "用户名已存在");
+                    }
+                }
+            } else {
+                //注册失败，验证码不存在
+                return ResultMapUtils.ResultMap(false, 0, "验证码不正确");
+            }
+        }
+    }
 
     /**
      * 获取七牛云的接口
@@ -334,8 +322,11 @@ public class IndexController {
                     Authentication auth = authenticationManager.authenticate(authRequest);
                     account = (Account) auth.getPrincipal();
                     log.info("用户信息为："+ account.toString());
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    return ResultMapUtils.ResultMap(true,0,account);
+                    SecurityContextHolder.getContext().setAuthentication(auth);;
+                    Map<String, Object> map = ResultMapUtils.ResultMap(true, 0, account);
+                    //存入用户信息
+                    request.getSession().setAttribute("map",map);
+                    return map;
                 }else {
                     return ResultMapUtils.ResultMap(false,0,"令牌已过期");
                 }
