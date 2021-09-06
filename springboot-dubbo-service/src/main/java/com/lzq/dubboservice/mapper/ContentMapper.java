@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContentMapper extends BaseMapper<Content> {
     void deleteContent(@Param("exampleId") String exampleId);
+
+    Content getContent(@Param("exampleId") String exampleId, @Param("username") String username);
 }

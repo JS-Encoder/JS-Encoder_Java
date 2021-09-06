@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/content")
-@Api(value = "实例内容接口",description = "实例内容接口")
+@Api(value = "实例内容接口", description = "实例内容接口")
 public class ContentController {
 
     @Reference
@@ -27,13 +27,14 @@ public class ContentController {
 
     /**
      * 获取实例内容
+     *
      * @param exampleId
      * @return
      */
     @RequestMapping("/getContent")
     @ApiOperation("获取实例内容")
-    public Map<String,Object> getContent(Integer exampleId){
-        Content content = contentService.getContent(exampleId);
-        return ResultMapUtils.ResultMap(true,0,content);
+    public Map<String, Object> getContent(String exampleId, String username) {
+        Content content = contentService.getContent(exampleId, username);
+        return ResultMapUtils.ResultMap(true, 0, content);
     }
 }

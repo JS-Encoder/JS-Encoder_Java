@@ -30,10 +30,8 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
     }
 
     @Override
-    public Content getContent(Integer exampleId) {
-        QueryWrapper<Content> wrapper = new QueryWrapper<>();
-        wrapper.eq("example_id",exampleId);
-        return baseMapper.selectOne(wrapper);
+    public Content getContent(String exampleId, String username) {
+        return baseMapper.getContent(exampleId,username);
     }
 
     @Override

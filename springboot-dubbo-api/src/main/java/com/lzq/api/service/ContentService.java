@@ -26,9 +26,10 @@ public interface ContentService {
     /**
      * 获取实例内容
      * @param exampleId
+     * @param username
      * @return
      */
-    public Content getContent(Integer exampleId);
+    public Content getContent(String exampleId,String username);
 
     /**
      * 删除实例内容
