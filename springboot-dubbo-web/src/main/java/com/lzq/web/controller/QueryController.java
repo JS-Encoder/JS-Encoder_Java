@@ -66,7 +66,7 @@ public class QueryController {
         //获取喜爱人数
         Integer count = favoritesService.getCount(username);
         //当喜爱数不匹配时进行更新
-        if (!result.getFavorites().equals(count)){
+        if (!result.getFavorites().equals(count)) {
             result.setFavorites(count);
             Account account = new Account();
             account.setUsername(result.getUsername());
@@ -196,7 +196,7 @@ public class QueryController {
      */
     @GetMapping("/queryByExampleName")
     @ApiOperation("根据实例名查询实例")
-    public Map<String, Object> queryByExampleName(HttpServletRequest request, String exampleName, @RequestParam(defaultValue = "1") Integer currentPage,@RequestParam(defaultValue = "0") Integer orderCondition) {
+    public Map<String, Object> queryByExampleName(HttpServletRequest request, String exampleName, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         if (request.getHeader("token") != null) {
             //获取token中的用户名
@@ -273,12 +273,13 @@ public class QueryController {
      *
      * @param request
      * @param account
-     * @param currentPage
+     * @param currentPage    当前页数
+     * @param orderCondition 排序条件
      * @return
      */
     @GetMapping("/getFavorites")
     @ApiOperation("获取喜爱实例列表")
-    public Map<String, Object> getFavorites(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getFavorites(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         PageInfo<ExampleAccount> list;
         if (request.getHeader("token") != null) {
@@ -290,7 +291,7 @@ public class QueryController {
         if (username != null) {
             //判断用户是否查看他人的喜爱实例
             if (username.equals(account.getUsername())) {
-                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage, orderCondition);
                 //关注列表
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
                 List<ExampleAccount> exampleList = list.getList();
@@ -307,7 +308,7 @@ public class QueryController {
                 List<Integer> favoritesList = redisTemplate.opsForList().range(username + "fav", 0, -1);
                 //获取缓存中用户的关注用户名
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
-                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+                list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage, orderCondition);
                 List<ExampleAccount> exampleList = list.getList();
                 for (ExampleAccount exampleAccount : exampleList) {
                     //判断该用户是否被关注，该用户是否是自己
@@ -323,7 +324,7 @@ public class QueryController {
                 list.setList(exampleList);
             }
         } else {
-            list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage);
+            list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage, orderCondition);
         }
         return ResultMapUtils.ResultMap(true, 0, list);
     }

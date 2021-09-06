@@ -14,17 +14,21 @@ public interface ExampleAccountService {
 
     /**
      * 通过实例名查询实例
-     * @param exampleName 实例名
-     * @param currentPage 当前页
+     *
+     * @param exampleName    实例名
+     * @param currentPage    当前页
+     * @param orderCondition 排序条件
      * @return
      */
-    PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage);
+    PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage, Integer orderCondition);
 
     /**
      * 查询个人喜爱实例
-     * @param username 用户名
+     *
+     * @param username    用户名
      * @param currentPage 当前页
+     * @param orderCondition
      * @return
      */
-    PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage);
+    PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage,Integer orderCondition);
 }

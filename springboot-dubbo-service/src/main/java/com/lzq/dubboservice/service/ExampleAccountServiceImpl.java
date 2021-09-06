@@ -21,19 +21,19 @@ import java.util.List;
 public class ExampleAccountServiceImpl extends ServiceImpl<ExampleAccountMapper, ExampleAccount> implements ExampleAccountService {
 
     @Override
-    public PageInfo<ExampleAccount> queryByExampleName(String exampleName,Integer currentPage) {
+    public PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage, Integer orderCondition) {
         //当前页和每页条数
-        PageHelper.startPage(currentPage,12);
+        PageHelper.startPage(currentPage, 12);
         //获取全部数据
-        List<ExampleAccount> list = baseMapper.queryByExampleName(exampleName);
+        List<ExampleAccount> list = baseMapper.queryByExampleName(exampleName, orderCondition);
         return new PageInfo<>(list);
     }
 
     @Override
-    public PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage) {
+    public PageInfo<ExampleAccount> queryPersonFavorites(String username, Integer currentPage, Integer orderCondition) {
         //当前页和每页条数
-        PageHelper.startPage(currentPage,12);
-        List<ExampleAccount> list = baseMapper.queryPersonFavorites(username);
+        PageHelper.startPage(currentPage, 12);
+        List<ExampleAccount> list = baseMapper.queryPersonFavorites(username, orderCondition);
         return new PageInfo<>(list);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface ExampleAccountMapper extends BaseMapper<ExampleAccount> {
 
-    public List<ExampleAccount> queryByExampleName(String exampleName);
+    public List<ExampleAccount> queryByExampleName(@Param("exampleName") String exampleName,@Param("orderCondition") Integer orderCondition);
 
-    List<ExampleAccount> queryPersonFavorites(@Param("username") String username);
+    List<ExampleAccount> queryPersonFavorites(@Param("username") String username,@Param("orderCondition") Integer orderCondition);
 }
