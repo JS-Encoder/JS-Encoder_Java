@@ -361,11 +361,5 @@ public class IndexController {
     }
 
 
-    @PostMapping("/updateBind")
-    public Map<String, Object> updateBind(Account account) {
-        Boolean aBoolean = accountService.bindGit(account);
-        log.info(aBoolean.toString());
-        return ResultMapUtils.ResultMap(true, 0, aBoolean);
-    }
 
 }

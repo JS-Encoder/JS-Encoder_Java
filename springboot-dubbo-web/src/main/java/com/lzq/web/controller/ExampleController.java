@@ -99,9 +99,9 @@ public class ExampleController {
             //获取当前时间毫秒
             long time = System.currentTimeMillis();
             //创建编译后的html文件
-            String file = ExampleUtils.filelocation + example.getUsername() + "/" + time + ".html";
+            String file = ExampleUtils.FILE_LOCATION + example.getUsername() + "/" + time + ".html";
             //初始化模板
-            File initfile = new File(ExampleUtils.InitHtml);
+            File initfile = new File(ExampleUtils.INIT_HTML);
             File existfile = new File(file);
             try {
                 //创建文件

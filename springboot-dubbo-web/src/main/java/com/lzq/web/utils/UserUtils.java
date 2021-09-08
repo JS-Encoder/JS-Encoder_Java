@@ -34,14 +34,14 @@ public class UserUtils {
         //用户保存jwt信息
         HashMap<String, String> jwtmap = new HashMap();
         //判断是否有token 有token则需要进行第三方绑定 没有则正常登录返回结果
-        if (headtoken != null && headtoken != "") {
+        if (StringUtils.isNotBlank(headtoken)) {
             //验证token
             DecodedJWT verify = JWTUtils.verify(headtoken);
             //获取token中的信息
             String id = verify.getClaim("githubId").asString();
             //判断是github登录还是gitee登录
             if (StringUtils.isNotBlank(id)) {
-                if (account.getGithubId() != "" && account.getGithubId() != null) {
+                if (StringUtils.isNotBlank(account.getGithubId())) {
                     //该用户已经绑定了github账号
                     return ResultMapUtils.ResultMapWithToken(true,1,account,null);
                 }
@@ -57,12 +57,18 @@ public class UserUtils {
             }
             //更新数据进行账号绑定
             accountService.bindGit(account);
+            //登录成功生产token
+            jwtmap.put("username", account.getUsername());
+            String token = JWTUtils.getToken(jwtmap);
+            return ResultMapUtils.ResultMapWithToken(true,2,account,token);
+        }else {
+            //登录成功生产token
+            jwtmap.put("username", account.getUsername());
+            String token = JWTUtils.getToken(jwtmap);
+            //返回信息
+            return ResultMapUtils.ResultMapWithToken(true,0,account,token);
         }
-        //登录成功生产token
-        jwtmap.put("username", account.getUsername());
-        String token = JWTUtils.getToken(jwtmap);
-        //返回信息
-        return ResultMapUtils.ResultMapWithToken(true,0,account,token);
+
     }
 
 
@@ -79,6 +85,15 @@ public class UserUtils {
     }
 
 
+    /**
+     * 查询第三方登录信息
+     * @param request
+     * @param baseOuathService
+     * @param redisTemplate
+     * @param accountService
+     * @param gitType 第三方登录类型
+     * @return
+     */
     public static Map<String, Object> callback(HttpServletRequest request, BaseOuathService baseOuathService,
                                                StringRedisTemplate redisTemplate,AccountService accountService,String gitType){
         String header = request.getHeader("token");
@@ -97,17 +112,27 @@ public class UserUtils {
         if (gitType.equals("giteeId")){
             rest = accountService.queryByGitId(null, info.getId());
             if (StringUtils.isNotBlank(header)){
-                rest.setGiteeId(info.getId());
-                accountService.bindGit(rest);
+                if (rest==null){
+                    rest.setGiteeId(info.getId());
+                    accountService.bindGit(rest);
+                    return ResultMapUtils.ResultMapWithToken(true, 1, "登陆状态下绑定第三方成功", null);
+                }else {
+                    return ResultMapUtils.ResultMapWithToken(false,1,"登录状态下绑定第三方失败,该第三方已绑定其他账号",null);
+                }
+
             }
         }else if (gitType.equals("githubId")){
             rest = accountService.queryByGitId(info.getId(),null );
             if (StringUtils.isNotBlank(header)){
-                rest.setGiteeId(info.getId());
-                accountService.bindGit(rest);
+                if (rest==null){
+                    rest.setGithubId(info.getId());
+                    accountService.bindGit(rest);
+                    return ResultMapUtils.ResultMapWithToken(true, 1, "登陆状态下绑定第三方成功", null);
+                }else {
+                    return ResultMapUtils.ResultMapWithToken(false,1,"登录状态下绑定第三方失败,该第三方已绑定其他账号",null);
+                }
             }
         }
-        rest = accountService.queryByGitId(null, info.getId());
         String token;
         //判断改github是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
         if (rest != null) {

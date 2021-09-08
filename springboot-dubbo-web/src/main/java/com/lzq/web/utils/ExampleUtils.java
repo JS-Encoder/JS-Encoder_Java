@@ -24,39 +24,39 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ExampleUtils {
 
-    public static String InitHtml;
+    public static String INIT_HTML;
 
-    public static String filelocation;
+    public static String FILE_LOCATION;
 
-    public static String chormeDriver;
+    public static String CHORME_DRIVER;
 
-    public static String bucket;
+    public static String BUCKET;
 
-    public static String url;
+    public static String URL;
 
     @Value("${resources.InitHtml}")
     public void setInitHtml(String initHtml) {
-        InitHtml = initHtml;
+        INIT_HTML = initHtml;
     }
 
     @Value("${resources.route}")
     public void setFilelocation(String filelocation) {
-        ExampleUtils.filelocation = filelocation;
+        ExampleUtils.FILE_LOCATION = filelocation;
     }
 
     @Value("${chorme.value}")
     public void setChormeDriver(String chormeDriver) {
-        ExampleUtils.chormeDriver = chormeDriver;
+        ExampleUtils.CHORME_DRIVER = chormeDriver;
     }
 
     @Value("${qiniuyun.bucket}")
     public void setBucket(String bucket) {
-        ExampleUtils.bucket = bucket;
+        ExampleUtils.BUCKET = bucket;
     }
 
     @Value("${qiniuyun.url}")
     public void setUrl(String url) {
-        ExampleUtils.url = url;
+        ExampleUtils.URL = url;
     }
 
     /**
@@ -72,7 +72,7 @@ public class ExampleUtils {
         //使用截屏工具进行截屏
         //启用chrome驱动
         //chrome驱动的位置
-        System.setProperty("webdriver.chrome.driver", chormeDriver);
+        System.setProperty("webdriver.chrome.driver", CHORME_DRIVER);
         System.setProperty("java.awt.headless", "true");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
@@ -100,7 +100,7 @@ public class ExampleUtils {
         //获取html文件路劲
         //实例内容和实例进行绑定
         exampleContent.setExampleId(example.getExampleId());
-        String file = filelocation + example.getUsername() + "/" + example.getFileName() + ".html";
+        String file = FILE_LOCATION + example.getUsername() + "/" + example.getFileName() + ".html";
         System.out.println(file);
         FileOutputStream fos = new FileOutputStream(new File(file));
         String screenshot = null;
@@ -122,7 +122,7 @@ public class ExampleUtils {
                 screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName(), example.getImg());
             }
             //修改图片地址
-            example.setImg(url + screenshot);
+            example.setImg(URL + screenshot);
             //更新实例
             bol = exampleService.update(example);
             //修改实例内容 当表无该数据时插入数据

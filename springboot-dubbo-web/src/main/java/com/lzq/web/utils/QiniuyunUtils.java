@@ -22,23 +22,23 @@ import java.io.ByteArrayInputStream;
 @Component
 public class QiniuyunUtils {
 
-    private static String accessKey;
-    public static String secretKey;
-    public static String bucket;
+    private static String ACCESSKEY;
+    public static String SECRETKEY;
+    public static String BUCKET;
 
     @Value("${qiniuyun.accessKey}")
     public void setAccessKey(String accessKey) {
-        QiniuyunUtils.accessKey = accessKey;
+        QiniuyunUtils.ACCESSKEY = accessKey;
     }
 
     @Value("${qiniuyun.secretKey}")
     public void setSecretKey(String secretKey) {
-        QiniuyunUtils.secretKey = secretKey;
+        QiniuyunUtils.SECRETKEY = secretKey;
     }
 
     @Value("${qiniuyun.bucket}")
     public void setBucket(String bucket) {
-        QiniuyunUtils.bucket = bucket;
+        QiniuyunUtils.BUCKET = bucket;
     }
 
     /**
@@ -57,9 +57,9 @@ public class QiniuyunUtils {
         String key = imgname;
         // byte[] uploadBytes = "hello qiniu cloud".getBytes("utf-8");
         ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
-        Auth auth = Auth.create(accessKey, secretKey);
+        Auth auth = Auth.create(ACCESSKEY, SECRETKEY);
 
-        String upToken = auth.uploadToken(bucket);
+        String upToken = auth.uploadToken(BUCKET);
         DefaultPutRet putRet = null;
         try {
             Response response = uploadManager.put(byteInputStream, key, upToken, null, null);
@@ -90,10 +90,10 @@ public class QiniuyunUtils {
         Configuration cfg = new Configuration(Region.region0());
         //...其他参数参考类注释
         String key = imgname;
-        Auth auth = Auth.create(accessKey, secretKey);
+        Auth auth = Auth.create(ACCESSKEY, SECRETKEY);
         BucketManager bucketManager = new BucketManager(auth, cfg);
         try {
-            bucketManager.delete(bucket, key);
+            bucketManager.delete(BUCKET, key);
         } catch (QiniuException ex) {
             //如果遇到异常，说明删除失败
             System.err.println(ex.code());

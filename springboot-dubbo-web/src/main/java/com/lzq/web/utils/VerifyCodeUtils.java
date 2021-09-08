@@ -5,6 +5,8 @@ import java.util.Random;
 public class VerifyCodeUtils {
 
 
+
+
     public static String getCode() {
         Random random = new Random();
         StringBuffer buffer = new StringBuffer();
