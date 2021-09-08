@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -55,9 +56,17 @@ public class UserController {
      */
     @PutMapping("/")
     @ApiOperation("更新用户信息")
-    public Map<String, Object> updateUserInfo(Account account) {
+    public Map<String, Object> updateUserInfo(HttpSession session, Account account) {
+        Map<String, Object> map = (Map<String, Object>) session.getAttribute("map");
+        Account data = (Account) map.get("data");
+        log.info("进入更新用户信息接口："+account);
         try {
             accountService.update(account);
+            //更新成功则更新verify中的数据
+            data.setName(account.getName());
+            data.setUserPicture(account.getUserPicture());
+            map.put("data",data);
+            session.setAttribute("map",map);
             return ResultMapUtils.ResultMap(true, 0, null);
         } catch (Exception e) {
             return ResultMapUtils.ResultMap(false, 0, null);

@@ -329,7 +329,7 @@ public class IndexController {
                 String git = verify.getClaim("git").asString();
                 String gitId = null;
                 if (StringUtils.isNotBlank(git)) {
-                    gitId = stringRedisTemplate.opsForValue().get(gitId);
+                    gitId = stringRedisTemplate.opsForValue().get(git);
                 }
                 //判断令牌是否过期
                 if (StringUtils.isNotBlank(gitId)) {

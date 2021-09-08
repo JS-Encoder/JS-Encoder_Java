@@ -75,6 +75,7 @@ public class ExampleController {
     @PostMapping("/createExample")
     @ApiOperation("创建一个实例")
     public Map<String, Object> CreateFile(Example example, Content exampleContent, String content) {
+        log.info("开始"+System.currentTimeMillis());
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
         Boolean bol =false;
         //随机生成uuid
