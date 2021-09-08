@@ -25,6 +25,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+
 @Slf4j
 @EnableWebSecurity
 @Configuration
@@ -54,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     //获取用户信息
                     Account account = (Account) authentication.getPrincipal();
                     Integer count = favoritesService.getCount(account.getUsername());
-                    if (!count.equals(account.getFavorites())){
+                    if (!count.equals(account.getFavorites())) {
                         account.setFavorites(count);
                         //更新（校正）我的喜爱数
                         Boolean aBoolean = accountService.updateFavorites(account);
@@ -64,11 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     String token = httpServletRequest.getHeader("token");
                     httpServletResponse.setContentType("application/json;charset=utf-8");
                     //把结果转换成json字符串
-                    try {
-                        httpServletResponse.getWriter().write(objectMapper.writeValueAsString(UserUtils.BindAccount(account, token, accountService)));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Map<String, Object> map = UserUtils.BindAccount(account, token, accountService);
+                    //判断是否绑定成功
+                    httpServletRequest.getSession().setAttribute("map", map);
+                    httpServletResponse.getWriter().write(objectMapper.writeValueAsString(map));
+
                 })
                 //登录失败
                 .failureHandler((httpServletRequest, httpServletResponse, e) -> {
@@ -81,7 +82,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //放行index接口
                 .antMatchers("/").permitAll()
-                .antMatchers("/user/**","/example/**","/index/verify","/feedback/**").authenticated()
+                .antMatchers("/user/**", "/example/**", "/index/verify", "/feedback/**").
+
+                authenticated()
                 //所有请求都需要登录验证
                 // .anyRequest().authenticated()
                 .and()
@@ -101,9 +104,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     //生成token
                     String token = JWTUtils.getToken(jwtmap);
                     //获取用户
-                    Account account=(Account) authentication.getPrincipal();
+                    Account account = (Account) authentication.getPrincipal();
                     Map<String, Object> withToken = ResultMapUtils.ResultMapWithToken(true, 0, account, token);
-                    httpServletRequest.getSession().setAttribute("map",withToken);
+                    httpServletRequest.getSession().setAttribute("map", withToken);
                     UserUtils.responseMessage(httpServletResponse, withToken, objectMapper);
                 })
                 .and()
@@ -116,11 +119,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     UserUtils.responseMessage(httpServletResponse, map, objectMapper);
                 })
                 .and()
-                .exceptionHandling().authenticationEntryPoint(macLoginUrlAuthenticationEntryPoint())
+                .exceptionHandling().
+
+                authenticationEntryPoint(macLoginUrlAuthenticationEntryPoint())
                 .and()
                 .csrf()
                 .disable()
         ;
+
     }
 
     @Bean
@@ -144,6 +150,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 认证管理器
+     *
      * @return
      * @throws Exception
      */

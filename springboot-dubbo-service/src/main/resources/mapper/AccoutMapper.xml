@@ -21,4 +21,14 @@
     <update id="reduceRecycle">
         update account set recycle=recycle-1 where username=#{username}
     </update>
+    <update id="bindGit">
+        update account
+        <if test=" githubId != '' and githubId != null ">
+            set github_id=#{githubId}
+        </if>
+        <if test=" giteeId != '' and giteeId != null ">
+            set gitee_id=#{giteeId}
+        </if>
+        where username=#{username}
+    </update>
 </mapper>

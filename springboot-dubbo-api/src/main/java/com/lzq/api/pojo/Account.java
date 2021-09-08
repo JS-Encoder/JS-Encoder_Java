@@ -75,13 +75,13 @@ public class Account implements Serializable, UserDetails {
      * github主键id
      */
     @TableField(value = "github_id")
-    @JsonIgnore
+    @JsonProperty("githubId")
     private String githubId;
     /**
      * gitee主键id
      */
     @TableField(value = "gitee_id")
-    @JsonIgnore
+    @JsonProperty("giteeId")
     private String giteeId;
     /**
      * 角色id

@@ -49,6 +49,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
+    public Boolean bindGit(Account account) {
+        return baseMapper.bindGit(account)>0?true:false;
+    }
+
+    @Override
     public Boolean addWorks(String username) {
         return baseMapper.addWorks(username)>0?true:false;
     }

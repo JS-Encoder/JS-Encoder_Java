@@ -24,4 +24,6 @@ public interface AccountMapper extends BaseMapper<Account> {
     Integer increaseRecycle(@Param("username") String username);
 
     Integer reduceRecycle(@Param("username") String username);
+
+    Integer bindGit(Account account);
 }

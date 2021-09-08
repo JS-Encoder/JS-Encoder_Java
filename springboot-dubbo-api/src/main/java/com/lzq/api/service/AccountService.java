@@ -33,6 +33,12 @@ public interface AccountService {
      */
     Boolean update(Account account) throws Exception;
 
+
+    /**
+     * 绑定第三方id
+     */
+    Boolean bindGit(Account account);
+
     /**
      * 增加作品数
      * @param username

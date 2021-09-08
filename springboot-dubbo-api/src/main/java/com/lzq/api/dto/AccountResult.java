@@ -45,7 +45,7 @@ public class AccountResult implements Serializable{
      */
     @TableField(value = "contact_email")
     @JsonProperty("contactEmail")
-    private String contactEmail;
+    private String contactEmail="";
     /**
      * 密码
      */
@@ -81,7 +81,7 @@ public class AccountResult implements Serializable{
      */
     @TableField("description")
     @JsonProperty("description")
-    private String description;
+    private String description="";
     /**
      * 作品数
      */

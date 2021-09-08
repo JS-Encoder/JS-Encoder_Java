@@ -11,6 +11,7 @@ import com.lzq.api.service.RoleService;
 import com.lzq.api.service.ouath.BaseOuathService;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
+import com.lzq.web.utils.UserUtils;
 import com.lzq.web.utils.VerifyCodeUtils;
 import com.qiniu.util.Auth;
 import io.swagger.annotations.Api;
@@ -71,6 +72,7 @@ public class IndexController {
 
     /**
      * 免登录后直接请求的接口
+     *
      * @param request
      * @return
      */
@@ -90,33 +92,38 @@ public class IndexController {
      */
     @GetMapping({"/github"})
     @ApiOperation("gituhub第三方登录调用接口")
-    public Map<String, Object> callback(HttpServletRequest request) throws JsonProcessingException {
-        Map<String, String> jwtmap = new HashMap();
-        //获取code  和 state
-        String code = request.getParameter("code");
-        String state = request.getParameter("state");
-        //获取github返回的信息
-        JSONObject userInfo = githubService.getUserInfo(githubService.getAccessToken(code, state));
-        //把返回的信息封装成对象
-        UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
-        //根据githubid查询用户信息
-        Account rest = accountService.queryByGitId(Integer.toString(info.getId()), null);
-        String token;
-        //判断改github是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
-        if (rest != null) {
-            jwtmap.put("username",rest.getUsername());
-            jwtmap.put("gitId",rest.getGithubId());
-            //把githubId存入数据库中用来严重token是否过期
-            stringRedisTemplate.opsForValue().set(rest.getGithubId(),rest.getGithubId(),120L,TimeUnit.SECONDS);
-            token = JWTUtils.getToken(jwtmap);
-            return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
-        } else {
-            jwtmap.put("githubId", info.getId().toString());
-            token = JWTUtils.getToken(jwtmap);
-            //返回token 用来绑定第三方账号
-            return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
-        }
-
+    public Map<String, Object> githubcallback(HttpServletRequest request) throws JsonProcessingException {
+        // Map<String, String> jwtmap = new HashMap();
+        // //获取code  和 state
+        // String code = request.getParameter("code");
+        // String state = request.getParameter("state");
+        // //获取github返回的信息
+        // JSONObject userInfo = githubService.getUserInfo(githubService.getAccessToken(code, state));
+        // //把返回的信息封装成对象
+        // UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
+        // //根据githubid查询用户信息
+        // Account rest = accountService.queryByGitId(info.getId(), null);
+        // String token;
+        // //判断改github是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
+        // if (rest != null) {
+        //     jwtmap.put("username", rest.getUsername());
+        //     jwtmap.put("githubId", rest.getGithubId());
+        //     //把githubId存入数据库中用来严重token是否过期
+        //     stringRedisTemplate.opsForValue().set(rest.getGithubId(), rest.getGithubId(), 900L, TimeUnit.SECONDS);
+        //     token = JWTUtils.getToken(jwtmap);
+        //     log.info("该用户已绑定");
+        //     return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
+        // } else {
+        //     jwtmap.put("githubId", info.getId().toString());
+        //     token = JWTUtils.getToken(jwtmap);
+        //     log.info("该用户未绑定");
+        //     //返回token 用来绑定第三方账号
+        //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
+        // }
+        log.info("我进入了github第三方登录调用接口");
+        Map<String, Object> map = UserUtils.callback(request, githubService, stringRedisTemplate,
+                accountService, "githubId");
+        return map;
     }
 
     /**
@@ -128,26 +135,35 @@ public class IndexController {
     @GetMapping({"/gitee"})
     @ApiOperation("gitee第三方登录调用接口")
     public Map<String, Object> giteeCallBack(HttpServletRequest request) throws IOException {
-        Map<String, String> jwtmap = new HashMap();
-        String code = request.getParameter("code");
-        String state = request.getParameter("state");
-        JSONObject userInfo = giteeService.getUserInfo(this.giteeService.getAccessToken(code, state));
-        //把json转化为对象
-        UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
-        //根据giteeid查询用户信息
-        Account rest = accountService.queryByGitId(null, Integer.toString(info.getId()));
-        String token;
-        //判断该gitee是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
-        if (rest != null) {
-            jwtmap.put("username",rest.getUsername());
-            token = JWTUtils.getToken(jwtmap);
-            return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
-        } else {
-            jwtmap.put("giteeId", Integer.toString(info.getId()));
-            token = JWTUtils.getToken(jwtmap);
-            //返回token 用来绑定第三方账号
-            return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
-        }
+        log.info("我进入了gitee第三方登录调用接口");
+        // Map<String, String> jwtmap = new HashMap();
+        // String code = request.getParameter("code");
+        // String state = request.getParameter("state");
+        // JSONObject userInfo = giteeService.getUserInfo(this.giteeService.getAccessToken(code, state));
+        // //把json转化为对象
+        // UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
+        // //根据giteeid查询用户信息
+        // Account rest = accountService.queryByGitId(null, Integer.toString(info.getId()));
+        // String token;
+        // //判断该gitee是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
+        // if (rest != null) {
+        //     jwtmap.put("username", rest.getUsername());
+        //     jwtmap.put("giteeId", rest.getGiteeId());
+        //     token = JWTUtils.getToken(jwtmap);
+        //     //把giteeId存入数据库中用来严重token是否过期
+        //     stringRedisTemplate.opsForValue().set(rest.getGiteeId(), rest.getGiteeId(), 900L, TimeUnit.SECONDS);
+        //     log.info("该用户已绑定");
+        //     return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
+        // } else {
+        //     jwtmap.put("giteeId", Integer.toString(info.getId()));
+        //     token = JWTUtils.getToken(jwtmap);
+        //     log.info("该用户未绑定");
+        //     //返回token 用来绑定第三方账号
+        //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
+        // }
+        Map<String, Object> map = UserUtils.callback(request, giteeService, stringRedisTemplate,
+                accountService, "giteeId");
+        return map;
     }
 
 
@@ -167,8 +183,7 @@ public class IndexController {
             String token = JWTUtils.getToken(map);
             Mail mail = new Mail();
             mail.setTo(account.getEmail());
-            mail.setSubject("修改密码链接");
-            mail.setMailContent(token);
+            mail.setSubject("http://localhost:8080/resetPwd?=" + token);
             //发送修改密码链接
             boolean b = mailService.sendActiveMail(mail);
             //返回token令牌
@@ -253,9 +268,9 @@ public class IndexController {
             String s = stringRedisTemplate.opsForValue().get(account.getEmail());
             if (code.equals(s)) {
                 Account email = accountService.queryByEmail(account.getEmail());
-                if (email!=null){
+                if (email != null) {
                     return ResultMapUtils.ResultMap(false, 2, "该邮箱已被注册");
-                }else {
+                } else {
                     try {
                         log.info("我到了");
                         accountService.insert(account);
@@ -297,22 +312,27 @@ public class IndexController {
 
     /**
      * 自定义登录逻辑
+     *
      * @param request
      * @return
      */
     @PostMapping("/doLogin")
     @ApiOperation("自定义登录逻辑")
-    public Map<String,Object> doLogin(HttpServletRequest request){
+    public Map<String, Object> doLogin(HttpServletRequest request) {
+        log.info("我进来自定义登录逻辑接口了");
         String token = request.getHeader("token");
-        if (StringUtils.isNotBlank(token)){
+        if (StringUtils.isNotBlank(token)) {
             try {
                 DecodedJWT verify = JWTUtils.verify(token);
                 //获取用户传输的第三方信息
                 String username = verify.getClaim("username").asString();
-                String gitId=verify.getClaim("gitId").asString();
-                String data = stringRedisTemplate.opsForValue().get(gitId);
+                String git = verify.getClaim("git").asString();
+                String gitId = null;
+                if (StringUtils.isNotBlank(git)) {
+                    gitId = stringRedisTemplate.opsForValue().get(gitId);
+                }
                 //判断令牌是否过期
-                if (StringUtils.isNotBlank(data)){
+                if (StringUtils.isNotBlank(gitId)) {
                     Account account = accountService.queryByUsername(username);
                     //(查询用户角色)s
                     Role role = roleService.queryById(account.getRoleId());
@@ -321,24 +341,31 @@ public class IndexController {
                     // 验证
                     Authentication auth = authenticationManager.authenticate(authRequest);
                     account = (Account) auth.getPrincipal();
-                    log.info("用户信息为："+ account.toString());
-                    SecurityContextHolder.getContext().setAuthentication(auth);;
+                    log.info("用户信息为：" + account.toString());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    ;
                     Map<String, Object> map = ResultMapUtils.ResultMap(true, 0, account);
                     //存入用户信息
-                    request.getSession().setAttribute("map",map);
+                    request.getSession().setAttribute("map", map);
                     return map;
-                }else {
-                    return ResultMapUtils.ResultMap(false,0,"令牌已过期");
+                } else {
+                    return ResultMapUtils.ResultMap(false, 0, "令牌已过期");
                 }
             } catch (AuthenticationException e) {
                 e.printStackTrace();
-                return ResultMapUtils.ResultMap(false,0,"无效令牌");
+                return ResultMapUtils.ResultMap(false, 0, "无效令牌");
             }
-        }else {
-            return ResultMapUtils.ResultMap(false,1,"令牌为空");
+        } else {
+            return ResultMapUtils.ResultMap(false, 1, "令牌为空");
         }
-
     }
 
+
+    @PostMapping("/updateBind")
+    public Map<String, Object> updateBind(Account account) {
+        Boolean aBoolean = accountService.bindGit(account);
+        log.info(aBoolean.toString());
+        return ResultMapUtils.ResultMap(true, 0, aBoolean);
+    }
 
 }

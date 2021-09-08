@@ -183,7 +183,7 @@
 
     <build>
         <!-- 包名称 -->
-        <finalName>dubbo-service</finalName>
+        <finalName>onlineidea-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

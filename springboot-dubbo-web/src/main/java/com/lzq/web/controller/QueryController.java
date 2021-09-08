@@ -61,6 +61,7 @@ public class QueryController {
     @GetMapping("/queryByUsername")
     @ApiOperation("根据用户名查询用户信息")
     public Map<String, Object> queryByUsername(String username) {
+        log.info("根据用户名查询用户信息接口："+username);
         //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
         //获取喜爱人数
@@ -73,7 +74,7 @@ public class QueryController {
             account.setFavorites(count);
             //更新数据
             Boolean aBoolean = accountService.updateFavorites(account);
-            log.info(aBoolean.toString());
+            log.info("校正用户喜爱数成功:" + aBoolean.toString());
         }
         return ResultMapUtils.ResultMap(true, 0, result);
     }

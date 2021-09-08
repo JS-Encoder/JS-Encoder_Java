@@ -20,6 +20,19 @@ spring:
     password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
     url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
+    #durid配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
   #rdis配置
   redis:
     host: 49.235.126.19
