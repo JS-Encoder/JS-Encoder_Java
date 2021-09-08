@@ -59,16 +59,22 @@ public class AccountResult implements Serializable{
     @JsonProperty("userPicture")
     private String userPicture;
     /**
+     * 背景颜色
+     */
+    @TableField(value = "background_color")
+    @JsonProperty("backgroundColor")
+    private String backgroundColor;
+    /**
      * github主键id
      */
     @TableField(value = "github_id")
-    @JsonIgnore
+    @JsonProperty("githubId")
     private String githubId;
     /**
      * gitee主键id
      */
     @TableField(value = "gitee_id")
-    @JsonIgnore
+    @JsonProperty("giteeId")
     private String giteeId;
     /**
      * 角色id

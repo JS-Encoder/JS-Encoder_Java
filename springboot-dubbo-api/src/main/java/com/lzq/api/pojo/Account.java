@@ -68,20 +68,20 @@ public class Account implements Serializable, UserDetails {
     /**
      * 背景颜色
      */
-    @TableField(value = "backgroud_color")
+    @TableField(value = "background_color")
     @JsonIgnore
-    private String backgroudColor;
+    private String backgroundColor;
     /**
      * github主键id
      */
     @TableField(value = "github_id")
-    @JsonProperty("githubId")
+    @JsonIgnore
     private String githubId;
     /**
      * gitee主键id
      */
     @TableField(value = "gitee_id")
-    @JsonProperty("giteeId")
+    @JsonIgnore
     private String giteeId;
     /**
      * 角色id

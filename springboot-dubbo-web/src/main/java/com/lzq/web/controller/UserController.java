@@ -100,7 +100,7 @@ public class UserController {
     @PutMapping("/unbindGitee")
     @ApiOperation("解绑Gitee")
     public Map<String, Object> unbindGitee(HttpServletRequest request, Account account) {
-        log.info(account.toString());
+        log.info("进入了解绑gitee接口："+account.toString());
         account.setGiteeId("");
         try {
             Boolean update = accountService.update(account);

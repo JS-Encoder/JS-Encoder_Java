@@ -86,7 +86,7 @@
             <artifactId>selenium-java</artifactId>
             <version>3.9.1</version>
         </dependency>
-        <!--版本冲突必须和seleniumhq同时导入-->
+        <!--版本冲突时必须和seleniumhq同时导入-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

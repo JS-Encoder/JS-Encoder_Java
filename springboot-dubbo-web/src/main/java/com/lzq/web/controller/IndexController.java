@@ -343,8 +343,11 @@ public class IndexController {
                     account = (Account) auth.getPrincipal();
                     log.info("用户信息为：" + account.toString());
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    ;
-                    Map<String, Object> map = ResultMapUtils.ResultMap(true, 0, account);
+                    //生成登录token
+                    Map<String, String> tokenMap = new HashMap<>();
+                    tokenMap.put("username",account.getUsername());
+                    String resultToken = JWTUtils.getToken(tokenMap);
+                    Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, account,resultToken);
                     //存入用户信息
                     request.getSession().setAttribute("map", map);
                     return map;

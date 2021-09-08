@@ -33,6 +33,9 @@ public class UserUtils {
     public static Map<String, Object> BindAccount(Account account, String headtoken, AccountService accountService) {
         //用户保存jwt信息
         HashMap<String, String> jwtmap = new HashMap();
+        jwtmap.put("username", account.getUsername());
+        //登录成功生产token
+        String token = JWTUtils.getToken(jwtmap);
         //判断是否有token 有token则需要进行第三方绑定 没有则正常登录返回结果
         if (StringUtils.isNotBlank(headtoken)) {
             //验证token
@@ -43,28 +46,22 @@ public class UserUtils {
             if (StringUtils.isNotBlank(id)) {
                 if (StringUtils.isNotBlank(account.getGithubId())) {
                     //该用户已经绑定了github账号
-                    return ResultMapUtils.ResultMapWithToken(true,1,account,null);
+                    return ResultMapUtils.ResultMapWithToken(true,1,account,token);
                 }
                 account.setGithubId(id);
             } else {
                 log.info("gitee为："+account.getGiteeId());
                 if (StringUtils.isNotBlank(account.getGiteeId())) {
                     //该用户已经绑定了gitee账号
-                    return ResultMapUtils.ResultMapWithToken(true,1,account,null);
+                    return ResultMapUtils.ResultMapWithToken(true,1,account,token);
 
                 }
                 account.setGiteeId(verify.getClaim("giteeId").asString());
             }
             //更新数据进行账号绑定
             accountService.bindGit(account);
-            //登录成功生产token
-            jwtmap.put("username", account.getUsername());
-            String token = JWTUtils.getToken(jwtmap);
             return ResultMapUtils.ResultMapWithToken(true,2,account,token);
         }else {
-            //登录成功生产token
-            jwtmap.put("username", account.getUsername());
-            String token = JWTUtils.getToken(jwtmap);
             //返回信息
             return ResultMapUtils.ResultMapWithToken(true,0,account,token);
         }
@@ -106,25 +103,35 @@ public class UserUtils {
         JSONObject userInfo = baseOuathService.getUserInfo(baseOuathService.getAccessToken(code, state));
         //把返回的信息封装成对象
         UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
-
+        log.info("获取第三方信息"+info.toString());
         //用户登录的状态下进行第三方绑定
         //根据git类型查询用户信息
         if (gitType.equals("giteeId")){
             rest = accountService.queryByGitId(null, info.getId());
             if (StringUtils.isNotBlank(header)){
+                //获取token中的用户名
+                log.info(header);
+                String username = JWTUtils.verify(header).getClaim("username").asString();
+                log.info(username);
                 if (rest==null){
+                    rest=new Account();
+                    rest.setUsername(username);
                     rest.setGiteeId(info.getId());
                     accountService.bindGit(rest);
-                    return ResultMapUtils.ResultMapWithToken(true, 1, "登陆状态下绑定第三方成功", null);
+                    return ResultMapUtils.ResultMap(true, 1, "登陆状态下绑定第三方成功");
                 }else {
-                    return ResultMapUtils.ResultMapWithToken(false,1,"登录状态下绑定第三方失败,该第三方已绑定其他账号",null);
+                    return ResultMapUtils.ResultMap(false,1,"登录状态下绑定第三方失败,该第三方已绑定其他账号");
                 }
 
             }
         }else if (gitType.equals("githubId")){
             rest = accountService.queryByGitId(info.getId(),null );
             if (StringUtils.isNotBlank(header)){
+                //获取token中的用户名
+                String username = JWTUtils.verify(header).getClaim("username").asString();
                 if (rest==null){
+                    rest=new Account();
+                    rest.setUsername(username);
                     rest.setGithubId(info.getId());
                     accountService.bindGit(rest);
                     return ResultMapUtils.ResultMapWithToken(true, 1, "登陆状态下绑定第三方成功", null);

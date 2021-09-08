@@ -45,4 +45,9 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
         List<AccountResult> list = baseMapper.getFanList(result);
         return new PageInfo<>(list);
     }
+
+    @Override
+    public Boolean updateFavorites(AccountResult result) {
+        return baseMapper.updateFavorites(result)>0?true:false;
+    }
 }

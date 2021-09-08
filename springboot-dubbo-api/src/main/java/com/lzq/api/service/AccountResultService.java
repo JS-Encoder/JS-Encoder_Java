@@ -3,6 +3,7 @@ package com.lzq.api.service;
 
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
+import com.lzq.api.pojo.Account;
 
 /**
  * @author ：LZQ
@@ -34,5 +35,11 @@ public interface AccountResultService {
      */
     PageInfo<AccountResult> getFanList(AccountResult result,Integer currentPage);
 
+    /**
+     * 更新喜爱数（校正喜爱数）
+     * @param result
+     * @return
+     */
+    Boolean updateFavorites(AccountResult result);
 
 }

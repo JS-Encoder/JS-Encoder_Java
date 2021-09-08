@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -60,21 +61,21 @@ public class QueryController {
      */
     @GetMapping("/queryByUsername")
     @ApiOperation("根据用户名查询用户信息")
-    public Map<String, Object> queryByUsername(String username) {
+    public Map<String, Object> queryByUsername(HttpSession session, String username) {
+
         log.info("根据用户名查询用户信息接口："+username);
         //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
         //获取喜爱人数
         Integer count = favoritesService.getCount(username);
-        //当喜爱数不匹配时进行更新
-        if (!result.getFavorites().equals(count)) {
-            result.setFavorites(count);
-            Account account = new Account();
-            account.setUsername(result.getUsername());
-            account.setFavorites(count);
-            //更新数据
-            Boolean aBoolean = accountService.updateFavorites(account);
-            log.info("校正用户喜爱数成功:" + aBoolean.toString());
+        if (result!=null){
+            //当喜爱数不匹配时进行更新
+            if (!result.getFavorites().equals(count)) {
+                result.setFavorites(count);
+                //更新数据
+                Boolean aBoolean = accountResultService.updateFavorites(result);
+                log.info("校正用户喜爱数成功:" + aBoolean.toString());
+            }
         }
         return ResultMapUtils.ResultMap(true, 0, result);
     }
