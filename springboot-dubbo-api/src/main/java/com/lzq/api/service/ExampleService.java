@@ -45,7 +45,7 @@ public interface ExampleService {
      * @param currentPage 当前页
      * @return
      */
-    PageInfo<Example> queryByAccount(String username, Integer currentPage);
+    PageInfo<Example> queryByAccount(String username, Integer currentPage, Integer orderCondition);
 
 
     /**
@@ -59,6 +59,7 @@ public interface ExampleService {
 
     /**
      * 删除实例（物理删除实例）
+     *
      * @param exampleId 实例id
      * @return
      */
@@ -66,6 +67,7 @@ public interface ExampleService {
 
     /**
      * 通过实例id查询实例信息
+     *
      * @param exampleId
      * @return
      */

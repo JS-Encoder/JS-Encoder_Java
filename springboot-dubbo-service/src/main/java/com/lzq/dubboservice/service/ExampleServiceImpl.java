@@ -23,7 +23,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public Boolean insert(Example example) {
-        return baseMapper.insert(example)>0?true:false;
+        return baseMapper.insert(example) > 0 ? true : false;
     }
 
     @Override
@@ -33,13 +33,24 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public boolean deleteById(String exampleId) {
-        return baseMapper.deleteById(exampleId)>0?true:false;
+        return baseMapper.deleteById(exampleId) > 0 ? true : false;
     }
 
     @Override
-    public PageInfo<Example> queryByAccount(String username, Integer currentPage) {
+    public PageInfo<Example> queryByAccount(String username, Integer currentPage, Integer orderCondition) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
+        switch (orderCondition){
+            case 0:
+                wrapper.orderByDesc("create_time");
+                break;
+            case 1:
+                wrapper.orderByDesc("update_time");
+                break;
+            case 2:
+                wrapper.orderByDesc("favorites");
+                break;
+        }
         //当前页和每页条数
         PageHelper.startPage(currentPage, 12);
         List<Example> list = baseMapper.selectList(wrapper);
@@ -59,14 +70,14 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public Boolean deleteExample(String exampleId) {
-         return baseMapper.deleteExample(exampleId)>0?true:false;
+        return baseMapper.deleteExample(exampleId) > 0 ? true : false;
 
     }
 
     @Override
     public Example queryById(String exampleId) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
-        wrapper.eq("example_id",exampleId);
+        wrapper.eq("example_id", exampleId);
         return baseMapper.selectOne(wrapper);
     }
 

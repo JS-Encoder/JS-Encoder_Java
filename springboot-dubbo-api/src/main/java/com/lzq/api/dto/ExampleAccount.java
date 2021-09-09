@@ -94,7 +94,7 @@ public class ExampleAccount implements Serializable {
 
     @JsonProperty("createTime")
     @TableField("create_time")
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss:",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新时间

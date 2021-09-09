@@ -64,12 +64,12 @@ public class QueryController {
     @ApiOperation("根据用户名查询用户信息")
     public Map<String, Object> queryByUsername(HttpSession session, String username) {
 
-        log.info("根据用户名查询用户信息接口："+username);
+        log.info("根据用户名查询用户信息接口：" + username);
         //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
         //获取喜爱人数
         Integer count = favoritesService.getCount(username);
-        if (result!=null){
+        if (result != null) {
             //当喜爱数不匹配时进行更新
             if (!result.getFavorites().equals(count)) {
                 result.setFavorites(count);
@@ -90,12 +90,13 @@ public class QueryController {
      */
     @GetMapping("/getFollow")
     @ApiOperation("获取关注列表")
-    public Map<String, Object> getFollowList(HttpServletRequest request, Account result, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getFollowList(HttpServletRequest request, Account result,
+                                             @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         PageInfo<Account> list = null;
         String token = request.getHeader("token");
         //判断用户是否登录
-        if (StringUtils.isNotBlank(token)){
+        if (StringUtils.isNotBlank(token)) {
             username = JWTUtils.verify(token)
                     .getClaim("username").asString();
         }
@@ -143,7 +144,8 @@ public class QueryController {
      */
     @GetMapping("/getFan")
     @ApiOperation("获取粉丝列表")
-    public Map<String, Object> getFanList(HttpServletRequest request, Account result, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getFanList(HttpServletRequest request, Account result,
+                                          @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         PageInfo<Account> list = null;
         //判断用户是否登录
@@ -194,13 +196,15 @@ public class QueryController {
      * 根据实例名查询实例
      *
      * @param request
-     * @param content 实例名获取实例名
+     * @param content     实例名获取实例名
      * @param currentPage 当前页
      * @return
      */
     @GetMapping("/queryByExampleName")
     @ApiOperation("根据实例名或者标签查询实例")
-    public Map<String, Object> queryByExampleName(HttpServletRequest request, String content, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
+    public Map<String, Object> queryByExampleName(HttpServletRequest request, String content,
+                                                  @RequestParam(defaultValue = "1") Integer currentPage,
+                                                  @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         if (request.getHeader("token") != null) {
             //获取token中的用户名
@@ -240,7 +244,9 @@ public class QueryController {
      */
     @GetMapping("/getExample")
     @ApiOperation("查询个人全部实例")
-    public Map<String, Object> getExample(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage,@RequestParam(defaultValue = "0") Integer orderCondition) {
+    public Map<String, Object> getExample(HttpServletRequest request, Account account,
+                                          @RequestParam(defaultValue = "1") Integer currentPage,
+                                          @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         PageInfo<Example> list;
         if (request.getHeader("token") != null) {
@@ -252,10 +258,10 @@ public class QueryController {
         if (username != null) {
             //用户名相同则查询自己的实例，不同则查询他人的公开实例
             if (username.equals(account.getUsername())) {
-                list = exampleService.queryByAccount(account.getUsername(), currentPage);
+                list = exampleService.queryByAccount(account.getUsername(), currentPage, orderCondition);
             } else {
                 //获取redis缓存中所喜欢的实例id列表
-                List<Integer> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
+                List<String> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
                 list = exampleService.queryByPublic(account.getUsername(), currentPage);
                 //获取实例集合
                 List<Example> exampleList = list.getList();
@@ -283,7 +289,9 @@ public class QueryController {
      */
     @GetMapping("/getFavorites")
     @ApiOperation("获取喜爱实例列表")
-    public Map<String, Object> getFavorites(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
+    public Map<String, Object> getFavorites(HttpServletRequest request, Account account,
+                                            @RequestParam(defaultValue = "1") Integer currentPage,
+                                            @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         PageInfo<ExampleAccount> list;
         if (request.getHeader("token") != null) {
@@ -310,13 +318,13 @@ public class QueryController {
             } else {
                 //获取缓存中用户的喜爱实例id
                 List<String> favoritesList = redisTemplate.opsForList().range(username + "fav", 0, -1);
-                log.info("查询到的个人喜爱列表"+favoritesList);
+                log.info("查询到的个人喜爱列表" + favoritesList);
                 //获取缓存中用户的关注用户名
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
                 list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage, orderCondition);
                 List<ExampleAccount> exampleList = list.getList();
                 for (ExampleAccount exampleAccount : exampleList) {
-                    log.info("遍历实例id:"+exampleAccount.getExampleId());
+                    log.info("遍历实例id:" + exampleAccount.getExampleId());
                     //判断该用户是否被关注，该用户是否是自己
                     if (followList.contains(exampleAccount.getUsername())) {
                         exampleAccount.setMyFollow(true);
@@ -324,7 +332,7 @@ public class QueryController {
                         exampleAccount.setMyFollow(null);
                     }
                     if (favoritesList.contains(exampleAccount.getExampleId())) {
-                        log.info("我匹配正确了"+exampleAccount.getExampleId());
+                        log.info("我匹配正确了" + exampleAccount.getExampleId());
                         exampleAccount.setMyFavorites(true);
                     }
                 }
