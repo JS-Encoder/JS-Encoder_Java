@@ -21,11 +21,11 @@ import java.util.List;
 public class ExampleAccountServiceImpl extends ServiceImpl<ExampleAccountMapper, ExampleAccount> implements ExampleAccountService {
 
     @Override
-    public PageInfo<ExampleAccount> queryByExampleName(String exampleName, Integer currentPage, Integer orderCondition) {
+    public PageInfo<ExampleAccount> queryByExampleName(String content, Integer currentPage, Integer orderCondition) {
         //当前页和每页条数
         PageHelper.startPage(currentPage, 12);
         //获取全部数据
-        List<ExampleAccount> list = baseMapper.queryByExampleName(exampleName, orderCondition);
+        List<ExampleAccount> list = baseMapper.queryByExampleName(content, orderCondition);
         return new PageInfo<>(list);
     }
 

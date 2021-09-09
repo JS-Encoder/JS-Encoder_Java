@@ -22,8 +22,8 @@
         on
         a.username=b.username
         where
-              b.example_name like concat('%',#{exampleName},'%')
-        or    b.label like concat('%',#{exampleName},'%')
+              b.example_name like concat('%',#{content},'%')
+        or    b.label like concat('%',#{content},'%')
         <if test="orderCondition == 0">
             order by b.create_time desc
         </if>

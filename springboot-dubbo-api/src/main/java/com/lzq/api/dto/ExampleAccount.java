@@ -1,5 +1,6 @@
 package com.lzq.api.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -90,15 +91,16 @@ public class ExampleAccount implements Serializable {
     /**
      * 创建时间
      */
+
     @JsonProperty("createTime")
-    @TableField(fill = FieldFill.INSERT)
+    @TableField("create_time")
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss:",timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新时间
      */
     @JsonProperty("updateTime")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField("update_time")
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private Date updateTime;
 }

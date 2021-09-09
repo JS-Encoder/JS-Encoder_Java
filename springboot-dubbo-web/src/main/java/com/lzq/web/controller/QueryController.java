@@ -194,13 +194,13 @@ public class QueryController {
      * 根据实例名查询实例
      *
      * @param request
-     * @param exampleName 实例名
+     * @param content 搜索框内容
      * @param currentPage 当前页
      * @return
      */
     @GetMapping("/queryByExampleName")
-    @ApiOperation("根据实例名查询实例")
-    public Map<String, Object> queryByExampleName(HttpServletRequest request, String exampleName, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
+    @ApiOperation("根据实例名或者标签查询实例")
+    public Map<String, Object> queryByExampleName(HttpServletRequest request, String content, @RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         if (request.getHeader("token") != null) {
             //获取token中的用户名
@@ -208,7 +208,7 @@ public class QueryController {
                     .getClaim("username").asString();
         }
         //先查询实例用户集合
-        PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryByExampleName(exampleName, currentPage, orderCondition);
+        PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryByExampleName(content, currentPage, orderCondition);
         List<ExampleAccount> list = pageInfo.getList();
         //当用户不登陆时不需要进行任何操作查询数据直接返回
         if (username != null) {
