@@ -56,7 +56,7 @@ public class ExampleAccount implements Serializable {
      */
     @TableId(value = "example_id")
     @JsonProperty("exampleId")
-    private Long exampleId;
+    private String exampleId;
     /**
      * 实列名称
      */

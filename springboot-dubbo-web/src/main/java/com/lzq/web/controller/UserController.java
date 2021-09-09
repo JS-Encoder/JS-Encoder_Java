@@ -155,6 +155,7 @@ public class UserController {
     @PutMapping("/updateEmail")
     @ApiOperation("更新注册邮箱")
     public Map<String, Object> updatEmail(Account account) {
+        //更新邮箱添加redis
         try {
             Boolean bol = accountService.update(account);
             return ResultMapUtils.ResultMapWithToken(bol, 0, null, null);

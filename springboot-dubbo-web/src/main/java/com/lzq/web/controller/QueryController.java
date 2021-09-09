@@ -11,6 +11,7 @@ import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -92,9 +93,10 @@ public class QueryController {
     public Map<String, Object> getFollowList(HttpServletRequest request, AccountResult result, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
         PageInfo<AccountResult> list = null;
+        String token = request.getHeader("token");
         //判断用户是否登录
-        if (request.getHeader("token") != null) {
-            username = JWTUtils.verify(request.getHeader("token"))
+        if (StringUtils.isNotBlank(token)){
+            username = JWTUtils.verify(token)
                     .getClaim("username").asString();
         }
         //登录的情况
@@ -238,7 +240,7 @@ public class QueryController {
      */
     @GetMapping("/getExample")
     @ApiOperation("查询个人全部实例")
-    public Map<String, Object> getExample(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getExample(HttpServletRequest request, Account account, @RequestParam(defaultValue = "1") Integer currentPage,@RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
         PageInfo<Example> list;
         if (request.getHeader("token") != null) {
@@ -307,12 +309,14 @@ public class QueryController {
                 list.setList(exampleList);
             } else {
                 //获取缓存中用户的喜爱实例id
-                List<Integer> favoritesList = redisTemplate.opsForList().range(username + "fav", 0, -1);
+                List<String> favoritesList = redisTemplate.opsForList().range(username + "fav", 0, -1);
+                log.info("查询到的个人喜爱列表"+favoritesList);
                 //获取缓存中用户的关注用户名
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
                 list = exampleAccountService.queryPersonFavorites(account.getUsername(), currentPage, orderCondition);
                 List<ExampleAccount> exampleList = list.getList();
                 for (ExampleAccount exampleAccount : exampleList) {
+                    log.info("遍历实例id:"+exampleAccount.getExampleId());
                     //判断该用户是否被关注，该用户是否是自己
                     if (followList.contains(exampleAccount.getUsername())) {
                         exampleAccount.setMyFollow(true);
@@ -320,6 +324,7 @@ public class QueryController {
                         exampleAccount.setMyFollow(null);
                     }
                     if (favoritesList.contains(exampleAccount.getExampleId())) {
+                        log.info("我匹配正确了"+exampleAccount.getExampleId());
                         exampleAccount.setMyFavorites(true);
                     }
                 }
