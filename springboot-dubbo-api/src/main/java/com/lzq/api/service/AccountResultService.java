@@ -21,21 +21,6 @@ public interface AccountResultService {
     AccountResult queryByUsername(String username);
 
     /**
-     * 获取关注列表
-     * @param result
-     * @param currentPage 当前页
-     * @return
-     */
-    PageInfo<AccountResult> getFollowList(AccountResult result, Integer currentPage);
-
-    /**
-     * 获取粉丝列表
-     * @param result
-     * @return
-     */
-    PageInfo<AccountResult> getFanList(AccountResult result,Integer currentPage);
-
-    /**
      * 更新喜爱数（校正喜爱数）
      * @param result
      * @return

@@ -32,21 +32,6 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
     }
 
     @Override
-    public PageInfo<AccountResult> getFollowList(AccountResult result, Integer currentPage) {
-        PageHelper.startPage(currentPage,24);
-        List<AccountResult> list = baseMapper.getFollowList(result);
-        return new PageInfo<>(list);
-
-    }
-
-    @Override
-    public PageInfo<AccountResult> getFanList(AccountResult result,Integer currentPage) {
-        PageHelper.startPage(currentPage,24);
-        List<AccountResult> list = baseMapper.getFanList(result);
-        return new PageInfo<>(list);
-    }
-
-    @Override
     public Boolean updateFavorites(AccountResult result) {
         return baseMapper.updateFavorites(result)>0?true:false;
     }

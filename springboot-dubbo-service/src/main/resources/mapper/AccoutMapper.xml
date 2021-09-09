@@ -2,25 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzq.dubboservice.mapper.AccountMapper">
 
+    <sql id="Account">
+        a.username, name, user_picture
+    </sql>
 
     <update id="addFavorites">
         update account set favorites=favorites+1 where username=#{username}
     </update>
+
     <update id="updateFavorites">
         update account set favorites=#{favorites} where username=#{username}
     </update>
+
     <update id="addWorks">
         update account set works=works+1 where username=#{username}
     </update>
+
     <update id="reduceWorks">
         update account set works=works-1 where username=#{username}
     </update>
+
     <update id="increaseRecycle">
         update account set recycle=recycle+1 where username=#{username}
     </update>
+
     <update id="reduceRecycle">
         update account set recycle=recycle-1 where username=#{username}
     </update>
+
     <update id="bindGit">
         update account
         <if test=" githubId != '' and githubId != null ">
@@ -31,4 +40,24 @@
         </if>
         where username=#{username}
     </update>
+
+    <select id="getFollowList" resultType="com.lzq.api.pojo.Account">
+        select
+        <include refid="Account"/>
+        from account a left join follow b
+        on
+        a.username=b.follow_username
+        where
+        b.username=#{username}
+    </select>
+
+    <select id="getFanList" resultType="com.lzq.api.pojo.Account">
+        select
+        <include refid="Account"/>
+        from account a left join follow b
+        on
+        a.username=b.username
+        where
+        b.follow_username=#{username}
+    </select>
 </mapper>

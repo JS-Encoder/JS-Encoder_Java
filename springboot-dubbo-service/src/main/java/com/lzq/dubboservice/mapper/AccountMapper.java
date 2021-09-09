@@ -5,6 +5,8 @@ import com.lzq.api.pojo.Account;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author ：LZQ
  * @description：TODO
@@ -26,4 +28,8 @@ public interface AccountMapper extends BaseMapper<Account> {
     Integer reduceRecycle(@Param("username") String username);
 
     Integer bindGit(Account account);
+
+    List<Account> getFollowList(Account result);
+
+    List<Account> getFanList(Account result);
 }

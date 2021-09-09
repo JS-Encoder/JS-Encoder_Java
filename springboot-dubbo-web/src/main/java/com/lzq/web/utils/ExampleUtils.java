@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -33,6 +34,8 @@ public class ExampleUtils {
     public static String BUCKET;
 
     public static String URL;
+
+    private static final char[] _UU64 = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     @Value("${resources.InitHtml}")
     public void setInitHtml(String initHtml) {
@@ -96,6 +99,16 @@ public class ExampleUtils {
 
     }
 
+    /**
+     * 保存实例
+     * @param example
+     * @param exampleContent
+     * @param content 编译后的内容
+     * @param exampleService
+     * @param contentService
+     * @return
+     * @throws IOException
+     */
     public static Boolean SaveExampleContent(Example example, Content exampleContent, String content, ExampleService exampleService, ContentService contentService) throws IOException {
         //获取html文件路劲
         //实例内容和实例进行绑定
@@ -140,5 +153,30 @@ public class ExampleUtils {
         }
     }
 
-    //
+    //生成22为uuid
+    public static String getUUid(){
+        UUID uuid = UUID.randomUUID();
+        int index = 0;
+        char[] cs = new char[22];
+        long L = uuid.getMostSignificantBits();
+        long R = uuid.getLeastSignificantBits();
+        long mask = 63;
+        // 从L64位取10次，每次取6位
+        for (int off = 58; off >= 4; off -= 6) {
+            long hex = (L & (mask << off)) >>> off;
+            cs[index++] = _UU64[(int) hex];
+        }
+        // 从L64位取最后的4位 ＋ R64位头2位拼上
+        int l = (int) (((L & 0xF) << 2) | ((R & (3 << 62)) >>> 62));
+        cs[index++] = _UU64[l];
+        // 从R64位取10次，每次取6位
+        for (int off = 56; off >= 2; off -= 6) {
+            long hex = (R & (mask << off)) >>> off;
+            cs[index++] = _UU64[(int) hex];
+        }
+        // 剩下的两位最后取
+        cs[index++] = _UU64[(int) (R & 3)];
+        // 返回字符串
+        return new String(cs);
+    }
 }

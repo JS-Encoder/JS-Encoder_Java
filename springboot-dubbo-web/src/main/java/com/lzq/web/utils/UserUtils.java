@@ -18,10 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class UserUtils {
+
+
 
     /**
      * 用户与第三方id进行绑定
@@ -162,4 +166,20 @@ public class UserUtils {
             return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
         }
     }
+
+
+    //生成4位随机字符串
+    public static String getCode() {
+        Random random = new Random();
+        StringBuffer buffer = new StringBuffer();
+        String baseNumLetter = "123456789abcdefghijklmnopqrstuvwsyz";
+
+        for(int i = 0; i < 4; ++i) {
+            int dot = random.nextInt(baseNumLetter.length());
+            buffer.append(baseNumLetter.charAt(dot));
+        }
+        return buffer.toString();
+    }
+
+
 }

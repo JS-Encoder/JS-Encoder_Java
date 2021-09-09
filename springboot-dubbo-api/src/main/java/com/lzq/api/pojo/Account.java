@@ -94,7 +94,7 @@ public class Account implements Serializable, UserDetails {
      */
     @JsonIgnore
     @TableField(exist = false)
-    private Role role;
+    private Role role=new Role(1,"ROLE_normal");
     /**
      * 描述
      */
@@ -131,6 +131,12 @@ public class Account implements Serializable, UserDetails {
     @TableField("recycle")
     @JsonIgnore
     private Integer recycle;
+    /**
+     * 我的关注
+     */
+    @TableField(exist = false)
+    @JsonProperty("myFollow")
+    private Boolean myFollow=false;
     /**
      * 创建时间
      */

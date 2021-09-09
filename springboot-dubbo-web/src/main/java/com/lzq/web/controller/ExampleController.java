@@ -76,7 +76,8 @@ public class ExampleController {
     @ApiOperation("创建一个实例")
     public Map<String, Object> CreateFile(Example example, Content exampleContent, String content) {
         log.info("开始"+System.currentTimeMillis());
-        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        //生成22位uuid
+        String uuid = ExampleUtils.getUUid();
         Boolean bol =false;
         //随机生成uuid
         //判断用户是保存实例还是第一次创建实例

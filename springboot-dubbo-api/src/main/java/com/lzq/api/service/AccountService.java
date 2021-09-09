@@ -1,6 +1,7 @@
 package com.lzq.api.service;
 
 
+import com.github.pagehelper.PageInfo;
 import com.lzq.api.pojo.Account;
 
 /**
@@ -31,7 +32,7 @@ public interface AccountService {
      * @param account 实例对象
      * @return
      */
-    Boolean update(Account account) throws Exception;
+    Boolean update(Account account);
 
 
     /**
@@ -74,6 +75,21 @@ public interface AccountService {
      * @return
      */
     Account queryByGitId(String githubId, String giteeId);
+
+    /**
+     * 获取关注列表
+     * @param result
+     * @param currentPage 当前页
+     * @return
+     */
+    PageInfo<Account> getFollowList(Account result, Integer currentPage);
+
+    /**
+     * 获取粉丝列表
+     * @param result
+     * @return
+     */
+    PageInfo<Account> getFanList(Account result,Integer currentPage);
 
     /**
      * 根据用户名查询用户信息

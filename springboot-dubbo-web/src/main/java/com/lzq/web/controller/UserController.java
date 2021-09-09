@@ -2,12 +2,14 @@ package com.lzq.web.controller;
 
 import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Follow;
+import com.lzq.api.pojo.Mail;
 import com.lzq.api.pojo.Role;
 import com.lzq.api.service.AccountService;
 import com.lzq.api.service.FollowService;
 import com.lzq.api.service.MailService;
 import com.lzq.api.service.RoleService;
 import com.lzq.web.utils.ResultMapUtils;
+import com.lzq.web.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：LZQ
@@ -59,14 +62,14 @@ public class UserController {
     public Map<String, Object> updateUserInfo(HttpSession session, Account account) {
         Map<String, Object> map = (Map<String, Object>) session.getAttribute("map");
         Account data = (Account) map.get("data");
-        log.info("进入更新用户信息接口："+account);
+        log.info("进入更新用户信息接口：" + account);
         try {
             accountService.update(account);
             //更新成功则更新verify中的数据
             data.setName(account.getName());
             data.setUserPicture(account.getUserPicture());
-            map.put("data",data);
-            session.setAttribute("map",map);
+            map.put("data", data);
+            session.setAttribute("map", map);
             return ResultMapUtils.ResultMap(true, 0, null);
         } catch (Exception e) {
             return ResultMapUtils.ResultMap(false, 0, null);
@@ -109,7 +112,7 @@ public class UserController {
     @PutMapping("/unbindGitee")
     @ApiOperation("解绑Gitee")
     public Map<String, Object> unbindGitee(HttpServletRequest request, Account account) {
-        log.info("进入了解绑gitee接口："+account.toString());
+        log.info("进入了解绑gitee接口：" + account.toString());
         account.setGiteeId("");
         try {
             Boolean update = accountService.update(account);
@@ -154,15 +157,21 @@ public class UserController {
      */
     @PutMapping("/updateEmail")
     @ApiOperation("更新注册邮箱")
-    public Map<String, Object> updatEmail(Account account) {
-        //更新邮箱添加redis
-        try {
+    public Map<String, Object> updatEmail(Account account, String newEmail, String code) {
+        log.info("我进入了更新注册邮箱接口：" + account.getUsername());
+        //获取code
+        String redisCode = (String) redisTemplate.opsForValue().get(account.getEmail());
+        Account byEmail = accountService.queryByEmail(newEmail);
+        //当新邮箱没被注册过且用户名和验证码正确时进行邮箱修改
+        if (byEmail != null) {
+            return ResultMapUtils.ResultMap(false, 2, "邮箱已被注册");
+        } else if (StringUtils.isNotBlank(account.getUsername()) && redisCode.equals(code)) {
             Boolean bol = accountService.update(account);
-            return ResultMapUtils.ResultMapWithToken(bol, 0, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultMapUtils.ResultMapWithToken(false, 1, null, null);
+            return ResultMapUtils.ResultMap(bol, 0, null);
+        } else {
+            return ResultMapUtils.ResultMap(false, 1, "验证码错误");
         }
+
     }
 
     /**

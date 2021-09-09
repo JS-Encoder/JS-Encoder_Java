@@ -10,7 +10,6 @@ import com.lzq.api.service.ouath.BaseOuathService;
 import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import com.lzq.web.utils.UserUtils;
-import com.lzq.web.utils.VerifyCodeUtils;
 import com.qiniu.util.Auth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -236,7 +235,7 @@ public class IndexController {
     @GetMapping({"/send"})
     @ApiOperation("发送邮箱验证码")
     public Map<String, Object> sendEmail(String email) {
-        String code = VerifyCodeUtils.getCode();
+        String code = UserUtils.getCode();
         Mail mail = new Mail();
         mail.setTo(email);
         mail.setSubject("验证码");
@@ -362,5 +361,9 @@ public class IndexController {
     }
 
 
-
+    @GetMapping("/Test")
+    public Map<String,Object> Test(String username){
+        Account account = accountService.queryByUsername(username);
+        return ResultMapUtils.ResultMap(true,0,account);
+    }
 }

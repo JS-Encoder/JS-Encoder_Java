@@ -90,9 +90,9 @@ public class QueryController {
      */
     @GetMapping("/getFollow")
     @ApiOperation("获取关注列表")
-    public Map<String, Object> getFollowList(HttpServletRequest request, AccountResult result, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getFollowList(HttpServletRequest request, Account result, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
-        PageInfo<AccountResult> list = null;
+        PageInfo<Account> list = null;
         String token = request.getHeader("token");
         //判断用户是否登录
         if (StringUtils.isNotBlank(token)){
@@ -103,32 +103,32 @@ public class QueryController {
         if (username != null) {
             //查看用户自己的关注
             if (username.equals(result.getUsername())) {
-                list = accountResultService.getFollowList(result, currentPage);
-                List<AccountResult> results = list.getList();
-                for (AccountResult accountResult : results) {
-                    accountResult.setMyFollow(true);
+                list = accountService.getFollowList(result, currentPage);
+                List<Account> results = list.getList();
+                for (Account account : results) {
+                    account.setMyFollow(true);
                 }
                 list.setList(results);
             } else {  //用户查看他人的关注
                 //获取缓存中的所有关注的用户
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
-                list = accountResultService.getFollowList(result, currentPage);
+                list = accountService.getFollowList(result, currentPage);
                 //通过遍历查找用户也关注的用户
-                List<AccountResult> results = list.getList();
-                for (AccountResult accountResult : results) {
+                List<Account> results = list.getList();
+                for (Account account : results) {
                     //当查询到同样的用户时，修改其状态
-                    if (followList.contains(accountResult.getUsername())) {
-                        accountResult.setMyFollow(true);
-                    } else if (username.equals(accountResult.getUsername())) {
+                    if (followList.contains(account.getUsername())) {
+                        account.setMyFollow(true);
+                    } else if (username.equals(account.getUsername())) {
                         //当用户查询到自己时不需要设置任何状态
-                        accountResult.setMyFollow(null);
+                        account.setMyFollow(null);
                     }
                 }
                 //添加回分页集合中
                 list.setList(results);
             }
         } else { //未登录的情况
-            list = accountResultService.getFollowList(result, currentPage);
+            list = accountService.getFollowList(result, currentPage);
         }
         return ResultMapUtils.ResultMap(true, 0, list);
     }
@@ -143,9 +143,9 @@ public class QueryController {
      */
     @GetMapping("/getFan")
     @ApiOperation("获取粉丝列表")
-    public Map<String, Object> getFanList(HttpServletRequest request, AccountResult result, @RequestParam(defaultValue = "1") Integer currentPage) {
+    public Map<String, Object> getFanList(HttpServletRequest request, Account result, @RequestParam(defaultValue = "1") Integer currentPage) {
         String username = null;
-        PageInfo<AccountResult> list = null;
+        PageInfo<Account> list = null;
         //判断用户是否登录
         if (request.getHeader("token") != null) {
             username = JWTUtils.verify(request.getHeader("token"))
@@ -155,37 +155,37 @@ public class QueryController {
         if (username != null) {
             //查看用户自己的粉丝
             if (username.equals(result.getUsername())) {
-                list = accountResultService.getFanList(result, currentPage);
-                List<AccountResult> results = list.getList();
+                list = accountService.getFanList(result, currentPage);
+                List<Account> results = list.getList();
                 //获取缓存中的所有关注的用户
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
-                for (AccountResult accountResult : results) {
+                for (Account account : results) {
                     //当互关时，修改状态
-                    if (followList.contains(accountResult.getUsername())) {
-                        accountResult.setMyFollow(true);
+                    if (followList.contains(account.getUsername())) {
+                        account.setMyFollow(true);
                     }
                 }
                 list.setList(results);
             } else {  //用户查看他人的粉丝
                 //获取缓存中的所有关注的用户
                 List<String> followList = redisTemplate.opsForList().range(username, 0, -1);
-                list = accountResultService.getFanList(result, currentPage);
+                list = accountService.getFanList(result, currentPage);
                 //通过遍历查找当前用户也关注的用户
-                List<AccountResult> results = list.getList();
-                for (AccountResult accountResult : results) {
+                List<Account> results = list.getList();
+                for (Account account : results) {
                     //当查询到同样的用户时，修改其状态
-                    if (followList.contains(accountResult.getUsername())) {
-                        accountResult.setMyFollow(true);
-                    } else if (username.equals(accountResult.getUsername())) {
+                    if (followList.contains(account.getUsername())) {
+                        account.setMyFollow(true);
+                    } else if (username.equals(account.getUsername())) {
                         //当用户查询到自己时不需要设置任何状态
-                        accountResult.setMyFollow(null);
+                        account.setMyFollow(null);
                     }
                 }
                 //添加回分页集合中
                 list.setList(results);
             }
         } else { //未登录的情况
-            list = accountResultService.getFanList(result, currentPage);
+            list = accountService.getFanList(result, currentPage);
         }
         return ResultMapUtils.ResultMap(true, 0, list);
     }
@@ -194,7 +194,7 @@ public class QueryController {
      * 根据实例名查询实例
      *
      * @param request
-     * @param content 搜索框内容
+     * @param content 实例名获取实例名
      * @param currentPage 当前页
      * @return
      */
