@@ -173,22 +173,19 @@ public class IndexController {
     @PostMapping("/sendPasswordEmail")
     @ApiOperation("发送修改密码链接到邮箱")
     public Map<String, Object> sendPasswordEmail(Account account) {
+        log.info("我进入了发送链接邮箱地址");
         HashMap<String, String> map = new HashMap<>();
         //判断用户名是否不为空
-        if (StringUtils.isNotBlank(account.getUsername())) {
-            map.put("email", account.getEmail());
-            String token = JWTUtils.getToken(map);
-            Mail mail = new Mail();
-            mail.setTo(account.getEmail());
-            mail.setSubject("http://localhost:8080/resetPwd?=" + token);
-            //发送修改密码链接
-            boolean b = mailService.sendActiveMail(mail);
-            //返回token令牌
-            return ResultMapUtils.ResultMap(true, 0, null);
-        } else {
-            //用户名为空
-            return ResultMapUtils.ResultMap(false, 0, null);
-        }
+        map.put("email", account.getEmail());
+        String token = JWTUtils.getToken(map);
+        Mail mail = new Mail();
+        mail.setTo(account.getEmail());
+        mail.setSubject("请点击以下链接进行密码修改");
+        mail.setMailContent("http://localhost:8080/resetPwd?token=" + token);
+        //发送修改密码链接
+        boolean b = mailService.sendActiveMail(mail);
+        //返回token令牌
+        return ResultMapUtils.ResultMap(true, 0, null);
     }
 
     /**

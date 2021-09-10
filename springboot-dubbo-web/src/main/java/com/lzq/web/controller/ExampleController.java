@@ -63,8 +63,6 @@ public class ExampleController {
     @Value("${resources.route}")
     public String fileLocation;
 
-    @Value("${qiniuyun.url}")
-    public String url;
 
     /**
      * 创建一个实例
@@ -117,14 +115,12 @@ public class ExampleController {
                 example.setFileName(Long.toString(time));
                 //把文件信息插入到数据库中
                 bol = exampleService.insert(example);
-                log.info("获取exampleId:"+example);
                 if (bol){
-                    bol = accountService.addWorks(example.getUsername());
-                    example.setExampleId(example.getExampleId());
+                    //更新用户的个人作品数
+                    accountService.addWorks(example.getUsername());
                     //保存实例内容
                     bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
                 }
-                log.info(bol.toString());
                 return ResultMapUtils.ResultMap(bol, 0, example.getExampleId());
             } catch (Exception e) {
                 e.printStackTrace();

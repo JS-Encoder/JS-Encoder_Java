@@ -203,6 +203,8 @@
                 <!--添加自己的启动类路径！-->
                 <configuration>
                     <mainClass>com.lzq.web.WebApplication</mainClass>
+                    <!--应用本地jar包-->
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
                 <executions>
                     <execution>

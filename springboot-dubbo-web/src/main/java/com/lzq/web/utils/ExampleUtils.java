@@ -1,11 +1,13 @@
 package com.lzq.web.utils;
 
 
+import com.luciad.imageio.webp.WebPWriteParam;
 import com.lzq.api.pojo.Content;
 import com.lzq.api.pojo.Example;
 import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.qiniu.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -14,6 +16,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class ExampleUtils {
 
@@ -32,8 +40,6 @@ public class ExampleUtils {
     public static String CHORME_DRIVER;
 
     public static String BUCKET;
-
-    public static String URL;
 
     private static final char[] _UU64 = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".toCharArray();
 
@@ -57,21 +63,16 @@ public class ExampleUtils {
         ExampleUtils.BUCKET = bucket;
     }
 
-    @Value("${qiniuyun.url}")
-    public void setUrl(String url) {
-        ExampleUtils.URL = url;
-    }
 
     /**
      * 截图
      *
      * @param username 用户名
      * @param filename 文件名
-     * @param imgname
      * @return
      * @throws IOException
      */
-    public static String screenshot(String username, String filename, String imgname) throws IOException {
+    public static String screenshot(String username, String filename) throws IOException {
         //使用截屏工具进行截屏
         //启用chrome驱动
         //chrome驱动的位置
@@ -90,20 +91,29 @@ public class ExampleUtils {
         broswer.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         //打开url
         broswer.get("http://localhost:8090/" + username + "/" + filename + ".html");
-
-        byte[] bytes = ((TakesScreenshot) broswer).getScreenshotAs(OutputType.BYTES);
-        //返回图片名
-        String fileName = QiniuyunUtils.uploadFiles(bytes, imgname);
+        //截图
+        File screenshotAs = ((TakesScreenshot) broswer).getScreenshotAs(OutputType.FILE);
+        //生成的webp文件
+        File file = new File(FILE_LOCATION + "/" + username + "/" + username + ".webp");
+        convertWebp(screenshotAs, file);
+        //把生成的webp文件转换位byte数组
+        //上传到七牛云
+        String imgName = QiniuyunUtils.uploadFile(file);
         broswer.close();
-        return fileName;
+        //删除截图原始图片缓存
+        screenshotAs.delete();
+        boolean delete = file.delete();
+        log.info(Boolean.toString(delete));
+        return imgName;
 
     }
 
     /**
      * 保存实例
+     *
      * @param example
      * @param exampleContent
-     * @param content 编译后的内容
+     * @param content        编译后的内容
      * @param exampleService
      * @param contentService
      * @return
@@ -114,7 +124,7 @@ public class ExampleUtils {
         //实例内容和实例进行绑定
         exampleContent.setExampleId(example.getExampleId());
         String file = FILE_LOCATION + example.getUsername() + "/" + example.getFileName() + ".html";
-        System.out.println(file);
+        log.info(file);
         FileOutputStream fos = new FileOutputStream(new File(file));
         String screenshot = null;
         Boolean bol = false;
@@ -123,23 +133,22 @@ public class ExampleUtils {
             fos.write(content.getBytes("GBK"));
             //第一次保存时生成图片
             if (StringUtils.isNullOrEmpty(example.getImg())) {
-                //把当前时间戳设置为图片名称
-                example.setImg(Long.toString(System.currentTimeMillis()));
                 //截图后进行保存
-                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName(), example.getImg());
+                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName());
+                //把当前时间戳设置为图片名称
+                example.setImg(screenshot);
             } else {
                 //先删除图片后上传新图片
                 QiniuyunUtils.deleteFiles(example.getImg());
-                example.setImg(Long.toString(System.currentTimeMillis()));
                 //截图后进行保存
-                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName(), example.getImg());
+                screenshot = ExampleUtils.screenshot(example.getUsername(), example.getFileName());
+                example.setImg(screenshot);
             }
-            //修改图片地址
-            example.setImg(URL + screenshot);
             //更新实例
             bol = exampleService.update(example);
-            //修改实例内容 当表无该数据时插入数据
+            //修改实例内容
             bol = contentService.updateContent(exampleContent);
+            //当表无该数据时插入数据
             if (!bol) {
                 //第一次保存时在表中添加实例内容
                 bol = contentService.addContent(exampleContent);
@@ -153,8 +162,37 @@ public class ExampleUtils {
         }
     }
 
+
+    /**
+     * 转换webp
+     *
+     * @param oldfile 要转换的文件
+     * @param newfile 生成的webp文件
+     * @return
+     * @throws IOException
+     */
+    public static void convertWebp(File oldfile, File newfile) throws IOException {
+        // Obtain an image to encode from somewhere
+        BufferedImage image = ImageIO.read(oldfile);
+
+        // Obtain a WebP ImageWriter instance
+        ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
+
+        // Configure encoding parameters
+        WebPWriteParam writeParam = new WebPWriteParam(writer.getLocale());
+        writeParam.setCompressionMode(WebPWriteParam.MODE_DEFAULT);
+
+        // Configure the output on the ImageWriter
+        FileImageOutputStream fileImageOutputStream = new FileImageOutputStream(newfile);
+        writer.setOutput(fileImageOutputStream);
+        // Encode
+        writer.write(null, new IIOImage(image, null, null), writeParam);
+        fileImageOutputStream.close();
+    }
+
+
     //生成22为uuid
-    public static String getUUid(){
+    public static String getUUid() {
         UUID uuid = UUID.randomUUID();
         int index = 0;
         char[] cs = new char[22];
