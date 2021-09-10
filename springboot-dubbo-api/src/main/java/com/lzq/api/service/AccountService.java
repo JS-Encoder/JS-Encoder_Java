@@ -118,5 +118,11 @@ public interface AccountService {
      */
     Boolean reduceRecycle(String username);
 
+    /**
+     * 通过密码验证用户
+     * @param account
+     * @return
+     */
+    Account queryByPassword(Account account);
 
 }

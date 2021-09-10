@@ -157,19 +157,18 @@ public class UserController {
      */
     @PutMapping("/updateEmail")
     @ApiOperation("更新注册邮箱")
-    public Map<String, Object> updatEmail(Account account, String newEmail, String code) {
+    public Map<String, Object> updatEmail(Account account, String newEmail) {
         log.info("我进入了更新注册邮箱接口：" + account.getUsername());
-        //获取code
-        String redisCode = (String) redisTemplate.opsForValue().get(account.getEmail());
         Account byEmail = accountService.queryByEmail(newEmail);
+        Account byPassword = accountService.queryByPassword(account);
         //当新邮箱没被注册过且用户名和验证码正确时进行邮箱修改
         if (byEmail != null) {
             return ResultMapUtils.ResultMap(false, 2, "邮箱已被注册");
-        } else if (StringUtils.isNotBlank(account.getUsername()) && redisCode.equals(code)) {
+        } else if (byPassword!=null) {
             Boolean bol = accountService.update(account);
             return ResultMapUtils.ResultMap(bol, 0, null);
-        } else {
-            return ResultMapUtils.ResultMap(false, 1, "验证码错误");
+        }else {
+            return ResultMapUtils.ResultMap(false,1,"密码错误");
         }
 
     }

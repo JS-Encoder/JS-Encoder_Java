@@ -112,6 +112,14 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
+    public Account queryByPassword(Account account) {
+        QueryWrapper<Account> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",account.getUsername());
+        wrapper.eq("password",account.getPassword());
+        return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
     public PageInfo<Account> getFollowList(Account result, Integer currentPage) {
         PageHelper.startPage(currentPage,24);
         List<Account> list = baseMapper.getFollowList(result);
