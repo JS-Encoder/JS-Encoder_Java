@@ -73,4 +73,11 @@ public interface ExampleService {
      */
     Example queryById(String exampleId);
 
+    /**
+     * 通过实例id和用户名查询实例
+     * @param example
+     * @return
+     */
+    Example queryByIdUsername(Example example);
+
 }

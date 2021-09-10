@@ -9,7 +9,6 @@ import com.lzq.api.service.FollowService;
 import com.lzq.api.service.MailService;
 import com.lzq.api.service.RoleService;
 import com.lzq.web.utils.ResultMapUtils;
-import com.lzq.web.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：LZQ

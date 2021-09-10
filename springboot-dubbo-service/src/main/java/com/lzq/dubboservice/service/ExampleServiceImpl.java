@@ -81,5 +81,13 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
         return baseMapper.selectOne(wrapper);
     }
 
+    @Override
+    public Example queryByIdUsername(Example example) {
+        QueryWrapper<Example> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",example.getUsername());
+        wrapper.eq("example_id",example.getExampleId());
+        return baseMapper.selectOne(wrapper);
+    }
+
 
 }

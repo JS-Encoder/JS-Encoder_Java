@@ -11,11 +11,11 @@ import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.ExampleUtils;
 import com.lzq.web.utils.QiniuyunUtils;
 import com.lzq.web.utils.ResultMapUtils;
-import com.qiniu.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
@@ -88,7 +88,7 @@ public class ExampleController {
                 example.setImg(query.getImg());
                 //用户保存实例
                 bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
-                return ResultMapUtils.ResultMap(bol,0,"保存实例内容");
+                return ResultMapUtils.ResultMap(bol,0,"保存实例内容成功");
             } catch (IOException e) {
                 e.printStackTrace();
                 return ResultMapUtils.ResultMap(false,0,"修改文件失败");
@@ -138,7 +138,8 @@ public class ExampleController {
     @ApiOperation("添加喜爱")
     public Map<String,Object> addFavorites(Favorites favorites){
         //判断是否用户已登录，登录则进行数据插入，否则则不做任何操作
-        if (!StringUtils.isNullOrEmpty(favorites.getUsername())){
+        if (StringUtils.isNotBlank(favorites.getUsername())
+                && StringUtils.isNotBlank(favorites.getExampleId())){
             Boolean bol = favoritesService.addFavorites(favorites);
             //添加到缓存
             if (bol){
@@ -162,28 +163,35 @@ public class ExampleController {
     @DeleteMapping("/")
     @ApiOperation("放入回收站")
     public Map<String,Object> deleteExample(Example example){
-        //逻辑删除实例放入回收站中
-        boolean b = exampleService.deleteById(example.getExampleId());
-        if (b){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            log.info("消息接收时间:"+sdf.format(new Date()));
-            //发送消息到队列中
-            rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
-                @Override
-                public Message postProcessMessage(Message message) throws AmqpException {
-                    //设置延迟时间 1天
-                    message.getMessageProperties().setHeader("x-delay",1000*60*60*24*1);
-                    return message;
-                }
-            });
-            //减少用户作品数
-            accountService.reduceWorks(example.getUsername());
-            //回收站数量增加
-            accountService.increaseRecycle(example.getUsername());
-            return ResultMapUtils.ResultMap(b,0,null);
+        //查询是否存在该实例
+        Example query = exampleService.queryByIdUsername(example);
+        if (query!=null){
+            //逻辑删除实例放入回收站中
+            boolean b = exampleService.deleteById(example.getExampleId());
+            if (b){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                log.info("消息接收时间:"+sdf.format(new Date()));
+                //发送消息到队列中
+                rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
+                    @Override
+                    public Message postProcessMessage(Message message) throws AmqpException {
+                        //设置延迟时间 1天
+                        message.getMessageProperties().setHeader("x-delay",1000*60*60*24*1);
+                        return message;
+                    }
+                });
+                //减少用户作品数
+                accountService.reduceWorks(example.getUsername());
+                //回收站数量增加
+                accountService.increaseRecycle(example.getUsername());
+                return ResultMapUtils.ResultMap(b,0,null);
+            }else {
+                return ResultMapUtils.ResultMap(b,0,null);
+            }
         }else {
-            return ResultMapUtils.ResultMap(b,0,null);
+            return ResultMapUtils.ResultMap(false,1,"请传入正确的值");
         }
+
     }
 
     /**

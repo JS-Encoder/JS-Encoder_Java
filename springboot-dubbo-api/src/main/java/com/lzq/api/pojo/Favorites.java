@@ -32,7 +32,7 @@ public class Favorites implements Serializable {
      */
     @TableField("example_id")
     @JsonProperty("exampleId")
-    private Integer exampleId;
+    private String exampleId;
     /**
      * 创建时间
      */
