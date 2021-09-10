@@ -39,7 +39,14 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     public Boolean update(Account account){
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         //当同时存在时则修改邮箱
-        wrapper.eq("username",account.getUsername());
+        if (StringUtils.isNotBlank(account.getUsername())){
+            wrapper.eq("username",account.getUsername());
+        }else if (!StringUtils.isNotBlank(account.getUsername())
+                && StringUtils.isNotBlank(account.getEmail())){
+            //当用户名为空邮箱不为空时修改密码
+            wrapper.eq("email",account.getEmail());
+        }
+
         return baseMapper.update(account,wrapper)>0?true:false;
     }
 

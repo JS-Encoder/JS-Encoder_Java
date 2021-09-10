@@ -196,6 +196,7 @@ public class IndexController {
     @PutMapping("/modifyPossword")
     @ApiOperation("修改用户密码")
     public Map<String, Object> modifyPossword(HttpServletRequest request, Account account) {
+        log.info("进入了修改密码接口");
         //接收发送过来的token
         String token = request.getHeader("token");
         //判断token是否存在
@@ -210,7 +211,8 @@ public class IndexController {
                     account.setEmail(email);
                     //更新密码
                     Boolean update = accountService.update(account);
-                    return ResultMapUtils.ResultMap(true, 0, null);
+                    log.info("修改："+Boolean.toString(update));
+                    return ResultMapUtils.ResultMap(update, 0, null);
                 } else {
 
                 }
