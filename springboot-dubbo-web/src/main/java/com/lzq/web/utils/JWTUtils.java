@@ -13,10 +13,10 @@ public class JWTUtils {
 
 
     //生产验证码
-    public static String getToken(Map<String, String> map) {
+    public static String getToken(Map<String, String> map,Integer timeType,Integer time) {
         Calendar instance = Calendar.getInstance();
         //过期时间24小时后过期
-        instance.add(10, 24);
+        instance.add(timeType, time);
         JWTCreator.Builder builder = JWT.create();
         map.forEach((k, v) -> {
             builder.withClaim(k, v);

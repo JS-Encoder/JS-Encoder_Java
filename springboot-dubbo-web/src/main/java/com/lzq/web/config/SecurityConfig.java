@@ -104,7 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     Account account = (Account) authentication.getPrincipal();
                     jwtmap.put("username", account.getUsername());
                     //生成token
-                    String token = JWTUtils.getToken(jwtmap);
+                    String token = JWTUtils.getToken(jwtmap,10,24);
                     Map<String, Object> withToken = ResultMapUtils.ResultMapWithToken(true, 0, account, token);
                     httpServletRequest.getSession().setAttribute("map", withToken);
                     UserUtils.responseMessage(httpServletResponse, withToken, objectMapper);

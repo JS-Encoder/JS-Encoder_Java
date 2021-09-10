@@ -118,8 +118,7 @@ public class IndexController {
         //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
         // }
         log.info("我进入了github第三方登录调用接口");
-        Map<String, Object> map = UserUtils.callback(request, githubService, stringRedisTemplate,
-                accountService, "githubId");
+        Map<String, Object> map = UserUtils.callback(request, githubService, accountService, "githubId");
         return map;
     }
 
@@ -158,8 +157,7 @@ public class IndexController {
         //     //返回token 用来绑定第三方账号
         //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
         // }
-        Map<String, Object> map = UserUtils.callback(request, giteeService, stringRedisTemplate,
-                accountService, "giteeId");
+        Map<String, Object> map = UserUtils.callback(request, giteeService, accountService, "giteeId");
         return map;
     }
 
@@ -177,7 +175,7 @@ public class IndexController {
         HashMap<String, String> map = new HashMap<>();
         //判断用户名是否不为空
         map.put("email", account.getEmail());
-        String token = JWTUtils.getToken(map);
+        String token = JWTUtils.getToken(map, 12, 10);
         Mail mail = new Mail();
         mail.setTo(account.getEmail());
         mail.setSubject("请点击以下链接进行密码修改");
@@ -207,12 +205,19 @@ public class IndexController {
                 DecodedJWT verify = JWTUtils.verify(token);
                 //获取用户名
                 String email = verify.getClaim("email").asString();
-                account.setEmail(email);
-                //更新密码
-                accountService.update(account);
-                return ResultMapUtils.ResultMap(true, 0, null);
+                //验证token是否正确
+                if (StringUtils.isNotBlank(email)) {
+                    account.setEmail(email);
+                    //更新密码
+                    Boolean update = accountService.update(account);
+                    return ResultMapUtils.ResultMap(true, 0, null);
+                } else {
+
+                }
+                //token无效
+                return ResultMapUtils.ResultMap(false, 0, null);
             } catch (Exception e) {
-                // e.printStackTrace();
+                e.printStackTrace();
                 //token无效
                 return ResultMapUtils.ResultMap(false, 0, null);
             }
@@ -320,13 +325,8 @@ public class IndexController {
                 DecodedJWT verify = JWTUtils.verify(token);
                 //获取用户传输的第三方信息
                 String username = verify.getClaim("username").asString();
-                String git = verify.getClaim("git").asString();
-                String gitId = null;
-                if (StringUtils.isNotBlank(git)) {
-                    gitId = stringRedisTemplate.opsForValue().get(git);
-                }
                 //判断令牌是否过期
-                if (StringUtils.isNotBlank(gitId)) {
+                if (StringUtils.isNotBlank(username)) {
                     Account account = accountService.queryByUsername(username);
                     //(查询用户角色)s
                     Role role = roleService.queryById(account.getRoleId());
@@ -339,9 +339,9 @@ public class IndexController {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                     //生成登录token
                     Map<String, String> tokenMap = new HashMap<>();
-                    tokenMap.put("username",account.getUsername());
-                    String resultToken = JWTUtils.getToken(tokenMap);
-                    Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, account,resultToken);
+                    tokenMap.put("username", account.getUsername());
+                    String resultToken = JWTUtils.getToken(tokenMap, 10, 24);
+                    Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, account, resultToken);
                     //存入用户信息
                     request.getSession().setAttribute("map", map);
                     return map;
@@ -359,8 +359,8 @@ public class IndexController {
 
 
     @GetMapping("/Test")
-    public Map<String,Object> Test(String username){
+    public Map<String, Object> Test(String username) {
         Account account = accountService.queryByUsername(username);
-        return ResultMapUtils.ResultMap(true,0,account);
+        return ResultMapUtils.ResultMap(true, 0, account);
     }
 }

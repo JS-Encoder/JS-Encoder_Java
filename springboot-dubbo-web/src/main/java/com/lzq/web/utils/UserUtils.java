@@ -39,7 +39,7 @@ public class UserUtils {
         HashMap<String, String> jwtmap = new HashMap();
         jwtmap.put("username", account.getUsername());
         //登录成功生产token
-        String token = JWTUtils.getToken(jwtmap);
+        String token = JWTUtils.getToken(jwtmap,10,24);
         //判断是否有token 有token则需要进行第三方绑定 没有则正常登录返回结果
         if (StringUtils.isNotBlank(headtoken)) {
             //验证token
@@ -90,13 +90,12 @@ public class UserUtils {
      * 查询第三方登录信息
      * @param request
      * @param baseOuathService
-     * @param redisTemplate
      * @param accountService
      * @param gitType 第三方登录类型
      * @return
      */
     public static Map<String, Object> callback(HttpServletRequest request, BaseOuathService baseOuathService,
-                                               StringRedisTemplate redisTemplate,AccountService accountService,String gitType){
+                                               AccountService accountService,String gitType){
         String header = request.getHeader("token");
         Map<String, String> jwtmap = new HashMap();
         Account rest=null;
@@ -153,14 +152,12 @@ public class UserUtils {
             }else {
                 jwtmap.put("git", rest.getGiteeId());
             }
-            //把githubId存入数据库中用来严重token是否过期
-            redisTemplate.opsForValue().set(info.getId(), info.getId(), 900L, TimeUnit.SECONDS);
-            token = JWTUtils.getToken(jwtmap);
+            token = JWTUtils.getToken(jwtmap,12,10);
             log.info("该用户已绑定");
             return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
         } else {
             jwtmap.put(gitType, info.getId());
-            token = JWTUtils.getToken(jwtmap);
+            token = JWTUtils.getToken(jwtmap,12,10);
             log.info("该用户未绑定");
             //返回token 用来绑定第三方账号
             return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
