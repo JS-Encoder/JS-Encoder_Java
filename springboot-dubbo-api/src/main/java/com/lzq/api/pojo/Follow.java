@@ -21,13 +21,13 @@ public class Follow implements Serializable {
     /**
      * 用户名
      */
-    @TableField(value = "username")
+    @TableId(value = "username")
     @JsonProperty("username")
     private String username;
     /**
      * 关注的用户冥
      */
-    @TableField(value = "follow_username")
+    @TableId(value = "follow_username")
     @JsonProperty("followUsername")
     private String followUsername;
     /**

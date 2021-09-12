@@ -3,6 +3,7 @@ package com.lzq.dubboservice.service;
 
 import com.lzq.api.pojo.Mail;
 import com.lzq.api.service.MailService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,6 +18,7 @@ import javax.mail.internet.MimeMessage;
  * @description：MailService实现类
  * @date ：2021/8/23 10:48
  */
+@Slf4j
 @Component
 @Service(interfaceClass = MailService.class,timeout = 60000,retries = 0)
 public class MailServiceImpl implements MailService {
@@ -35,10 +37,10 @@ public class MailServiceImpl implements MailService {
             helper.setSubject(mail.getSubject());
             helper.setText(mail.getMailContent(), true);
             javaMailSender.send(message);
-            System.out.println("发送成功");
+           log.info("发送成功");
             return true;
         } catch (MessagingException var4) {
-            System.out.println("发送失败");
+            log.info("发送失败");
             return false;
         }
     }

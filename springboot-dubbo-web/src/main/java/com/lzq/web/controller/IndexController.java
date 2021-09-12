@@ -90,33 +90,6 @@ public class IndexController {
     @GetMapping({"/github"})
     @ApiOperation("gituhub第三方登录调用接口")
     public Map<String, Object> githubcallback(HttpServletRequest request) throws JsonProcessingException {
-        // Map<String, String> jwtmap = new HashMap();
-        // //获取code  和 state
-        // String code = request.getParameter("code");
-        // String state = request.getParameter("state");
-        // //获取github返回的信息
-        // JSONObject userInfo = githubService.getUserInfo(githubService.getAccessToken(code, state));
-        // //把返回的信息封装成对象
-        // UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
-        // //根据githubid查询用户信息
-        // Account rest = accountService.queryByGitId(info.getId(), null);
-        // String token;
-        // //判断改github是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
-        // if (rest != null) {
-        //     jwtmap.put("username", rest.getUsername());
-        //     jwtmap.put("githubId", rest.getGithubId());
-        //     //把githubId存入数据库中用来严重token是否过期
-        //     stringRedisTemplate.opsForValue().set(rest.getGithubId(), rest.getGithubId(), 900L, TimeUnit.SECONDS);
-        //     token = JWTUtils.getToken(jwtmap);
-        //     log.info("该用户已绑定");
-        //     return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
-        // } else {
-        //     jwtmap.put("githubId", info.getId().toString());
-        //     token = JWTUtils.getToken(jwtmap);
-        //     log.info("该用户未绑定");
-        //     //返回token 用来绑定第三方账号
-        //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
-        // }
         log.info("我进入了github第三方登录调用接口");
         Map<String, Object> map = UserUtils.callback(request, githubService, accountService, "githubId");
         return map;
@@ -132,31 +105,6 @@ public class IndexController {
     @ApiOperation("gitee第三方登录调用接口")
     public Map<String, Object> giteeCallBack(HttpServletRequest request) throws IOException {
         log.info("我进入了gitee第三方登录调用接口");
-        // Map<String, String> jwtmap = new HashMap();
-        // String code = request.getParameter("code");
-        // String state = request.getParameter("state");
-        // JSONObject userInfo = giteeService.getUserInfo(this.giteeService.getAccessToken(code, state));
-        // //把json转化为对象
-        // UserInfo info = JSON.parseObject(userInfo.toString(), UserInfo.class);
-        // //根据giteeid查询用户信息
-        // Account rest = accountService.queryByGitId(null, Integer.toString(info.getId()));
-        // String token;
-        // //判断该gitee是否进行过绑定 未绑定则进行绑定，绑定则返回用户信息
-        // if (rest != null) {
-        //     jwtmap.put("username", rest.getUsername());
-        //     jwtmap.put("giteeId", rest.getGiteeId());
-        //     token = JWTUtils.getToken(jwtmap);
-        //     //把giteeId存入数据库中用来严重token是否过期
-        //     stringRedisTemplate.opsForValue().set(rest.getGiteeId(), rest.getGiteeId(), 900L, TimeUnit.SECONDS);
-        //     log.info("该用户已绑定");
-        //     return ResultMapUtils.ResultMapWithToken(true, 0, "返回token用于登录", token);
-        // } else {
-        //     jwtmap.put("giteeId", Integer.toString(info.getId()));
-        //     token = JWTUtils.getToken(jwtmap);
-        //     log.info("该用户未绑定");
-        //     //返回token 用来绑定第三方账号
-        //     return ResultMapUtils.ResultMapWithToken(false, 0, "返回token用于绑定账号", token);
-        // }
         Map<String, Object> map = UserUtils.callback(request, giteeService, accountService, "giteeId");
         return map;
     }
@@ -171,15 +119,43 @@ public class IndexController {
     @PostMapping("/sendPasswordEmail")
     @ApiOperation("发送修改密码链接到邮箱")
     public Map<String, Object> sendPasswordEmail(Account account) {
-        log.info("我进入了发送链接邮箱地址");
         HashMap<String, String> map = new HashMap<>();
-        //判断用户名是否不为空
         map.put("email", account.getEmail());
         String token = JWTUtils.getToken(map, 12, 10);
+        log.info("我进入了发送链接邮箱地址");
+        String url="http://localhost:8080/resetPwd?token=" + token;
+        String template="<!DOCTYPE html>" +
+                "<html lang=\"zh-n\">" +
+                "<head><meta charset=\"UTF-8\">" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" +
+                "<style>body{background:#1e1e1e;width:100%;}.flex{display:flex;}.flex-ai{align-items:center;}.flex-col{flex-direction:column;}.flex-jcc{justify-content:center;}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class=\"flex flex-jcc\" style=\"background:#1e1e1e;width:100%;height:100%;padding: 50px 15px 100px 15px;box-sizing:border-box;\">" +
+                "<div class=\"flex flex-ai flex-jcc\"><img style=\"width: 60px\" src=\"http://images.lliiooiill.cn/logo.svg\" alt=\"JS Encoder\">" +
+                "<span style=\"color:#F8F8F8;font-weight:bold;font-size:24px;margin-left:15px\">JS Encoder</span>" +
+                "</div>" +
+                "<div class=\"flex flex-col\" style=\"width:100%;color:#999999;font-size:14px;margin-top:40px\">" +
+                "<span>这是你的重置密码链接，有效期为10分钟，请尽快操作！</span>" +
+                "<a style=\"margin-top:15px;color=#1890ff\" href=\" \">"+url+"</ a>" +
+                "</div>" +
+                "<div style=\"width:100%;color:#999999;font-size:14px;margin-top:40px\" class=\"flex flex-col\">" +
+                "<span>非本人操作，请忽略此邮件！</span>" +
+                "<span>此为系统邮件，请勿回复</span>" +
+                "</div>" +
+                "<hr style=\"width:100%;border-color:#777777\">" +
+                "<a href=\"https://www.lliiooiill.cn\" style=\"color:#999999;font-size:12px;margin-top:40px\">JS Encoder</ a>" +
+                "<span style=\"color:#999999;font-size:12px;margin-top:10px\">JS Encoder 团队</span>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
         Mail mail = new Mail();
         mail.setTo(account.getEmail());
         mail.setSubject("请点击以下链接进行密码修改");
-        mail.setMailContent("http://localhost:8080/resetPwd?token=" + token);
+        mail.setMailContent(url);
         //发送修改密码链接
         boolean b = mailService.sendActiveMail(mail);
         //返回token令牌
@@ -211,7 +187,7 @@ public class IndexController {
                     account.setEmail(email);
                     //更新密码
                     Boolean update = accountService.update(account);
-                    log.info("修改："+Boolean.toString(update));
+                    log.info("修改：" + Boolean.toString(update));
                     return ResultMapUtils.ResultMap(update, 0, null);
                 } else {
 
@@ -239,11 +215,42 @@ public class IndexController {
     @GetMapping({"/send"})
     @ApiOperation("发送邮箱验证码")
     public Map<String, Object> sendEmail(String email) {
+        log.info("发送邮箱验证码："+email);
         String code = UserUtils.getCode();
+        String template = "" +
+                "<!DOCTYPE html>" +
+                "<html lang=\"zh-n\">" +
+                "<head>" +
+                "<meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" +
+                "<style>" +
+                "body{width:100%;}.flex{display:flex;}.flex-ai{align-items:center;}.flex-col{flex-direction:column;}.flex-jcc{justify-content:center;}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class=\"flex flex-jcc\" style=\"background:#1e1e1e;width:100%;height:100%;padding: 50px 15px 100px 15px;box-sizing:border-box;\"><div style=\"width:450px;\" class=\"flex flex-col flex-ai\">" +
+                "<div class=\"flex flex-ai flex-jcc\"><img style=\"width: 60px\" src=\"http://images.lliiooiill.cn/logo.png\" alt=\"JS Encoder\">" +
+                "<span style=\"color:#F8F8F8;font-weight:bold;font-size:24px;margin-left:15px\">JS Encoder</span>" +
+                "</div>" +
+                "<div class=\"flex flex-col\" style=\"width:100%;color:#999999;font-size:14px;margin-top:40px\">" +
+                "<span>欢迎注册 JS Encoder！</span><span style=\"margin-top:10px\">这是你的邮箱验证码，有效期为5分钟，请尽快注册！</span></div><div class=\"flex flex-jcc\">" +
+                "<span style=\"margin-top:30px;font-weight:bold;font-size:24px;background:#1a1a1a;color:#1890ff;padding:5px 15px;border-radius:5px\">" + code + "</span>" +
+                "</div>" +
+                "<div style=\"width:100%;color:#999999;font-size:14px;margin-top:40px\" class=\"flex flex-col\">" +
+                "<span>非本人操作，请忽略此邮件！</span>" +
+                "<span>此为系统邮件，请勿回复</span>" +
+                "</div>" +
+                "<hr style=\"width:100%;border-color:#777777\">" +
+                "<a href=\" \" style=\"color:#999999;font-size:12px;margin-top:40px\">JS Encoder</a>" +
+                "<span style=\"color:#999999;font-size:12px;margin-top:10px\">JS Encoder 团队</span>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
         Mail mail = new Mail();
         mail.setTo(email);
         mail.setSubject("验证码");
-        mail.setMailContent(code);
+        mail.setMailContent(template);
         boolean bol = mailService.sendActiveMail(mail);
         //把验证码存储到redis中
         stringRedisTemplate.opsForValue().set(email, code, 300L, TimeUnit.SECONDS);

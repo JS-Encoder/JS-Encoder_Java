@@ -98,7 +98,7 @@ public class ExampleUtils {
         convertWebp(screenshotAs, file);
         //把生成的webp文件转换位byte数组
         //上传到七牛云
-        String imgName = QiniuyunUtils.uploadFile(file);
+        String imgName = QiniuyunUtils.uploadFile(file,username);
         broswer.close();
         //删除截图原始图片缓存
         screenshotAs.delete();
@@ -130,7 +130,7 @@ public class ExampleUtils {
         Boolean bol = false;
         try {
             //包编译后的html内容覆盖原来的内容
-            fos.write(content.getBytes("GBK"));
+            fos.write(content.getBytes("UTF-8"));
             //第一次保存时生成图片
             if (StringUtils.isNullOrEmpty(example.getImg())) {
                 //截图后进行保存
