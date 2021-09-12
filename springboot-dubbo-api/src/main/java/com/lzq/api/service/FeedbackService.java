@@ -11,5 +11,16 @@ import java.util.List;
  */
 public interface FeedbackService {
 
+    /**
+     * 获取反馈列表
+     * @return
+     */
     List<Feedback> getAllFeedback();
+
+    /**
+     *
+     * @return
+     * @param feedback
+     */
+    Boolean addFeedback(Feedback feedback);
 }

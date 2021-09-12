@@ -25,30 +25,31 @@ public class Feedback implements Serializable {
     @JsonIgnore
     private Integer id;
 
+    @TableField("username")
+    @JsonProperty("username")
+    private String username;
     /**
      * 标题
      */
     @TableField("title")
     @JsonProperty("title")
     private String title;
-
     /**
      * 反馈内容
      */
     @TableField("content")
     @JsonProperty("content")
     private String content;
-
+    /**
+     * 表情
+     */
+    @TableField("emoji")
+    @JsonProperty("emoji")
+    private String emoji;
     /**
      * 创建时间
      */
     @JsonIgnore
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
-    /**
-     * 更新时间
-     */
-    @JsonIgnore
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
 }

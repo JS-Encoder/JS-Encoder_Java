@@ -2,7 +2,6 @@ package com.lzq.dubboservice.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lzq.api.pojo.Feedback;
-import com.lzq.api.service.FavoritesService;
 import com.lzq.api.service.FeedbackService;
 import com.lzq.dubboservice.mapper.FeedbackMapper;
 import org.apache.dubbo.config.annotation.Service;
@@ -22,5 +21,10 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     @Override
     public List<Feedback> getAllFeedback() {
         return baseMapper.selectList(null);
+    }
+
+    @Override
+    public Boolean addFeedback(Feedback feedback) {
+        return baseMapper.insert(feedback)>0?true:false;
     }
 }
