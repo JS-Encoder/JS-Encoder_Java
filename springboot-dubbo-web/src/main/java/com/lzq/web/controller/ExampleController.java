@@ -9,6 +9,7 @@ import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.lzq.api.service.FavoritesService;
 import com.lzq.web.utils.ExampleUtils;
+import com.lzq.web.utils.JWTUtils;
 import com.lzq.web.utils.QiniuyunUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -73,7 +75,7 @@ public class ExampleController {
     @PostMapping("/createExample")
     @ApiOperation("创建一个实例")
     public Map<String, Object> CreateFile(Example example, Content exampleContent, String content) {
-        log.info("开始"+System.currentTimeMillis());
+        log.info("开始"+new Date(System.currentTimeMillis()).toString());
         //生成22位uuid
         String uuid = ExampleUtils.getUUid();
         Boolean bol =false;
@@ -88,6 +90,7 @@ public class ExampleController {
                 example.setImg(query.getImg());
                 //用户保存实例
                 bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
+                log.info("结束"+new Date(System.currentTimeMillis()).toString());
                 return ResultMapUtils.ResultMap(bol,0,"保存实例内容成功");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -120,6 +123,7 @@ public class ExampleController {
                     accountService.addWorks(example.getUsername());
                     //保存实例内容
                     bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
+                    log.info("结束"+new Date(System.currentTimeMillis()).toString());
                 }
                 return ResultMapUtils.ResultMap(bol, 0, example.getExampleId());
             } catch (Exception e) {
@@ -154,6 +158,31 @@ public class ExampleController {
         }
     }
 
+    /**
+     * 取消喜爱
+     * @param favorites
+     * @return
+     */
+    @PostMapping("/cancelFavorites")
+    @ApiOperation("取消喜爱")
+    public Map<String,Object> cancelFavorites(Favorites favorites){
+        if (StringUtils.isNotBlank(favorites.getUsername())
+                && StringUtils.isNotBlank(favorites.getExampleId())){
+            //取消喜爱
+            Boolean bol = favoritesService.cancelFavorites(favorites);
+            //清除缓存中的喜爱
+            if (bol){
+                redisTemplate.opsForList().remove(favorites.getUsername()+"fav", 0, favorites.getExampleId());
+            }
+            //更新用户喜爱数量
+            Boolean aBoolean = accountService.reduceFavorites(favorites.getUsername());
+            log.info(aBoolean.toString());
+            return ResultMapUtils.ResultMap(bol,0,null);
+        }else {
+            return ResultMapUtils.ResultMap(false,1,null);
+        }
+    }
+
 
     /**
      * 放入回收站
@@ -162,7 +191,12 @@ public class ExampleController {
      */
     @DeleteMapping("/")
     @ApiOperation("放入回收站")
-    public Map<String,Object> deleteExample(Example example){
+    public Map<String,Object> deleteExample(HttpServletRequest request, Example example){
+        //获取token中的用户名
+        String username = JWTUtils.verify(request.getHeader("token"))
+                .getClaim("username").asString();
+        //存入用户名进行查询
+        example.setUsername(username);
         //查询是否存在该实例
         Example query = exampleService.queryByIdUsername(example);
         if (query!=null){
@@ -195,11 +229,28 @@ public class ExampleController {
     }
 
     /**
+     * 恢复实例
+     * @return
+     */
+    @PostMapping("/resume")
+    public Map<String,Object> resume(Example example){
+        example.setDeleted(0);
+        Boolean update = exampleService.update(example);
+        if (update){
+            //减少回收站数量（恢复实例）
+            accountService.reduceRecycle(example.getUsername());
+            //增加作品数
+            accountService.addWorks(example.getUsername());
+        }
+        return ResultMapUtils.ResultMap(update,0,null);
+    }
+
+    /**
      * 立即删除回收站
      * @param example
      * @return
      */
-    @DeleteMapping("/example")
+    @DeleteMapping("/delete")
     @ApiOperation("立即删除回收站")
     public Map<String,Object> deleteRightNow(Example example){
         //立即删除实例
@@ -220,5 +271,25 @@ public class ExampleController {
         return ResultMapUtils.ResultMap(bol,0,null);
     }
 
+    /**
+     * 更新实例
+     * @param example
+     * @return
+     */
+    @ApiOperation("更新实例")
+    @PutMapping("/")
+    public Map<String,Object> updateExample(HttpServletRequest request,Example example){
+        //获取token中的用户名
+        String username = JWTUtils.verify(request.getHeader("token"))
+                .getClaim("username").asString();
+        //存入用户名进行查询
+        example.setUsername(username);
+        Example query = exampleService.queryByIdUsername(example);
+        Boolean update=false;
+        if (query!=null){
+            update = exampleService.update(example);
+        }
+        return ResultMapUtils.ResultMap(update,0,null);
+    }
 
 }
