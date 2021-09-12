@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.ExampleAccount;
+import com.lzq.api.pojo.Content;
 import com.lzq.api.service.ExampleAccountService;
 import com.lzq.dubboservice.mapper.ExampleAccountMapper;
 import org.apache.dubbo.config.annotation.Service;
@@ -21,11 +22,11 @@ import java.util.List;
 public class ExampleAccountServiceImpl extends ServiceImpl<ExampleAccountMapper, ExampleAccount> implements ExampleAccountService {
 
     @Override
-    public PageInfo<ExampleAccount> queryByExampleName(String content, Integer currentPage, Integer orderCondition) {
+    public PageInfo<ExampleAccount> queryExample(String queryContent, Integer currentPage, Integer orderCondition, Content content) {
         //当前页和每页条数
         PageHelper.startPage(currentPage, 12);
         //获取全部数据
-        List<ExampleAccount> list = baseMapper.queryByExampleName(content, orderCondition);
+        List<ExampleAccount> list = baseMapper.queryExample(queryContent, orderCondition, content);
         return new PageInfo<>(list);
     }
 

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
 import com.lzq.api.dto.ExampleAccount;
 import com.lzq.api.pojo.Account;
+import com.lzq.api.pojo.Content;
 import com.lzq.api.pojo.Example;
 import com.lzq.api.service.*;
 import com.lzq.web.utils.JWTUtils;
@@ -198,11 +199,12 @@ public class QueryController {
      * @param request
      * @param content     实例名获取实例名
      * @param currentPage 当前页
+     * @param exampleContent content对象
      * @return
      */
-    @GetMapping("/queryByExampleName")
-    @ApiOperation("根据实例名或者标签查询实例")
-    public Map<String, Object> queryByExampleName(HttpServletRequest request, String content,
+    @GetMapping("/queryExample")
+    @ApiOperation("搜索框查询")
+    public Map<String, Object> queryByExampleName(HttpServletRequest request, String queryContent, Content content,
                                                   @RequestParam(defaultValue = "1") Integer currentPage,
                                                   @RequestParam(defaultValue = "0") Integer orderCondition) {
         String username = null;
@@ -212,7 +214,7 @@ public class QueryController {
                     .getClaim("username").asString();
         }
         //先查询实例用户集合
-        PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryByExampleName(content, currentPage, orderCondition);
+        PageInfo<ExampleAccount> pageInfo = exampleAccountService.queryExample(queryContent, currentPage, orderCondition, content);
         List<ExampleAccount> list = pageInfo.getList();
         //当用户不登陆时不需要进行任何操作查询数据直接返回
         if (username != null) {

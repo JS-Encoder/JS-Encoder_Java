@@ -5,13 +5,25 @@
         a.example_id, example_name, ispublic, label, img, file_name, favorites, a.username
     </sql>
 
-    <select id="queryByExampleName" resultType="com.lzq.api.dto.ExampleAccount">
+    <sql id="style">
+        <if test="content.htmlStyle != null and content.htmlStyle != '' ">
+            and html_style=#{content.htmlStyle}
+        </if>
+        <if test="content.cssStyle != null and content.cssStyle != '' ">
+            and css_style=#{content.cssStyle}
+        </if>
+        <if test="content.jsStyle != null and content.jsStyle != '' ">
+            and js_style=#{content.jsStyle}
+        </if>
+    </sql>
+
+    <select id="queryExample" resultType="com.lzq.api.dto.ExampleAccount">
         select
         a.username,
         name,
         user_picture,
         description,
-        example_id,
+        b.example_id,
         example_name,
         label,
         img,
@@ -20,10 +32,19 @@
         b.update_time
         from account a left join example b
         on
-        a.username=b.username
+            a.username=b.username
+        left join content c
+        on
+            b.example_id=c.example_id
         where
-              b.example_name like concat('%',#{content},'%')
-        or    b.label like concat('%',#{content},'%')
+              b.example_name like concat('%',#{queryContent},'%')
+        <include refid="style"/>
+        or
+              b.label like concat('%',#{queryContent},'%')
+        <include refid="style"/>
+        or
+              a.name like concat('%',#{queryContent},'%')
+        <include refid="style"/>
         <if test="orderCondition == 0">
             order by b.create_time desc
         </if>
