@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzq.dubboservice.mapper.FavoritesMapper">
 
+    <!--删除实例的时候同时删除掉喜爱表中所有该实例的数据-->
     <delete id="deleteFavorites">
         delete from favorites where example_id=#{exampleId}
     </delete>

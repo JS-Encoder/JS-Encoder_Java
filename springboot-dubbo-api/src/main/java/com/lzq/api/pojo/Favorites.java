@@ -2,6 +2,7 @@ package com.lzq.api.pojo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,13 +25,13 @@ public class Favorites implements Serializable {
     /**
      * 用户名
      */
-    @TableField("username")
+    @TableId("username")
     @JsonProperty("username")
     private String username;
     /**
      * 实例id
      */
-    @TableField("example_id")
+    @TableId("example_id")
     @JsonProperty("exampleId")
     private String exampleId;
     /**

@@ -17,6 +17,13 @@ public interface FavoritesService {
     Boolean addFavorites(Favorites favorites);
 
     /**
+     * 取消喜爱
+     * @param favorites
+     * @return
+     */
+    Boolean cancelFavorites(Favorites favorites);
+
+    /**
      * 删除喜爱（物理）
      * @param exampleId
      */
