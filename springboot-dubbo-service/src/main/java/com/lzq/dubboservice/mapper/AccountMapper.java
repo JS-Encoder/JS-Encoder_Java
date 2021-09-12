@@ -17,6 +17,8 @@ public interface AccountMapper extends BaseMapper<Account> {
 
     Integer addFavorites(@Param("username") String username);
 
+    Integer reduceFavorites(@Param("username") String username);
+
     Integer updateFavorites(Account account);
 
     Integer addWorks(@Param("username") String username);

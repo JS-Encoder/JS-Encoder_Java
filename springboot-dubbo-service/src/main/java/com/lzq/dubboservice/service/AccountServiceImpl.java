@@ -71,6 +71,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
+    public Boolean reduceFavorites(String username) {
+        return baseMapper.reduceFavorites(username)>0?true:false;
+    }
+
+    @Override
     public Boolean updateFavorites(Account account) {
         return baseMapper.updateFavorites(account)>0?true:false;
     }

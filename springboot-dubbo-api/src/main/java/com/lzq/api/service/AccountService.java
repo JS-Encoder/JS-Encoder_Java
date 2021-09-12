@@ -62,6 +62,13 @@ public interface AccountService {
     Boolean addFavorites(String username);
 
     /**
+     * 减少喜爱数
+     * @param username
+     * @return
+     */
+    Boolean reduceFavorites(String username);
+
+    /**
      * 更新喜爱数（校正喜爱数）
      * @param account
      * @return
