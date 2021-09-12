@@ -29,41 +29,23 @@ public class Content implements Serializable {
     @JsonProperty("exampleId")
     private String exampleId;
     /**
-     * css代码
+     * 实列名称
      */
-    @TableField(value = "css")
-    @JsonProperty("css")
-    private String css;
+    @TableField(exist = false)
+    @JsonProperty("exampleName")
+    private String exampleName;
     /**
-     * css外部链接
+     * 标签
      */
-    @TableField(value = "css_out")
-    @JsonProperty("cssOut")
-    private String cssOut;
+    @TableField(exist = false)
+    @JsonProperty("label")
+    private String label;
     /**
-     * js代码
+     * codeContent
      */
-    @TableField(value = "js")
-    @JsonProperty("js")
-    private String js;
-    /**
-     * js外部链接
-     */
-    @TableField(value = "js_out")
-    @JsonProperty("jsOut")
-    private String jsOut;
-    /**
-     * html代码
-     */
-    @TableField(value = "html")
-    @JsonProperty("html")
-    private String html;
-    /**
-     * html head 代码
-     */
-    @TableField(value = "html_head")
-    @JsonProperty("htmlHead")
-    private String htmlHead;
+    @TableField(value = "code_content")
+    @JsonProperty("codeContent")
+    private String codeContent;
     /**
      * html预处理语言
      */

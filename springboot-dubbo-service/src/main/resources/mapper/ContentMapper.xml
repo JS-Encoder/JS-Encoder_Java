@@ -5,7 +5,7 @@
         delete from content where example_id=#{exampleId}
     </delete>
     <select id="getContent" resultType="com.lzq.api.pojo.Content">
-        select css, css_out, js, js_out, html, html_head, css_style, js_style
+        select a.example_id, code_content, css_style, js_style, html_style, b.example_name, b.label
         from content a left join example b
         on
             a.example_id=b.example_id
