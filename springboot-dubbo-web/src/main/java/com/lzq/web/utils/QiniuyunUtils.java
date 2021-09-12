@@ -80,13 +80,14 @@ public class QiniuyunUtils {
         return putRet.key;
     }
 
-    public static String uploadFile(File file) {
+    public static String uploadFile(File file,String username) {
+        long time = System.currentTimeMillis();
         //构造一个带指定 Region 对象的配置类
         Configuration cfg = new Configuration(Region.huanan());
         //...其他参数参考类注释
         UploadManager uploadManager = new UploadManager(cfg);
         //默认不指定key的情况下，以文件内容的hash值作为文件名
-        String key = null;
+        String key = username+time;
         Auth auth = Auth.create(ACCESSKEY, SECRETKEY);
         String upToken = auth.uploadToken(BUCKET);
 
