@@ -83,8 +83,8 @@ public class ExampleUtils {
         options.setHeadless(true);
         ChromeDriver broswer = new ChromeDriver(options);
         //设置浏览器窗口大小
-        int winHeight = 800;
-        int winWidth = 1280;
+        int winHeight = 528;
+        int winWidth = 960;
         Dimension dim = new Dimension(winWidth, winHeight);
         broswer.manage().window().setSize(dim);
         //等待1秒,

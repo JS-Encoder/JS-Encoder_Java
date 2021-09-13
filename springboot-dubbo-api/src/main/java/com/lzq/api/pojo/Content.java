@@ -65,6 +65,12 @@ public class Content implements Serializable {
     @JsonProperty("jsStyle")
     private String jsStyle;
     /**
+     * 是否喜爱
+     */
+    @TableField(exist = false)
+    @JsonProperty("myFavorites")
+    private Boolean myFavorites=false;
+    /**
      * 创建时间
      */
     @JsonIgnore

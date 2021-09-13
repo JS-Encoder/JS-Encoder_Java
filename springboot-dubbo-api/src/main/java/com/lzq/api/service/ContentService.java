@@ -11,30 +11,34 @@ public interface ContentService {
 
     /**
      * 添加实例内容
+     *
      * @param content
      * @return
      */
-    public Boolean addContent(Content content);
+    Boolean addContent(Content content);
 
     /**
      * 更新实例内容
+     *
      * @param content
      * @return
      */
-    public Boolean updateContent(Content content);
+    Boolean updateContent(Content content);
 
     /**
      * 获取实例内容
+     *
      * @param exampleId
      * @param username
      * @return
      */
-    public Content getContent(String exampleId,String username);
+    Content getContent(String exampleId, String username);
 
     /**
      * 删除实例内容
+     *
      * @param exampleId 实例id
      * @return
      */
-     void deleteContent(String exampleId);
+    void deleteContent(String exampleId);
 }
