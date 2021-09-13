@@ -131,6 +131,7 @@ public class ExampleUtils {
         try {
             //包编译后的html内容覆盖原来的内容
             fos.write(content.getBytes("UTF-8"));
+            // fos.write(content.getBytes("GBK"));
             //第一次保存时生成图片
             if (StringUtils.isNullOrEmpty(example.getImg())) {
                 //截图后进行保存

@@ -1,6 +1,5 @@
 package com.lzq.web.intercepter;
 
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,18 +28,17 @@ public class JWTIntercepter implements HandlerInterceptor {
             JWTUtils.verify(token);
             return true;
         } catch (SignatureVerificationException e) {
-            map.put("msg", "无效签名");
+            map.put("msg", "无效令牌");
         } catch (TokenExpiredException e) {
-            map.put("msg", "签名过期");
-        } catch (AlgorithmMismatchException e) {
-            map.put("msg", "token算法不一致");
-        } catch (Exception e) {
+            map.put("msg", "令牌过期");
+        }catch (Exception e) {
             map.put("msg", "未知错误");
         }
 
         map.put("state", false);
         String json = (new ObjectMapper()).writeValueAsString(map);
         response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(401);
         response.getWriter().println(json);
         return false;
     }
