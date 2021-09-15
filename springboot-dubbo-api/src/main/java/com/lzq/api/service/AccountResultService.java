@@ -27,4 +27,19 @@ public interface AccountResultService {
      */
     Boolean updateFavorites(AccountResult result);
 
+    /**
+     * 获取关注列表
+     * @param result
+     * @param currentPage 当前页
+     * @return
+     */
+    PageInfo<AccountResult> getFollowList(Account result, Integer currentPage);
+
+    /**
+     * 获取粉丝列表
+     * @param result
+     * @return
+     */
+    PageInfo<AccountResult> getFanList(Account result,Integer currentPage);
+
 }

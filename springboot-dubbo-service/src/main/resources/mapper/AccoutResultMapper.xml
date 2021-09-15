@@ -3,7 +3,7 @@
 <mapper namespace="com.lzq.dubboservice.mapper.AccountResultMapper">
 
     <sql id="AccountResult">
-        a.username, name, email, contact_email, user_picture
+        a.username, name, user_picture , description, works, fan
     </sql>
 
     <select id="getFollowList" resultType="com.lzq.api.dto.AccountResult">
@@ -29,4 +29,5 @@
     <update id="updateFavorites">
         update account set favorites=#{favorites} where username=#{username}
     </update>
+
 </mapper>

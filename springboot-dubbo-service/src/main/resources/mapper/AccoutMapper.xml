@@ -44,23 +44,5 @@
         update account set favorites=favorites-1 where username=#{username}
     </update>
 
-    <select id="getFollowList" resultType="com.lzq.api.pojo.Account">
-        select
-        <include refid="Account"/>
-        from account a left join follow b
-        on
-        a.username=b.follow_username
-        where
-        b.username=#{username}
-    </select>
 
-    <select id="getFanList" resultType="com.lzq.api.pojo.Account">
-        select
-        <include refid="Account"/>
-        from account a left join follow b
-        on
-        a.username=b.username
-        where
-        b.follow_username=#{username}
-    </select>
 </mapper>

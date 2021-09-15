@@ -83,20 +83,7 @@ public interface AccountService {
      */
     Account queryByGitId(String githubId, String giteeId);
 
-    /**
-     * 获取关注列表
-     * @param result
-     * @param currentPage 当前页
-     * @return
-     */
-    PageInfo<Account> getFollowList(Account result, Integer currentPage);
 
-    /**
-     * 获取粉丝列表
-     * @param result
-     * @return
-     */
-    PageInfo<Account> getFanList(Account result,Integer currentPage);
 
     /**
      * 根据用户名查询用户信息

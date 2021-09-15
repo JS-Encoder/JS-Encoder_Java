@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user",headers = "token")
 @Api(value = "用户个人信息接口", description = "用户个人信息接口")
 public class UserController {
 
@@ -190,6 +190,7 @@ public class UserController {
     @PostMapping("/addFollow")
     @ApiOperation("添加关注")
     public Map<String, Object> addFollow(Follow follow) {
+        log.info("添加关注：-----"+follow.toString());
         if (StringUtils.isNotBlank(follow.getUsername())) {
             boolean bol = followService.addFollow(follow);
             if (bol) {
@@ -208,9 +209,10 @@ public class UserController {
      * @param follow
      * @return
      */
-    @PutMapping("/cancelFollow")
+    @DeleteMapping("/cancelFollow")
     @ApiOperation("取消关注")
     public Map<String, Object> cancelFollow(Follow follow) {
+        log.info("取消关注：-----"+follow.toString());
         boolean bol = followService.cancelFollow(follow);
         if (bol) {
             //移除缓存

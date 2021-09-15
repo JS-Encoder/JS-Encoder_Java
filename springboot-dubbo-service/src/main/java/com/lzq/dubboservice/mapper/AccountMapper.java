@@ -31,7 +31,5 @@ public interface AccountMapper extends BaseMapper<Account> {
 
     Integer bindGit(Account account);
 
-    List<Account> getFollowList(Account result);
 
-    List<Account> getFanList(Account result);
 }

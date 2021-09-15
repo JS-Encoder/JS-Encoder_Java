@@ -6,6 +6,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.dto.AccountResult;
+import com.lzq.api.pojo.Account;
 import com.lzq.api.service.AccountResultService;
 import com.lzq.dubboservice.mapper.AccountResultMapper;
 import org.apache.commons.lang.StringUtils;
@@ -34,5 +35,20 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
     @Override
     public Boolean updateFavorites(AccountResult result) {
         return baseMapper.updateFavorites(result)>0?true:false;
+    }
+
+    @Override
+    public PageInfo<AccountResult> getFollowList(Account result, Integer currentPage) {
+        PageHelper.startPage(currentPage,24);
+        List<AccountResult> list = baseMapper.getFollowList(result);
+        return new PageInfo<>(list);
+
+    }
+
+    @Override
+    public PageInfo<AccountResult> getFanList(Account result,Integer currentPage) {
+        PageHelper.startPage(currentPage,24);
+        List<AccountResult> list = baseMapper.getFanList(result);
+        return new PageInfo<>(list);
     }
 }

@@ -115,6 +115,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/index/logout")
                 //退出成功
                 .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                    httpServletRequest.getSession().removeAttribute("map");
                     Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, null, null);
                     UserUtils.responseMessage(httpServletResponse, map, objectMapper);
                 })

@@ -40,7 +40,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/example")
+@RequestMapping(value = "/example",headers ="token")
 @Api(value = "实例接口",description = "实例接口")
 public class ExampleController {
 

@@ -124,19 +124,6 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         return baseMapper.selectOne(wrapper);
     }
 
-    @Override
-    public PageInfo<Account> getFollowList(Account result, Integer currentPage) {
-        PageHelper.startPage(currentPage,24);
-        List<Account> list = baseMapper.getFollowList(result);
-        return new PageInfo<>(list);
 
-    }
-
-    @Override
-    public PageInfo<Account> getFanList(Account result,Integer currentPage) {
-        PageHelper.startPage(currentPage,24);
-        List<Account> list = baseMapper.getFanList(result);
-        return new PageInfo<>(list);
-    }
 
 }
