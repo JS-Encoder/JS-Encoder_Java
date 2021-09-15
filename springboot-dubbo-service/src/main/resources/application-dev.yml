@@ -1,8 +1,8 @@
 resources:
-  route: /home/demo/data/
-  InitHtml: /home/demo/data/HelloWord.html
+  route: F:/项目/MyDemo/data/
+  InitHtml: F:/项目/MyDemo/data/HelloWord.html
 
 qiniuyun:
-  accessKey: Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC
-  secretKey: QIriVPlgNKoKdjU02q166-7IBPy3z9sQTMn5Ae7R
-  bucket: js-encoder
+  accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
+  secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
+  bucket: lzqwxr

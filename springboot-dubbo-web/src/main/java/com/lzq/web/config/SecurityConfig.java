@@ -82,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //放行index接口
                 .antMatchers("/").permitAll()
-                .antMatchers("/user/**", "/example/**", "/index/verify", "/feedback/**").
+                .antMatchers("/user/**", "/example/**", "/index/verify", "/feedback/**","/query/getRecycle").
 
                 authenticated()
                 //所有请求都需要登录验证

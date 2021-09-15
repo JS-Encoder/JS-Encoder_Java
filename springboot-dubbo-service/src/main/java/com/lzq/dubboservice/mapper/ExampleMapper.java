@@ -1,11 +1,9 @@
 package com.lzq.dubboservice.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lzq.api.dto.ExampleAccount;
-import com.lzq.api.pojo.Account;
 import com.lzq.api.pojo.Example;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +17,10 @@ import java.util.List;
 public interface ExampleMapper extends BaseMapper<Example> {
 
     Integer deleteExample(@Param("exampleId")String exampleId);
+
+    List<Example> queryDeleted(@Param("username") String username);
+
+    Integer resumeExample(@Param("exmapleId") String exampleId);
+
+    Example getExampleByDeleted(Example example);
 }

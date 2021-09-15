@@ -204,13 +204,13 @@ public class ExampleController {
             boolean b = exampleService.deleteById(example.getExampleId());
             if (b){
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                log.info("消息接收时间:"+sdf.format(new Date()));
+                log.info("消息接收时间:"+sdf.format(new Date())+"-------"+example.getExampleId());
                 //发送消息到队列中
                 rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
                     @Override
                     public Message postProcessMessage(Message message) throws AmqpException {
-                        //设置延迟时间 1天
-                        message.getMessageProperties().setHeader("x-delay",1000*60*60*24*1);
+                        //设置延迟时间 10分钟
+                        message.getMessageProperties().setHeader("x-delay",600000);
                         return message;
                     }
                 });
@@ -234,8 +234,9 @@ public class ExampleController {
      */
     @PostMapping("/resume")
     public Map<String,Object> resume(Example example){
+        log.info("恢复实例:-------"+example.getExampleId());
         example.setDeleted(0);
-        Boolean update = exampleService.update(example);
+        Boolean update = exampleService.resumeExample(example.getExampleId());
         if (update){
             //减少回收站数量（恢复实例）
             accountService.reduceRecycle(example.getUsername());
@@ -253,20 +254,29 @@ public class ExampleController {
     @DeleteMapping("/delete")
     @ApiOperation("立即删除回收站")
     public Map<String,Object> deleteRightNow(Example example){
-        //立即删除实例
-        Boolean bol = exampleService.deleteExample(example.getExampleId());
-        if (bol){
-            File file = new File(fileLocation + example.getUsername() + "/" + example.getFileName()+".html");
-            //删除文件
-            file.delete();
-            //删除实例内容
-            contentService.deleteContent(example.getExampleId());
-            //删除实例图片（七牛云）
-            QiniuyunUtils.deleteFiles(example.getImg());
-            //删除所有用户的对该作品的喜爱
-            favoritesService.deleteFavorites(example.getExampleId());
-            //减少回收站数量（删除实例）
-            accountService.reduceRecycle(example.getUsername());
+        //查询该用户的回收站是否有该梳理
+        Example query = exampleService.getExampleByDeleted(example);
+        log.info(query.toString());
+        Boolean bol = null;
+        if (query!=null) {
+            //立即删除实例
+            bol = exampleService.deleteExample(example.getExampleId());
+            String filelocation=fileLocation + query.getUsername() + "/" + query.getFileName()+".html";
+            log.info("删除的html地址"+filelocation);
+            if (bol){
+                File file = new File(fileLocation + query.getUsername() + "/" + query.getFileName()+".html");
+                //删除文件
+                boolean delete = file.delete();
+                System.out.println(delete);
+                //删除实例内容
+                contentService.deleteContent(query.getExampleId());
+                //删除实例图片（七牛云）
+                QiniuyunUtils.deleteFiles(query.getImg());
+                //删除所有用户的对该作品的喜爱
+                favoritesService.deleteFavorites(query.getExampleId());
+                //减少回收站数量（删除实例）
+                accountService.reduceRecycle(query.getUsername());
+            }
         }
         return ResultMapUtils.ResultMap(bol,0,null);
     }

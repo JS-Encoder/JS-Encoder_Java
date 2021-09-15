@@ -4,6 +4,8 @@ package com.lzq.api.service;
 import com.github.pagehelper.PageInfo;
 import com.lzq.api.pojo.Example;
 
+import java.util.List;
+
 /**
  * (Example)表服务接口
  *
@@ -53,9 +55,10 @@ public interface ExampleService {
      *
      * @param username    用户名
      * @param currentPage 当前页
+     * @param orderCondition
      * @return
      */
-    PageInfo<Example> queryByPublic(String username, Integer currentPage);
+    PageInfo<Example> queryByPublic(String username, Integer currentPage,Integer orderCondition);
 
     /**
      * 删除实例（物理删除实例）
@@ -79,5 +82,27 @@ public interface ExampleService {
      * @return
      */
     Example queryByIdUsername(Example example);
+
+
+    /**
+     * 查询用户的回收站
+     * @param username
+     * @return
+     */
+    List<Example> queryRecycle(String username);
+
+    /**
+     * 恢复回收站实例
+     * @param exampleId
+     * @return
+     */
+    Boolean resumeExample(String exampleId);
+
+    /**
+     * 查询回收站是否有该实例
+     * @param example
+     * @return
+     */
+    Example getExampleByDeleted(Example example);
 
 }

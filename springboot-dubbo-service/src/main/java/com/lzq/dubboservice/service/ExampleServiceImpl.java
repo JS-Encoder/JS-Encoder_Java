@@ -58,10 +58,21 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     }
 
     @Override
-    public PageInfo<Example> queryByPublic(String username, Integer currentPage) {
+    public PageInfo<Example> queryByPublic(String username, Integer currentPage, Integer orderCondition) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         wrapper.eq("ispublic", 0);
+        switch (orderCondition){
+            case 0:
+                wrapper.orderByDesc("create_time");
+                break;
+            case 1:
+                wrapper.orderByDesc("update_time");
+                break;
+            case 2:
+                wrapper.orderByDesc("favorites");
+                break;
+        }
         //当前页和每页条数
         PageHelper.startPage(currentPage, 12);
         List<Example> list = baseMapper.selectList(wrapper);
@@ -87,6 +98,21 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
         wrapper.eq("username",example.getUsername());
         wrapper.eq("example_id",example.getExampleId());
         return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public List<Example> queryRecycle(String username) {
+        return baseMapper.queryDeleted(username);
+    }
+
+    @Override
+    public Boolean resumeExample(String exampleId) {
+        return baseMapper.resumeExample(exampleId)>0?true:false;
+    }
+
+    @Override
+    public Example getExampleByDeleted(Example example) {
+        return baseMapper.getExampleByDeleted(example);
     }
 
 

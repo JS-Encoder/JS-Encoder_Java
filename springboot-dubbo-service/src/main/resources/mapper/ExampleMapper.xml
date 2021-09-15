@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzq.dubboservice.mapper.ExampleMapper">
-
     <delete id="deleteExample">
-        delete from example where example_id=#{exampleId} and deleted=1
+        delete from example
+        where
+              example_id=#{exampleId} and deleted=1
     </delete>
+    <select id="queryDeleted" resultType="com.lzq.api.pojo.Example">
+        select
+               example_id, example_name, update_time
+        from example
+        where
+              username=#{username} and deleted=1;
+    </select>
+    <update id="resumeExample">
+        update example
+        set
+            deleted=0
+        where
+              example_id=#{exmapleId}
+    </update>
+    <select id="getExampleByDeleted" resultType="com.lzq.api.pojo.Example">
+        select
+               example_id, img, file_name, username
+        from example
+        where
+              username=#{username} and example_id=#{exampleId} and deleted=1
+    </select>
+
 </mapper>

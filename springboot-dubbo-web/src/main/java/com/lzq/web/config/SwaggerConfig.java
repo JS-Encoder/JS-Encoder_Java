@@ -22,16 +22,23 @@ public class SwaggerConfig {
     @Bean
     public Docket docket(Environment environment){
 
+        //设置要显示的Swagger环境
+        Profiles profiles = Profiles.of("prod");
+
+        //通过environment.acceptsProfiles判断是否处于当前的环境中
+        boolean flag = environment.acceptsProfiles(profiles);
+
+
         return new Docket(DocumentationType.SWAGGER_2)
                 //编写api的基本信息
                 .apiInfo(apiInfo())
+                //enable是否启动Swagger,如果为false,则Swagger不能在浏览器中访问
+                .enable(flag)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.lzq.web.controller"))
                 //paths():过滤路径
                 //PathSelectors.ant():只扫描扫描下的接口
-                // .paths(PathSelectors.ant("/lzq/**"))
-                .build()
-                ;
+                .build();
     }
 
 

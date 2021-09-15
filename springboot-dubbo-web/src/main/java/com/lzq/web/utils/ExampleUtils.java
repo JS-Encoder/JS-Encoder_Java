@@ -22,10 +22,8 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -130,8 +128,8 @@ public class ExampleUtils {
         Boolean bol = false;
         try {
             //包编译后的html内容覆盖原来的内容
-            fos.write(content.getBytes("UTF-8"));
-            // fos.write(content.getBytes("GBK"));
+            // fos.write(content.getBytes("UTF-8"));
+            fos.write(content.getBytes("GBK"));
             //第一次保存时生成图片
             if (StringUtils.isNullOrEmpty(example.getImg())) {
                 //截图后进行保存

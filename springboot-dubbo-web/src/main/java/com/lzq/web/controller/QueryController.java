@@ -197,9 +197,9 @@ public class QueryController {
      * 根据实例名查询实例
      *
      * @param request
-     * @param content     实例名获取实例名
-     * @param currentPage 当前页
-     * @param exampleContent content对象
+     * @param queryContent 实例名获取实例名
+     * @param currentPage  当前页
+     * @param content      content对象
      * @return
      */
     @GetMapping("/queryExample")
@@ -207,6 +207,7 @@ public class QueryController {
     public Map<String, Object> queryByExampleName(HttpServletRequest request, String queryContent, Content content,
                                                   @RequestParam(defaultValue = "1") Integer currentPage,
                                                   @RequestParam(defaultValue = "0") Integer orderCondition) {
+        log.info("搜索框查询");
         String username = null;
         if (request.getHeader("token") != null) {
             //获取token中的用户名
@@ -249,6 +250,7 @@ public class QueryController {
     public Map<String, Object> getExample(HttpServletRequest request, Account account,
                                           @RequestParam(defaultValue = "1") Integer currentPage,
                                           @RequestParam(defaultValue = "0") Integer orderCondition) {
+        log.info("查询个人实例"+account.getUsername());
         String username = null;
         PageInfo<Example> list;
         if (request.getHeader("token") != null) {
@@ -264,7 +266,7 @@ public class QueryController {
             } else {
                 //获取redis缓存中所喜欢的实例id列表
                 List<String> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
-                list = exampleService.queryByPublic(account.getUsername(), currentPage);
+                list = exampleService.queryByPublic(account.getUsername(), currentPage, orderCondition);
                 //获取实例集合
                 List<Example> exampleList = list.getList();
                 for (Example example : exampleList) {
@@ -274,7 +276,7 @@ public class QueryController {
                 }
             }
         } else {
-            list = exampleService.queryByPublic(account.getUsername(), currentPage);
+            list = exampleService.queryByPublic(account.getUsername(), currentPage, orderCondition);
         }
 
         return ResultMapUtils.ResultMap(true, 0, list);
@@ -346,4 +348,24 @@ public class QueryController {
         return ResultMapUtils.ResultMap(true, 0, list);
     }
 
+    /**
+     * 获取回收站列表
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/getRecycle")
+    @ApiOperation("获取回收站列表")
+    public Map<String, Object> getRecycle(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isNotBlank(token)) {
+            //获取登录的用户名
+            String username = JWTUtils.verify(token).getClaim("username").asString();
+            log.info("获取回收站"+username);
+            List<Example> examples = exampleService.queryRecycle(username);
+            return ResultMapUtils.ResultMap(true, 0, examples);
+        } else {
+            return ResultMapUtils.ResultMap(false, 0, null);
+        }
+    }
 }
