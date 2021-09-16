@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,6 +56,7 @@ public class QueryController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+
     /**
      * 根据用户名查询用户信息
      *
@@ -63,8 +65,8 @@ public class QueryController {
      */
     @GetMapping("/queryByUsername")
     @ApiOperation("根据用户名查询用户信息")
-    public Map<String, Object> queryByUsername(String username) {
-
+    public Map<String, Object> queryByUsername(HttpServletRequest request,String username) {
+        String token = request.getHeader("token");
         log.info("根据用户名查询用户信息接口：" + username);
         //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
@@ -77,6 +79,16 @@ public class QueryController {
                 //更新数据
                 Boolean aBoolean = accountResultService.updateFavorites(result);
                 log.info("校正用户喜爱数成功:" + aBoolean.toString());
+            }
+        }
+        if (StringUtils.isNotBlank(token)){
+            String s = JWTUtils.verify(token).getClaim("username").asString();
+            if (!s.equals(username)){
+                //获取缓存中的关注用户
+                List<String> followList = redisTemplate.opsForList().range(s, 0, -1);
+                if(followList.contains(username)){
+                    result.setMyFollow(true);
+                }
             }
         }
         return ResultMapUtils.ResultMap(true, 0, result);

@@ -171,7 +171,7 @@ public class ExampleController {
                 && StringUtils.isNotBlank(favorites.getExampleId())){
             //取消喜爱
             Boolean bol = favoritesService.cancelFavorites(favorites);
-            log.info(bol.toString());
+            log.info("取消喜爱-删除喜爱表中的数据----"+bol.toString());
             //清除缓存中的喜爱
             if (bol){
                 redisTemplate.opsForList().remove(favorites.getUsername()+"fav", 0, favorites.getExampleId());
@@ -179,7 +179,7 @@ public class ExampleController {
             //更新用户喜爱数量
             Boolean aBoolean = accountService.reduceFavorites(favorites.getUsername());
 
-            log.info(aBoolean.toString());
+            log.info("取消喜爱-更新用户喜爱数量----"+aBoolean.toString());
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
             return ResultMapUtils.ResultMap(false,1,null);
