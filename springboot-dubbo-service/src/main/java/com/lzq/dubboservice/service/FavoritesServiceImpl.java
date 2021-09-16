@@ -54,14 +54,14 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
         //先删除
         QueryWrapper<Favorites> wrapper = new QueryWrapper<>();
         wrapper.eq("username", favorites.getUsername());
-        wrapper.eq("exampleId", favorites.getExampleId());
+        wrapper.eq("example_id", favorites.getExampleId());
         Boolean delete = baseMapper.delete(wrapper) > 0 ? true : false;
         int i1 = 0;
         if (delete) {
             do {
                 //用来查询关注人
                 QueryWrapper<Example> exampleQueryWrapper = new QueryWrapper<>();
-                wrapper.eq("example_id", favorites.getExampleId());
+                exampleQueryWrapper.eq("example_id", favorites.getExampleId());
                 //获取喜爱的用例
                 Example example = exampleMapper.selectOne(exampleQueryWrapper);
                 example.setFavorites(example.getFavorites() - 1);

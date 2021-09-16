@@ -166,16 +166,19 @@ public class ExampleController {
     @PostMapping("/cancelFavorites")
     @ApiOperation("取消喜爱")
     public Map<String,Object> cancelFavorites(Favorites favorites){
+        log.info("取消喜爱"+favorites.toString());
         if (StringUtils.isNotBlank(favorites.getUsername())
                 && StringUtils.isNotBlank(favorites.getExampleId())){
             //取消喜爱
             Boolean bol = favoritesService.cancelFavorites(favorites);
+            log.info(bol.toString());
             //清除缓存中的喜爱
             if (bol){
                 redisTemplate.opsForList().remove(favorites.getUsername()+"fav", 0, favorites.getExampleId());
             }
             //更新用户喜爱数量
             Boolean aBoolean = accountService.reduceFavorites(favorites.getUsername());
+
             log.info(aBoolean.toString());
             return ResultMapUtils.ResultMap(bol,0,null);
         }else {
