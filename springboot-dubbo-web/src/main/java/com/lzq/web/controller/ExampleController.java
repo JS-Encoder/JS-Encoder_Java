@@ -72,9 +72,12 @@ public class ExampleController {
      * @param example 实例对象
      * @return
      */
-    @PostMapping("/createExample")
+    @PostMapping(value = "/createExample",headers = "token")
     @ApiOperation("创建一个实例")
-    public Map<String, Object> CreateFile(Example example, Content exampleContent, String content) {
+    public Map<String, Object> CreateFile(HttpServletRequest request,Example example, Content exampleContent, String content) {
+        String token = request.getHeader("token");
+        String username = JWTUtils.verify(token).getClaim("username").asString();
+        example.setUsername(username);
         log.info("开始"+new Date(System.currentTimeMillis()).toString());
         //生成22位uuid
         String uuid = ExampleUtils.getUUid();
@@ -213,7 +216,7 @@ public class ExampleController {
                     @Override
                     public Message postProcessMessage(Message message) throws AmqpException {
                         //设置延迟时间 10分钟
-                        message.getMessageProperties().setHeader("x-delay",600000);
+                        message.getMessageProperties().setHeader("x-delay",30000);
                         return message;
                     }
                 });
@@ -226,7 +229,7 @@ public class ExampleController {
                 return ResultMapUtils.ResultMap(b,0,null);
             }
         }else {
-            return ResultMapUtils.ResultMap(false,1,"请传入正确的值");
+            return ResultMapUtils.ResultMap(false,1,"删除失败");
         }
 
     }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -65,6 +66,7 @@ public class IndexController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
 
 
     /**
@@ -305,15 +307,12 @@ public class IndexController {
     @GetMapping("/getToken")
     @ApiOperation("获取七牛云token")
     public String getToken() {
-        //七牛云AK
-        String ACCESS_KEY = "Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC";
-        //七牛云SK
-        String SECRET_KEY = "QIriVPlgNKoKdjU02q166-7IBPy3z9sQTMn5Ae7R";
-        //空间名
-        String bucket = "js-encoder";
+        String ACCESS_KEY="fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY";
+        String SECRET_KEY="ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C";
+        String BUCKET="lzqwxr";
         Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
         //获取当前空间的token
-        String s = auth.uploadToken(bucket);
+        String s = auth.uploadToken(BUCKET);
         //返回获取的token值
         return s;
     }

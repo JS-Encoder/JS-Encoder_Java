@@ -7,6 +7,7 @@ import com.lzq.api.service.AccountService;
 import com.lzq.api.service.FollowService;
 import com.lzq.api.service.MailService;
 import com.lzq.api.service.RoleService;
+import com.lzq.web.utils.QiniuyunUtils;
 import com.lzq.web.utils.ResultMapUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,7 +61,11 @@ public class UserController {
      */
     @PutMapping("/")
     @ApiOperation("更新用户信息")
-    public Map<String, Object> updateUserInfo(HttpSession session, Account account) {
+    public Map<String, Object> updateUserInfo(HttpSession session, Account account,String oldImg) {
+        log.info(oldImg);
+        if (StringUtils.isNotBlank(oldImg)){
+            QiniuyunUtils.deleteFiles(oldImg);
+        }
         Map<String, Object> map = (Map<String, Object>) session.getAttribute("map");
         Account data = (Account) map.get("data");
         log.info("进入更新用户信息接口：" + account);
@@ -95,7 +100,6 @@ public class UserController {
                 query.setRole(role);
                 request.getSession().setAttribute("map", ResultMapUtils.ResultMap(true, 0, query));
             }
-
             return ResultMapUtils.ResultMap(update, 0, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,8 +181,6 @@ public class UserController {
         }else {
             return ResultMapUtils.ResultMap(false,3,"验证码错误");
         }
-
-
     }
 
     /**

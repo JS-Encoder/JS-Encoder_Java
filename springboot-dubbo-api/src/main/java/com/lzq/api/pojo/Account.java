@@ -66,12 +66,6 @@ public class Account implements Serializable, UserDetails {
     @JsonProperty("userPicture")
     private String userPicture;
     /**
-     * 背景颜色
-     */
-    @TableField(value = "background_color")
-    @JsonIgnore
-    private String backgroundColor;
-    /**
      * github主键id
      */
     @TableField(value = "github_id")

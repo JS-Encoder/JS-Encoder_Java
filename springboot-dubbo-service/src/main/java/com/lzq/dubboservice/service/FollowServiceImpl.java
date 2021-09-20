@@ -27,7 +27,6 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean addFollow(Follow follow) {
         //插入数据
         int i = baseMapper.insert(follow);

@@ -35,6 +35,12 @@ public class Content implements Serializable {
     @JsonProperty("exampleName")
     private String exampleName;
     /**
+     * 昵称
+     */
+    @TableField(exist = false)
+    @JsonProperty("name")
+    private String name;
+    /**
      * 标签
      */
     @TableField(exist = false)

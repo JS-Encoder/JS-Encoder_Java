@@ -50,7 +50,6 @@ dubbo:
   consumer:
     retries: 0
     timeout: 600000
-
   #扫描包的位置
   scan:
     base-packages: com.lzq.dubboservice.service

@@ -28,7 +28,6 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Boolean addFavorites(Favorites favorites) {
         Boolean insert = baseMapper.insert(favorites) > 0 ? true : false;
         int i1 = 0;
