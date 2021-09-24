@@ -30,18 +30,13 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ExampleUtils {
 
-    public static String INIT_HTML;
+
 
     public static String FILE_LOCATION;
 
     public static String CHORME_DRIVER;
 
     public static String BUCKET;
-
-    @Value("${resources.InitHtml}")
-    public void setInitHtml(String initHtml) {
-        INIT_HTML = initHtml;
-    }
 
     @Value("${resources.route}")
     public void setFilelocation(String filelocation) {

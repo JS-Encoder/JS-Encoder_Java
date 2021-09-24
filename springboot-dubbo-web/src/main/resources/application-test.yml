@@ -1,13 +1,13 @@
 resources:
-  route: F:/项目/MyDemo/data/
+  route: /home/demo/data/
 
 qiniuyun:
-  accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
-  secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
-  bucket: lzqwxr
+  accessKey: Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC
+  secretKey: QIriVPlgNKoKdjU02q166-7IBPy3z9sQTMn5Ae7R
+  bucket: js-encoder
 
 chorme:
-  value: F:/ChormeDriver/chromedriver.exe
+  value: /usr/bin/chromedriver
 
 
 spring:

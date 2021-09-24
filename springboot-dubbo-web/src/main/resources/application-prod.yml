@@ -27,7 +27,6 @@
 
 resources:
   route: C:/Java/data/
-  InitHtml: C:/Java/data/HelloWord.html
 
 qiniuyun:
   accessKey: Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC
