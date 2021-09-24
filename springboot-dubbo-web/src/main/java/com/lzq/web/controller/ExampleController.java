@@ -72,9 +72,10 @@ public class ExampleController {
      * @param example 实例对象
      * @return
      */
-    @PostMapping(value = "/createExample",headers = "token")
+    @PostMapping(value = "/createExample")
     @ApiOperation("创建一个实例")
     public Map<String, Object> CreateFile(HttpServletRequest request,Example example, Content exampleContent, String content) {
+        log.info(example.toString());
         String token = request.getHeader("token");
         String username = JWTUtils.verify(token).getClaim("username").asString();
         example.setUsername(username);
@@ -215,8 +216,8 @@ public class ExampleController {
                 rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
                     @Override
                     public Message postProcessMessage(Message message) throws AmqpException {
-                        //设置延迟时间 10分钟
-                        message.getMessageProperties().setHeader("x-delay",30000);
+                        //设置延迟时间 7天
+                        message.getMessageProperties().setHeader("x-delay",1000*60*60*24*7);
                         return message;
                     }
                 });

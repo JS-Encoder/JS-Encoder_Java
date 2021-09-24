@@ -1,39 +1,19 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     #项目名称
     name: service
-  #mybatis配置
-  datasource:
-    username: root
-    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
-    url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    #durid配置
-    type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 5
-    minIdle: 5
-    maxActive: 20
-    maxWait: 60000
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
   #邮箱配置
   mail:
-    host: smtp.qq.com
-    username: 1275096074@qq.com
-    password: nbybixepsvogjgdi
-  #rabbitmq配置
-  rabbitmq:
-    host: 49.235.126.19
-    port: 5672
-    username: user
-    password: wxr19980304
+    host: smtp.163.com
+    username: jsencoder@163.com
+    password: IQQXAETMLUUSLACI
+    port: 465
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: true
+
 
 
 #dubbo配置
@@ -80,6 +60,3 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mapper/*xml
-
-logging:
-  config: classpath:logback.xml

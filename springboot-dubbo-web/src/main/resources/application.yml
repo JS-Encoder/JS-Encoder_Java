@@ -4,12 +4,6 @@ spring:
   application:
     #项目名称
     name: web
-  #mybatis配置
-  datasource:
-    username: root
-    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
-    url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
-    driver-class-name: com.mysql.cj.jdbc.Driver
   #rdis配置
   redis:
     host: 49.235.126.19
@@ -51,6 +45,8 @@ jasypt:
 server:
   #服务器接口
   port: 8090
+  tomcat:
+    max-http-form-post-size: -1
 
 logging:
   config: classpath:logback.xml

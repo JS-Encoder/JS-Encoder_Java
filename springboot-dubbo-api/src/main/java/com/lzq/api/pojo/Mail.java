@@ -1,9 +1,7 @@
 package com.lzq.api.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+;
 
 import java.io.Serializable;
 
@@ -19,7 +17,7 @@ public class Mail implements Serializable{
     /**
      *发送方
      */
-    private final String from = "1275096074@qq.com";
+    private final String from = "jsencoder@163.com";
     /**
      * 接收方
      */

@@ -22,6 +22,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     //把结果转换成json字符串
                     Map<String, Object> map = UserUtils.BindAccount(account, token, accountService);
                     //判断是否绑定成功
-                    httpServletRequest.getSession().setAttribute("map", map);
+                    HttpSession session = httpServletRequest.getSession();
+                    session.setAttribute("map", map);
+                    //session失效时间
+                    session.setMaxInactiveInterval(60*60);
                     httpServletResponse.getWriter().write(objectMapper.writeValueAsString(map));
 
                 })
@@ -115,7 +119,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/index/logout")
                 //退出成功
                 .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                    log.info("退出登录");
                     httpServletRequest.getSession().removeAttribute("map");
+                    httpServletRequest.getSession().invalidate();
                     Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, null, null);
                     UserUtils.responseMessage(httpServletResponse, map, objectMapper);
                 })

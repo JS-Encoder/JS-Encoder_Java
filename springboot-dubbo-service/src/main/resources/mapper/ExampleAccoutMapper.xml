@@ -45,6 +45,8 @@
         or
               a.name like concat('%',#{queryContent},'%')
         <include refid="style"/>
+        and
+              length(b.example_id)>0
         <if test="orderCondition == 0">
             order by b.create_time desc
         </if>

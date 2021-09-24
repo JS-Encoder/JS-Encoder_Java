@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author ：LZQ
@@ -50,7 +51,7 @@ public class QiniuyunUtils {
      * @param bytes
      * @return
      */
-    public static String uploadFiles(byte[] bytes) {
+    public static String uploadFiles(byte[] bytes) throws IOException {
         //构造一个带指定 Region 对象的配置类
         Configuration cfg = new Configuration(Region.huanan());
         //...其他参数参考类注释
@@ -67,7 +68,10 @@ public class QiniuyunUtils {
             Response response = uploadManager.put(byteInputStream, key, upToken, null, null);
             //解析上传成功的结果
             putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+            byteInputStream.close();
+            log.info("关闭七牛云流---");
             log.info(putRet.key);
+
         } catch (QiniuException ex) {
             Response r = ex.response;
             System.err.println(r.toString());

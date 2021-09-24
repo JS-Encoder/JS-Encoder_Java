@@ -1,7 +1,3 @@
-resources:
-  route: F:/项目/MyDemo/data/
-  InitHtml: F:/项目/MyDemo/data/HelloWord.html
-
 qiniuyun:
   accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
   secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
@@ -11,19 +7,25 @@ spring:
   #mybatis配置
   datasource:
     username: root
-    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
-    url: jdbc:mysql://49.235.126.19:3306/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    password: ENC(WXWaBiEdhad+aqD/luB+Kw==)
+    url: jdbc:mysql:///onlineidea?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #durid配置
-    type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 5
-    minIdle: 5
-    maxActive: 20
-    maxWait: 60000
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
+  druid:
+    #2.连接池配置
+    #初始化连接池的连接数量 大小，最小，最大
+    initial-size: 5
+    min-idle: 5
+    max-active: 20
+    #配置获取连接等待超时的时间
+    max-wait: 60000
+    #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    time-between-eviction-runs-millis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    min-evictable-idle-time-millis: 30000
+    validation-query: SELECT 1 FROM DUAL
+    test-while-idle: true
+    test-on-borrow: true
+    test-on-return: false
+    # 是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
+    #      pool-prepared-statements: true
+    max-pool-prepared-statement-per-connection-size: 20

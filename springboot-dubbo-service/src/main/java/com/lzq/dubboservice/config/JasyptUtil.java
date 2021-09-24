@@ -47,10 +47,10 @@ public class JasyptUtil {
 
     public static void main(String[] args) {
         // 加密
-        String encPwd = encyptPwd("WXRANDLZQ1998", "wxr19980304");
+        String encPwd = encyptPwd("WXRANDLZQ1998", "root");
         // 解密
-        String decPwd = decyptPwd("WXRANDLZQ1998", encPwd);
+        // String decPwd = decyptPwd("WXRANDLZQ1998", encPwd);
         System.out.println(encPwd);
-        System.out.println(decPwd);
+        // System.out.println(decPwd);
     }
 }

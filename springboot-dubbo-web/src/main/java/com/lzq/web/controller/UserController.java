@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = "/user",headers = "token")
+@RequestMapping(value = "/user")
 @Api(value = "用户个人信息接口", description = "用户个人信息接口")
 public class UserController {
 

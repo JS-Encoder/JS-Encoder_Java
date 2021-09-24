@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class IndexController {
         map.put("email", account.getEmail());
         String token = JWTUtils.getToken(map, 12, 10);
         log.info("我进入了发送链接邮箱地址");
-        String url="http://localhost:8080/resetPwd?token=" + token;
+        String url="https://www.lliiooiill.cn/resetPwd?token=" + token;
         String template="<!DOCTYPE html>" +
                 "<html lang=\"zh-n\">" +
                 "<head><meta charset=\"UTF-8\">" +
@@ -136,7 +137,7 @@ public class IndexController {
                 "</head>" +
                 "<body>" +
                 "<div class=\"flex flex-jcc\" style=\"background:#1e1e1e;width:100%;height:100%;padding: 50px 15px 100px 15px;box-sizing:border-box;\">" +
-                "<div class=\"flex flex-ai flex-jcc\"><img style=\"width: 60px\" src=\"http://images.lliiooiill.cn/logo.svg\" alt=\"JS Encoder\">" +
+                "<div class=\"flex flex-ai flex-jcc\"><img style=\"width: 60px\" src=\"http://images.lliiooiill.cn/logo.png\" alt=\"JS Encoder\">" +
                 "<span style=\"color:#F8F8F8;font-weight:bold;font-size:24px;margin-left:15px\">JS Encoder</span>" +
                 "</div>" +
                 "<div class=\"flex flex-col\" style=\"width:100%;color:#999999;font-size:14px;margin-top:40px\">" +
@@ -148,7 +149,7 @@ public class IndexController {
                 "<span>此为系统邮件，请勿回复</span>" +
                 "</div>" +
                 "<hr style=\"width:100%;border-color:#777777\">" +
-                "<a href=\"https://www.lliiooiill.cn\" style=\"color:#999999;font-size:12px;margin-top:40px\">JS Encoder</ a>" +
+                "<a href=\"https://www.lliiooiill.cn\" style=\"color:#999999;font-size:12px;margin-top:40px\">JS Encoder</a>" +
                 "<span style=\"color:#999999;font-size:12px;margin-top:10px\">JS Encoder 团队</span>" +
                 "</div>" +
                 "</div>" +
@@ -157,7 +158,7 @@ public class IndexController {
         Mail mail = new Mail();
         mail.setTo(account.getEmail());
         mail.setSubject("请点击以下链接进行密码修改");
-        mail.setMailContent(url);
+        mail.setMailContent(template);
         //发送修改密码链接
         boolean b = mailService.sendActiveMail(mail);
         //返回token令牌
@@ -269,27 +270,29 @@ public class IndexController {
     @PostMapping({"/register"})
     @ApiOperation("用户注册")
     public Map<String, Object> register(Account account, String code) {
+        log.info("用户注册：---------"+account);
+        log.info("验证码："+code);
         Account result = accountService.queryByUsername(account.getUsername());
         if (result != null) {
             //用户名已存在
-            return ResultMapUtils.ResultMap(false, 2, null);
+            return ResultMapUtils.ResultMap(false, 2, "用户名已存在");
         } else {
             //获取redis中的验证码
             String s = stringRedisTemplate.opsForValue().get(account.getEmail());
             if (code.equals(s)) {
                 Account email = accountService.queryByEmail(account.getEmail());
                 if (email != null) {
-                    return ResultMapUtils.ResultMap(false, 2, "该邮箱已被注册");
+                    return ResultMapUtils.ResultMap(false, 3, "该邮箱已被注册");
                 } else {
                     try {
-                        log.info("我到了");
+
                         accountService.insert(account);
                         //注册成功
                         return ResultMapUtils.ResultMap(true, 0, null);
                     } catch (DuplicateKeyException e) {
                         e.printStackTrace();
                         //注册失败,用户名已存在
-                        return ResultMapUtils.ResultMap(false, 1, "用户名已存在");
+                        return ResultMapUtils.ResultMap(false, 1, "注册失败");
                     }
                 }
             } else {
@@ -307,9 +310,9 @@ public class IndexController {
     @GetMapping("/getToken")
     @ApiOperation("获取七牛云token")
     public String getToken() {
-        String ACCESS_KEY="fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY";
-        String SECRET_KEY="ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C";
-        String BUCKET="lzqwxr";
+        String ACCESS_KEY="Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC";
+        String SECRET_KEY="QIriVPlgNKoKdjU02q166-7IBPy3z9sQTMn5Ae7R";
+        String BUCKET="js-encoder";
         Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
         //获取当前空间的token
         String s = auth.uploadToken(BUCKET);
@@ -351,7 +354,10 @@ public class IndexController {
                     String resultToken = JWTUtils.getToken(tokenMap, 10, 24);
                     Map<String, Object> map = ResultMapUtils.ResultMapWithToken(true, 0, account, resultToken);
                     //存入用户信息
-                    request.getSession().setAttribute("map", map);
+                    HttpSession session = request.getSession();
+                    session.setAttribute("map", map);
+                    //设置失效时间
+                    session.setMaxInactiveInterval(60*60);
                     return map;
                 } else {
                     return ResultMapUtils.ResultMap(false, 0, "令牌已过期");

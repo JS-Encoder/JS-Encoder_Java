@@ -86,7 +86,7 @@ public class ExampleUtils {
         Dimension dim = new Dimension(winWidth, winHeight);
         broswer.manage().window().setSize(dim);
         //等待1秒,
-        broswer.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        broswer.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         //打开url
         broswer.get("http://localhost:8090/" + username + "/" + filename + ".html");
         //截图
@@ -97,10 +97,10 @@ public class ExampleUtils {
         //把生成的webp文件转换位byte数组
         //上传到七牛云
         String imgName = QiniuyunUtils.uploadFile(file,username);
-        broswer.close();
         //删除截图原始图片缓存
         screenshotAs.delete();
         boolean delete = file.delete();
+        broswer.quit();
         log.info(Boolean.toString(delete));
         return imgName;
 
@@ -157,6 +157,7 @@ public class ExampleUtils {
             e.printStackTrace();
             return bol;
         } finally {
+            log.info("上传关闭流-----------------------");
             fos.close();
         }
     }
@@ -180,7 +181,6 @@ public class ExampleUtils {
         // Configure encoding parameters
         WebPWriteParam writeParam = new WebPWriteParam(writer.getLocale());
         writeParam.setCompressionMode(WebPWriteParam.MODE_DEFAULT);
-
         // Configure the output on the ImageWriter
         FileImageOutputStream fileImageOutputStream = new FileImageOutputStream(newfile);
         writer.setOutput(fileImageOutputStream);
