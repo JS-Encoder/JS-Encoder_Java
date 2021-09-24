@@ -27,7 +27,7 @@ public class Example implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "example_id")
+    @TableId(value = "example_id",type =IdType.ID_WORKER_STR )
     @JsonProperty("exampleId")
     private String exampleId;
     /**

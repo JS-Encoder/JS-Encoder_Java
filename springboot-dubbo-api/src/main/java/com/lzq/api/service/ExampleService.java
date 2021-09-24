@@ -21,7 +21,7 @@ public interface ExampleService {
      * @param example 实例对象
      * @return 实例对象
      */
-    Boolean insert(Example example);
+    Example insert(Example example);
 
     /**
      * 修改数据

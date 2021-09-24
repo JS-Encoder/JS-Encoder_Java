@@ -2,9 +2,7 @@ package com.lzq.web.utils;
 
 
 import com.luciad.imageio.webp.WebPWriteParam;
-import com.lzq.api.pojo.Content;
 import com.lzq.api.pojo.Example;
-import com.lzq.api.service.ContentService;
 import com.lzq.api.service.ExampleService;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +12,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.IIOImage;
@@ -24,7 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,8 +37,6 @@ public class ExampleUtils {
     public static String CHORME_DRIVER;
 
     public static String BUCKET;
-
-    private static final char[] _UU64 = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     @Value("${resources.InitHtml}")
     public void setInitHtml(String initHtml) {
@@ -86,7 +83,7 @@ public class ExampleUtils {
         Dimension dim = new Dimension(winWidth, winHeight);
         broswer.manage().window().setSize(dim);
         //等待1秒,
-        broswer.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        broswer.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         //打开url
         broswer.get("http://localhost:8090/" + username + "/" + filename + ".html");
         //截图
@@ -110,26 +107,22 @@ public class ExampleUtils {
      * 保存实例
      *
      * @param example
-     * @param exampleContent
      * @param content        编译后的内容
      * @param exampleService
-     * @param contentService
+     * @param file
      * @return
      * @throws IOException
      */
-    public static Boolean SaveExampleContent(Example example, Content exampleContent, String content, ExampleService exampleService, ContentService contentService) throws IOException {
-        //获取html文件路劲
-        //实例内容和实例进行绑定
-        exampleContent.setExampleId(example.getExampleId());
-        String file = FILE_LOCATION + example.getUsername() + "/" + example.getFileName() + ".html";
-        log.info(file);
+    @Async
+    public void SaveExampleContent(Example example, String content, ExampleService exampleService,String file) throws IOException {
+        log.info("开始截图-------"+new Date(System.currentTimeMillis()));
+        //获取文件输出流
         FileOutputStream fos = new FileOutputStream(new File(file));
         String screenshot = null;
         Boolean bol = false;
         try {
             //包编译后的html内容覆盖原来的内容
             fos.write(content.getBytes("UTF-8"));
-            // fos.write(content.getBytes("GBK"))   ;
             //第一次保存时生成图片
             if (StringUtils.isNullOrEmpty(example.getImg())) {
                 //截图后进行保存
@@ -145,20 +138,15 @@ public class ExampleUtils {
             }
             //更新实例
             bol = exampleService.update(example);
-            //修改实例内容
-            bol = contentService.updateContent(exampleContent);
-            //当表无该数据时插入数据
-            if (!bol) {
-                //第一次保存时在表中添加实例内容
-                bol = contentService.addContent(exampleContent);
-            }
-            return bol;
+            log.info("截图成功");
         } catch (IOException e) {
             e.printStackTrace();
-            return bol;
+            log.info("截图失败");
+            // return bol;
         } finally {
             log.info("上传关闭流-----------------------");
             fos.close();
+            log.info("结束截图-------"+new Date(System.currentTimeMillis()));
         }
     }
 
@@ -190,30 +178,4 @@ public class ExampleUtils {
     }
 
 
-    //生成22为uuid
-    public static String getUUid() {
-        UUID uuid = UUID.randomUUID();
-        int index = 0;
-        char[] cs = new char[22];
-        long L = uuid.getMostSignificantBits();
-        long R = uuid.getLeastSignificantBits();
-        long mask = 63;
-        // 从L64位取10次，每次取6位
-        for (int off = 58; off >= 4; off -= 6) {
-            long hex = (L & (mask << off)) >>> off;
-            cs[index++] = _UU64[(int) hex];
-        }
-        // 从L64位取最后的4位 ＋ R64位头2位拼上
-        int l = (int) (((L & 0xF) << 2) | ((R & (3 << 62)) >>> 62));
-        cs[index++] = _UU64[l];
-        // 从R64位取10次，每次取6位
-        for (int off = 56; off >= 2; off -= 6) {
-            long hex = (R & (mask << off)) >>> off;
-            cs[index++] = _UU64[(int) hex];
-        }
-        // 剩下的两位最后取
-        cs[index++] = _UU64[(int) (R & 3)];
-        // 返回字符串
-        return new String(cs);
-    }
 }

@@ -22,8 +22,8 @@ import java.util.List;
 public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> implements ExampleService {
 
     @Override
-    public Boolean insert(Example example) {
-        return baseMapper.insert(example) > 0 ? true : false;
+    public Example insert(Example example) {
+        return baseMapper.insert(example) > 0 ? example : null;
     }
 
     @Override

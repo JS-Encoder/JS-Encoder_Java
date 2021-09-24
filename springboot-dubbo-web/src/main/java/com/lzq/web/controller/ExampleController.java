@@ -62,6 +62,9 @@ public class ExampleController {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    ExampleUtils exampleUtils;
+
     @Value("${resources.route}")
     public String fileLocation;
 
@@ -81,7 +84,7 @@ public class ExampleController {
         example.setUsername(username);
         log.info("开始"+new Date(System.currentTimeMillis()).toString());
         //生成22位uuid
-        String uuid = ExampleUtils.getUUid();
+        // String uuid = ExampleUtils.getUUid();
         Boolean bol =false;
         //随机生成uuid
         //判断用户是保存实例还是第一次创建实例
@@ -90,25 +93,25 @@ public class ExampleController {
                 //通过id查询实例信息
                 Example query = exampleService.queryById(example.getExampleId());
                 //获取实例的文件名和图片key
-                example.setFileName(query.getFileName());
                 example.setImg(query.getImg());
+                //修改实例内容
+                bol = contentService.updateContent(exampleContent);
+                String file = ExampleUtils.FILE_LOCATION + example.getUsername() + "/" + query.getFileName() + ".html";
                 //用户保存实例
-                bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
-                log.info("结束"+new Date(System.currentTimeMillis()).toString());
+                exampleUtils.SaveExampleContent(example,content, exampleService,file);
                 return ResultMapUtils.ResultMap(bol,0,"保存实例内容成功");
             } catch (IOException e) {
                 e.printStackTrace();
                 return ResultMapUtils.ResultMap(false,0,"修改文件失败");
             }
         }else {
-            example.setExampleId(uuid);
             //用户第一次创建实例
             //获取当前时间毫秒
             long time = System.currentTimeMillis();
             //创建编译后的html文件
             String file = ExampleUtils.FILE_LOCATION + example.getUsername() + "/" + time + ".html";
             //初始化模板
-            File initfile = new File(ExampleUtils.INIT_HTML);
+            // File initfile = new File(ExampleUtils.INIT_HTML);
             File existfile = new File(file);
             try {
                 //创建文件
@@ -117,18 +120,23 @@ public class ExampleController {
                 }
                 existfile.createNewFile();
                 //把初始化模板拷贝到新建的html中
-                FileUtils.copyFile(initfile, existfile);
+                // FileUtils.copyFile(initfile, existfile);
                 //插入编译后的文件名称time
                 example.setFileName(Long.toString(time));
                 //把文件信息插入到数据库中
-                bol = exampleService.insert(example);
-                if (bol){
+                example = exampleService.insert(example);
+                System.out.println(example);
+                if (example!=null){
                     //更新用户的个人作品数
                     accountService.addWorks(example.getUsername());
                     //保存实例内容
-                    bol = ExampleUtils.SaveExampleContent(example, exampleContent, content, exampleService, contentService);
-                    log.info("结束"+new Date(System.currentTimeMillis()).toString());
+                    exampleContent.setExampleId(example.getExampleId());
+                    //第一次保存时在表中添加实例内容
+                    bol = contentService.addContent(exampleContent);
+                    //用户保存实例
+                    exampleUtils.SaveExampleContent(example,content, exampleService,file);
                 }
+                log.info(example.getExampleId());
                 return ResultMapUtils.ResultMap(bol, 0, example.getExampleId());
             } catch (Exception e) {
                 e.printStackTrace();
