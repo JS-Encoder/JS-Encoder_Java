@@ -49,15 +49,18 @@ public class ContentController {
     public Map<String, Object> getContent(HttpServletRequest request, String exampleId, String username) {
         log.info("获取实例内容接口"+exampleId+"------"+username);
         String token = request.getHeader("token");
-        Content content = contentService.getContent(exampleId, username);
+        Content content=null;
         //当token不为空时用户已登录
         if (StringUtils.isNotBlank(token)){
+            content = contentService.getContent(exampleId, username,1);
             String s = JWTUtils.verify(token).getClaim("username").asString();
             List<Integer> favoriteslist = redisTemplate.opsForList().range(s + "fav", 0, -1);
             //判断改实例是否为用户的喜爱
             if (favoriteslist.contains(content.getExampleId())){
                 content.setMyFavorites(true);
             }
+        }else {
+            content = contentService.getContent(exampleId, username,0);
         }
         return ResultMapUtils.ResultMap(true, 0, content);
     }

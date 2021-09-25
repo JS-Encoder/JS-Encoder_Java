@@ -37,13 +37,13 @@
         on
             b.example_id=c.example_id
         where
-              b.example_name like concat('%',#{queryContent},'%')
+              b.example_name like concat('%',#{queryContent},'%')  and b.ispublic=0
         <include refid="style"/>
         or
-              b.label like concat('%',#{queryContent},'%')
+              b.label like concat('%',#{queryContent},'%') and b.ispublic=0
         <include refid="style"/>
         or
-              a.name like concat('%',#{queryContent},'%')
+              a.name like concat('%',#{queryContent},'%')  and b.ispublic=0
         <include refid="style"/>
         and
               length(b.example_id)>0

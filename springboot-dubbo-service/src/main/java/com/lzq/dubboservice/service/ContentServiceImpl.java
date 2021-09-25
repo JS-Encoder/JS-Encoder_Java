@@ -26,12 +26,12 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
     public Boolean updateContent(Content content) {
         QueryWrapper<Content> wrapper = new QueryWrapper<>();
         wrapper.eq("example_id", content.getExampleId());
-        return baseMapper.update(content,wrapper) > 0 ? true : false;
+        return baseMapper.update(content, wrapper) > 0 ? true : false;
     }
 
     @Override
-    public Content getContent(String exampleId, String username) {
-        return baseMapper.getContent(exampleId,username);
+    public Content getContent(String exampleId, String username, Integer ispublic) {
+        return baseMapper.getContent(exampleId, username,ispublic);
     }
 
     @Override

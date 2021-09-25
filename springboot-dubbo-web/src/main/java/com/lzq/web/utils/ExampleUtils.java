@@ -91,9 +91,9 @@ public class ExampleUtils {
         String imgName = QiniuyunUtils.uploadFile(file,username);
         //删除截图原始图片缓存
         screenshotAs.delete();
-        boolean delete = file.delete();
+        // boolean delete = file.delete();
         broswer.quit();
-        log.info(Boolean.toString(delete));
+        // log.info(Boolean.toString(delete));
         return imgName;
 
     }

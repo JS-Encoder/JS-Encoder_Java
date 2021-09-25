@@ -37,32 +37,13 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     }
 
     @Override
-    public PageInfo<Example> queryByAccount(String username, Integer currentPage, Integer orderCondition) {
+    public PageInfo<Example> queryByAccount(String username, Integer currentPage, Integer orderCondition, Integer ispublic) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
-        switch (orderCondition){
-            case 0:
-                wrapper.orderByDesc("create_time");
-                break;
-            case 1:
-                wrapper.orderByDesc("update_time");
-                break;
-            case 2:
-                wrapper.orderByDesc("favorites");
-                break;
+        if (ispublic==0){
+            wrapper.eq("ispublic", 0);
         }
-        //当前页和每页条数
-        PageHelper.startPage(currentPage, 12);
-        List<Example> list = baseMapper.selectList(wrapper);
-        return new PageInfo<>(list);
-    }
-
-    @Override
-    public PageInfo<Example> queryByPublic(String username, Integer currentPage, Integer orderCondition) {
-        QueryWrapper<Example> wrapper = new QueryWrapper<>();
-        wrapper.eq("username", username);
-        wrapper.eq("ispublic", 0);
-        switch (orderCondition){
+        switch (orderCondition) {
             case 0:
                 wrapper.orderByDesc("create_time");
                 break;
@@ -95,8 +76,8 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     @Override
     public Example queryByIdUsername(Example example) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
-        wrapper.eq("username",example.getUsername());
-        wrapper.eq("example_id",example.getExampleId());
+        wrapper.eq("username", example.getUsername());
+        wrapper.eq("example_id", example.getExampleId());
         return baseMapper.selectOne(wrapper);
     }
 
@@ -107,7 +88,7 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
 
     @Override
     public Boolean resumeExample(String exampleId) {
-        return baseMapper.resumeExample(exampleId)>0?true:false;
+        return baseMapper.resumeExample(exampleId) > 0 ? true : false;
     }
 
     @Override

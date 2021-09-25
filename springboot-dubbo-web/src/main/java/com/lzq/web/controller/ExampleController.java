@@ -93,12 +93,11 @@ public class ExampleController {
                 //通过id查询实例信息
                 Example query = exampleService.queryById(example.getExampleId());
                 //获取实例的文件名和图片key
-                example.setImg(query.getImg());
                 //修改实例内容
                 bol = contentService.updateContent(exampleContent);
-                String file = ExampleUtils.FILE_LOCATION + example.getUsername() + "/" + query.getFileName() + ".html";
+                String file = fileLocation + username + "/" + query.getFileName() + ".html";
                 //用户保存实例
-                exampleUtils.SaveExampleContent(example,content, exampleService,file);
+                exampleUtils.SaveExampleContent(query,content, exampleService,file);
                 return ResultMapUtils.ResultMap(bol,0,"保存实例内容成功");
             } catch (IOException e) {
                 e.printStackTrace();

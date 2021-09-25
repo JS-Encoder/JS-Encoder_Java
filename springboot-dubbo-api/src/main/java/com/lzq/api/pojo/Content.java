@@ -77,6 +77,12 @@ public class Content implements Serializable {
     @JsonProperty("myFavorites")
     private Boolean myFavorites=false;
     /**
+     * 是否公开
+     */
+    @TableField(exist = false)
+    @JsonIgnore
+    private Integer ispublic;
+    /**
      * 创建时间
      */
     @JsonIgnore

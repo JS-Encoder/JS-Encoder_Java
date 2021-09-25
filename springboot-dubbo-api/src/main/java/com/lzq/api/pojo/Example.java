@@ -40,7 +40,7 @@ public class Example implements Serializable {
      * 是否公开
      */
     @TableField(value = "ispublic")
-    @JsonIgnore
+    @JsonProperty("ispublic")
     private Integer ispublic;
     /**
      * 标签

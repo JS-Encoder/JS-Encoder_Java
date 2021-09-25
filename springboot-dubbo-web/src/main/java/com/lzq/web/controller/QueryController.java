@@ -253,7 +253,7 @@ public class QueryController {
     }
 
     /**
-     * 根据用户名查询全部实例
+     * 查询个人全部实例
      *
      * @return
      */
@@ -274,11 +274,11 @@ public class QueryController {
         if (username != null) {
             //用户名相同则查询自己的实例，不同则查询他人的公开实例
             if (username.equals(account.getUsername())) {
-                list = exampleService.queryByAccount(account.getUsername(), currentPage, orderCondition);
+                list = exampleService.queryByAccount(account.getUsername(), currentPage, orderCondition,1);
             } else {
                 //获取redis缓存中所喜欢的实例id列表
                 List<String> favoriteslist = redisTemplate.opsForList().range(username + "fav", 0, -1);
-                list = exampleService.queryByPublic(account.getUsername(), currentPage, orderCondition);
+                list = exampleService.queryByAccount(account.getUsername(), currentPage, orderCondition,0);
                 //获取实例集合
                 List<Example> exampleList = list.getList();
                 for (Example example : exampleList) {
@@ -288,9 +288,8 @@ public class QueryController {
                 }
             }
         } else {
-            list = exampleService.queryByPublic(account.getUsername(), currentPage, orderCondition);
+            list = exampleService.queryByAccount(account.getUsername(), currentPage, orderCondition,0);
         }
-
         return ResultMapUtils.ResultMap(true, 0, list);
     }
 

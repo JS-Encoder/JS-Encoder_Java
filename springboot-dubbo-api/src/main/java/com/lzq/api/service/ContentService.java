@@ -30,9 +30,10 @@ public interface ContentService {
      *
      * @param exampleId
      * @param username
+     * @param ispublic
      * @return
      */
-    Content getContent(String exampleId, String username);
+    Content getContent(String exampleId, String username, Integer ispublic);
 
     /**
      * 删除实例内容

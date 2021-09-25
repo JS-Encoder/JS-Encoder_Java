@@ -5,7 +5,7 @@
         delete from content where example_id=#{exampleId}
     </delete>
     <select id="getContent" resultType="com.lzq.api.pojo.Content">
-        select a.example_id, code_content, css_style, js_style, html_style, b.example_name, b.label, c.name
+        select a.example_id, code_content, css_style, js_style, html_style, b.example_name, b.label, c.name, b.ispublic
         from content a left join example b
         on
             a.example_id=b.example_id
@@ -14,5 +14,8 @@
             b.username=c.username
         where
             a.example_id=#{exampleId} and b.username=#{username}
+        <if test="ispublic=0">
+            and b.ispublic=0
+        </if>
     </select>
 </mapper>
