@@ -62,7 +62,7 @@ public class ExampleUtils {
      * @return
      * @throws IOException
      */
-    public static String screenshot(String username, String filename) throws IOException {
+    public static String screenshot(String username, String filename) throws IOException, InterruptedException {
         //使用截屏工具进行截屏
         //启用chrome驱动
         //chrome驱动的位置
@@ -77,10 +77,10 @@ public class ExampleUtils {
         int winWidth = 960;
         Dimension dim = new Dimension(winWidth, winHeight);
         broswer.manage().window().setSize(dim);
-        //等待1秒,
-        broswer.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         //打开url
         broswer.get("http://localhost:8090/" + username + "/" + filename + ".html");
+        //等待10秒,
+        broswer.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         //截图
         File screenshotAs = ((TakesScreenshot) broswer).getScreenshotAs(OutputType.FILE);
         //生成的webp文件
@@ -91,9 +91,9 @@ public class ExampleUtils {
         String imgName = QiniuyunUtils.uploadFile(file,username);
         //删除截图原始图片缓存
         screenshotAs.delete();
-        // boolean delete = file.delete();
+        boolean delete = file.delete();
         broswer.quit();
-        // log.info(Boolean.toString(delete));
+        log.info(Boolean.toString(delete));
         return imgName;
 
     }
@@ -134,7 +134,7 @@ public class ExampleUtils {
             //更新实例
             bol = exampleService.update(example);
             log.info("截图成功");
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             log.info("截图失败");
             // return bol;

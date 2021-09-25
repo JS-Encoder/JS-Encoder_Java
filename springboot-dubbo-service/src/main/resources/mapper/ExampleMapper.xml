@@ -27,5 +27,21 @@
         where
               username=#{username} and example_id=#{exampleId} and deleted=1
     </select>
+    <select id="getCountIspublic" resultType="java.lang.Integer">
+        select
+               count(*)
+        from example
+        where
+            username=#{username} and ispublic='0'
+    </select>
+    <update id="addFavorites">
+        update example
+        set
+            favorites=favorites+1
+        where
+            example_id=#{exampleId}
+        and
+            version=#{version}
+    </update>
 
 </mapper>

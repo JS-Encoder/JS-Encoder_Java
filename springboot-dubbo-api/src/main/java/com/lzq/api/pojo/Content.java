@@ -80,8 +80,8 @@ public class Content implements Serializable {
      * 是否公开
      */
     @TableField(exist = false)
-    @JsonIgnore
-    private Integer ispublic;
+    @JsonProperty("ispublic")
+    private Boolean ispublic;
     /**
      * 创建时间
      */

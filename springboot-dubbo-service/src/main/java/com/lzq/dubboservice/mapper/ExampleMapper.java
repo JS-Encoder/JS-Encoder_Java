@@ -23,4 +23,8 @@ public interface ExampleMapper extends BaseMapper<Example> {
     Integer resumeExample(@Param("exmapleId") String exampleId);
 
     Example getExampleByDeleted(Example example);
+
+    Integer getCountIspublic(@Param("username") String username);
+
+    Integer addFavorites(Example example);
 }

@@ -40,8 +40,8 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     public PageInfo<Example> queryByAccount(String username, Integer currentPage, Integer orderCondition, Integer ispublic) {
         QueryWrapper<Example> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
-        if (ispublic==0){
-            wrapper.eq("ispublic", 0);
+        if (ispublic.equals("0")){
+            wrapper.eq("ispublic", true);
         }
         switch (orderCondition) {
             case 0:
@@ -94,6 +94,11 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleMapper, Example> impl
     @Override
     public Example getExampleByDeleted(Example example) {
         return baseMapper.getExampleByDeleted(example);
+    }
+
+    @Override
+    public Integer getCountIspublic(String username) {
+        return baseMapper.getCountIspublic(username);
     }
 
 

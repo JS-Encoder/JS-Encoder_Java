@@ -100,4 +100,11 @@ public interface ExampleService {
      */
     Example getExampleByDeleted(Example example);
 
+    /**
+     * 查询用户的不公开实例
+     * @param username
+     * @return
+     */
+    Integer getCountIspublic(String username);
+
 }

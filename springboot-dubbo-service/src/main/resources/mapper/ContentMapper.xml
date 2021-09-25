@@ -14,8 +14,8 @@
             b.username=c.username
         where
             a.example_id=#{exampleId} and b.username=#{username}
-        <if test="ispublic=0">
-            and b.ispublic=0
+        <if test="ispublic==0">
+            and b.ispublic='1'
         </if>
     </select>
 </mapper>

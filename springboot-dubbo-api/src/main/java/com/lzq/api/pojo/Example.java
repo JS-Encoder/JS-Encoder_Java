@@ -41,7 +41,7 @@ public class Example implements Serializable {
      */
     @TableField(value = "ispublic")
     @JsonProperty("ispublic")
-    private Integer ispublic;
+    private Boolean ispublic;
     /**
      * 标签
      */
@@ -87,7 +87,7 @@ public class Example implements Serializable {
      * 更新时间
      */
     @JsonProperty("updateTime")
-    @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "update_time",fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     /**

@@ -70,13 +70,13 @@ public class ExampleController {
 
 
     /**
-     * 创建一个实例
+     * 创建/更新实例
      *
      * @param example 实例对象
      * @return
      */
     @PostMapping(value = "/createExample")
-    @ApiOperation("创建一个实例")
+    @ApiOperation("创建/更新实例")
     public Map<String, Object> CreateFile(HttpServletRequest request,Example example, Content exampleContent, String content) {
         log.info(example.toString());
         String token = request.getHeader("token");
@@ -87,11 +87,12 @@ public class ExampleController {
         // String uuid = ExampleUtils.getUUid();
         Boolean bol =false;
         //随机生成uuid
-        //判断用户是保存实例还是第一次创建实例
+        //更新实例
         if (example.getExampleId()!=null){
             try {
                 //通过id查询实例信息
                 Example query = exampleService.queryById(example.getExampleId());
+                query.setUpdateTime(new Date());
                 //获取实例的文件名和图片key
                 //修改实例内容
                 bol = contentService.updateContent(exampleContent);
@@ -303,14 +304,21 @@ public class ExampleController {
     @ApiOperation("更新实例")
     @PutMapping("/")
     public Map<String,Object> updateExample(HttpServletRequest request,Example example){
+        log.info("更新实例"+example.toString());
         //获取token中的用户名
         String username = JWTUtils.verify(request.getHeader("token"))
                 .getClaim("username").asString();
         //存入用户名进行查询
         example.setUsername(username);
-        Example query = exampleService.queryByIdUsername(example);
         Boolean update=false;
-        if (query!=null){
+        if (example.getIspublic()!=null && !example.getIspublic()){
+            Integer ispublic = exampleService.getCountIspublic(username);
+            if (ispublic<5){
+                update = exampleService.update(example);
+            }else {
+                return ResultMapUtils.ResultMap(update,1,"私人实例已上限");
+            }
+        }else {
             update = exampleService.update(example);
         }
         return ResultMapUtils.ResultMap(update,0,null);

@@ -31,17 +31,17 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
     public Boolean addFavorites(Favorites favorites) {
         Boolean insert = baseMapper.insert(favorites) > 0 ? true : false;
         int i1 = 0;
+        int i2 = 0;
         if (insert) {
             do {
+                i2++;
                 //用来查询关注人
                 QueryWrapper<Example> wrapper = new QueryWrapper<>();
                 wrapper.eq("example_id", favorites.getExampleId());
                 //获取喜爱的用例
                 Example example = exampleMapper.selectOne(wrapper);
-                example.setFavorites(example.getFavorites() + 1);
-                //更新喜爱人数
-                i1 = exampleMapper.update(example, wrapper);
-            } while (i1 == 0);
+                i1 = exampleMapper.addFavorites(example);
+            } while (i1 == 0 || i2 < 5);
             return true;
         } else {
             return false;
@@ -56,8 +56,10 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
         wrapper.eq("example_id", favorites.getExampleId());
         Boolean delete = baseMapper.delete(wrapper) > 0 ? true : false;
         int i1 = 0;
+        int i2 = 0;
         if (delete) {
             do {
+                i2++;
                 //用来查询关注人
                 QueryWrapper<Example> exampleQueryWrapper = new QueryWrapper<>();
                 exampleQueryWrapper.eq("example_id", favorites.getExampleId());
@@ -66,9 +68,9 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
                 example.setFavorites(example.getFavorites() - 1);
                 //更新喜爱人数
                 i1 = exampleMapper.update(example, exampleQueryWrapper);
-            } while (i1 == 0);
+            } while (i1 == 0 || i2 < 5);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
