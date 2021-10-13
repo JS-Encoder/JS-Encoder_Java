@@ -33,8 +33,10 @@ public class AccountResultServiceImpl extends ServiceImpl<AccountResultMapper, A
     }
 
     @Override
-    public Boolean updateFavorites(AccountResult result) {
-        return baseMapper.updateFavorites(result)>0?true:false;
+    public Boolean update(AccountResult result) {
+        QueryWrapper<AccountResult> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",result.getUsername());
+        return baseMapper.update(result,wrapper)>0?true:false;
     }
 
     @Override

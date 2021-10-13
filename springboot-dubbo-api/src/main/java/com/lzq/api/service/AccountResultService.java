@@ -25,7 +25,7 @@ public interface AccountResultService {
      * @param result
      * @return
      */
-    Boolean updateFavorites(AccountResult result);
+    Boolean update(AccountResult result);
 
     /**
      * 获取关注列表

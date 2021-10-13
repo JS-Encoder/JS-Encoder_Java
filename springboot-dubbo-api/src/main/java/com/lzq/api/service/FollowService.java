@@ -22,4 +22,18 @@ public interface FollowService {
      * @return
      */
     boolean cancelFollow(Follow follow);
+
+    /**
+     * 获取自己关注人数
+     * @param username
+     * @return
+     */
+    Integer getCount(String username);
+
+    /**
+     * 获取粉丝数
+     * @param username
+     * @return
+     */
+    Integer getFanCount(String username);
 }

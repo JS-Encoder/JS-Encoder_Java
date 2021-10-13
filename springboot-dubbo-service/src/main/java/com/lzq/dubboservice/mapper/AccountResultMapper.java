@@ -15,8 +15,6 @@ import java.util.List;
 @Repository
 public interface AccountResultMapper extends BaseMapper<AccountResult> {
 
-    Integer updateFavorites(AccountResult result);
-
     List<AccountResult> getFollowList(Account result);
 
     List<AccountResult> getFanList(Account result);

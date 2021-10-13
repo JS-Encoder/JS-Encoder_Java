@@ -26,8 +26,5 @@
             b.follow_username=#{username}
     </select>
 
-    <update id="updateFavorites">
-        update account set favorites=#{favorites} where username=#{username}
-    </update>
 
 </mapper>

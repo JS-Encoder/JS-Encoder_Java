@@ -2,9 +2,9 @@ resources:
   route: F:/项目/MyDemo/data/
 
 qiniuyun:
-  accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
-  secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
-  bucket: lzqwxr
+  accessKey:
+  secretKey:
+  bucket:
 
 chorme:
   value: F:/ChormeDriver/chromedriver.exe

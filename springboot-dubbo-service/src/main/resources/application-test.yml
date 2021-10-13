@@ -2,8 +2,8 @@ spring:
   #mybatis配置
   datasource:
     username: root
-    password: ENC(WXWaBiEdhad+aqD/luB+Kw==)
-    url: jdbc:mysql:///onlineidea?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
+    url: jdbc:mysql:///onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
   druid:
     #2.连接池配置
@@ -21,6 +21,6 @@ spring:
     test-while-idle: true
     test-on-borrow: true
     test-on-return: false
-    # 是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
-    #      pool-prepared-statements: true
+    #     是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
+    pool-prepared-statements: true
     max-pool-prepared-statement-per-connection-size: 20

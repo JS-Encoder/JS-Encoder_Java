@@ -43,5 +43,14 @@
         and
             version=#{version}
     </update>
+    <update id="reduceFavorites">
+        update example
+        set
+            favorites=favorites-1
+        where
+            example_id=#{exampleId}
+          and
+            version=#{version}
+    </update>
 
 </mapper>

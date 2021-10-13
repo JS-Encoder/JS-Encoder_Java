@@ -16,14 +16,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +49,7 @@ public class QueryController {
     private FavoritesService favoritesService;
 
     @Reference
-    private AccountService accountService;
+    private FollowService followService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -70,15 +68,33 @@ public class QueryController {
         log.info("根据用户名查询用户信息接口：" + username);
         //获取用户信息
         AccountResult result = accountResultService.queryByUsername(username);
-        //获取喜爱人数
+        //获取喜爱作品数
         Integer count = favoritesService.getCount(username);
+        //获取关注人数
+        Integer follow = followService.getCount(username);
+        //获取粉丝数
+        Integer fanCount = followService.getFanCount(username);
         if (result != null) {
             //当喜爱数不匹配时进行更新
             if (!result.getFavorites().equals(count)) {
                 result.setFavorites(count);
                 //更新数据
-                Boolean aBoolean = accountResultService.updateFavorites(result);
+                Boolean aBoolean = accountResultService.update(result);
                 log.info("校正用户喜爱数成功:" + aBoolean.toString());
+            }
+            //当关注数不匹配时进行更新
+            if (!result.getFollowing().equals(follow)) {
+                result.setFollowing(follow);
+                //更新数据
+                Boolean aBoolean = accountResultService.update(result);
+                log.info("校正用户关注数成功:" + aBoolean.toString());
+            }
+            //当粉丝数不匹配时进行更新
+            if (!result.getFan().equals(fanCount)) {
+                result.setFan(fanCount);
+                //更新数据
+                Boolean aBoolean = accountResultService.update(result);
+                log.info("校正用户粉丝数成功:" + aBoolean.toString());
             }
         }
         if (StringUtils.isNotBlank(token)){

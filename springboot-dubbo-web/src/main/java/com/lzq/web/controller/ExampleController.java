@@ -40,8 +40,8 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/example",headers ="token")
-@Api(value = "实例接口",description = "实例接口")
+@RequestMapping(value = "/example", headers = "token")
+@Api(value = "实例接口", description = "实例接口")
 public class ExampleController {
 
     @Reference
@@ -77,18 +77,17 @@ public class ExampleController {
      */
     @PostMapping(value = "/createExample")
     @ApiOperation("创建/更新实例")
-    public Map<String, Object> CreateFile(HttpServletRequest request,Example example, Content exampleContent, String content) {
+    public Map<String, Object> CreateFile(HttpServletRequest request, Example example, Content exampleContent, String content) {
         log.info(example.toString());
         String token = request.getHeader("token");
         String username = JWTUtils.verify(token).getClaim("username").asString();
         example.setUsername(username);
-        log.info("开始"+new Date(System.currentTimeMillis()).toString());
         //生成22位uuid
         // String uuid = ExampleUtils.getUUid();
-        Boolean bol =false;
+        Boolean bol = false;
         //随机生成uuid
         //更新实例
-        if (example.getExampleId()!=null){
+        if (example.getExampleId() != null) {
             try {
                 //通过id查询实例信息
                 Example query = exampleService.queryById(example.getExampleId());
@@ -98,13 +97,13 @@ public class ExampleController {
                 bol = contentService.updateContent(exampleContent);
                 String file = fileLocation + username + "/" + query.getFileName() + ".html";
                 //用户保存实例
-                exampleUtils.SaveExampleContent(query,content, exampleService,file);
-                return ResultMapUtils.ResultMap(bol,0,"保存实例内容成功");
+                exampleUtils.SaveExampleContent(query, content, exampleService, file);
+                return ResultMapUtils.ResultMap(bol, 0, "保存实例内容成功");
             } catch (IOException e) {
                 e.printStackTrace();
-                return ResultMapUtils.ResultMap(false,0,"修改文件失败");
+                return ResultMapUtils.ResultMap(false, 0, "修改文件失败");
             }
-        }else {
+        } else {
             //用户第一次创建实例
             //获取当前时间毫秒
             long time = System.currentTimeMillis();
@@ -126,7 +125,7 @@ public class ExampleController {
                 //把文件信息插入到数据库中
                 example = exampleService.insert(example);
                 System.out.println(example);
-                if (example!=null){
+                if (example != null) {
                     //更新用户的个人作品数
                     accountService.addWorks(example.getUsername());
                     //保存实例内容
@@ -134,7 +133,7 @@ public class ExampleController {
                     //第一次保存时在表中添加实例内容
                     bol = contentService.addContent(exampleContent);
                     //用户保存实例
-                    exampleUtils.SaveExampleContent(example,content, exampleService,file);
+                    exampleUtils.SaveExampleContent(example, content, exampleService, file);
                 }
                 log.info(example.getExampleId());
                 return ResultMapUtils.ResultMap(bol, 0, example.getExampleId());
@@ -147,66 +146,68 @@ public class ExampleController {
 
     /**
      * 添加喜爱
+     *
      * @param favorites
      * @return
      */
     @PostMapping("/addFavorites")
     @ApiOperation("添加喜爱")
-    public Map<String,Object> addFavorites(Favorites favorites){
+    public Map<String, Object> addFavorites(Favorites favorites) {
         //判断是否用户已登录，登录则进行数据插入，否则则不做任何操作
         if (StringUtils.isNotBlank(favorites.getUsername())
-                && StringUtils.isNotBlank(favorites.getExampleId())){
+                && StringUtils.isNotBlank(favorites.getExampleId())) {
             Boolean bol = favoritesService.addFavorites(favorites);
             //添加到缓存
-            if (bol){
-                redisTemplate.opsForList().leftPush(favorites.getUsername()+"fav",favorites.getExampleId());
+            if (bol) {
+                redisTemplate.opsForList().leftPush(favorites.getUsername() + "fav", favorites.getExampleId());
+                //更新用户喜爱数量
+                Boolean aBoolean = accountService.addFavorites(favorites.getUsername());
+                log.info(aBoolean.toString());
             }
-            //更新用户喜爱数量
-            Boolean aBoolean = accountService.addFavorites(favorites.getUsername());
-            log.info(aBoolean.toString());
-            return ResultMapUtils.ResultMap(bol,0,null);
-        }else {
-            return ResultMapUtils.ResultMap(false,1,null);
+            return ResultMapUtils.ResultMap(bol, 0, null);
+        } else {
+            return ResultMapUtils.ResultMap(false, 1, null);
         }
     }
 
     /**
      * 取消喜爱
+     *
      * @param favorites
      * @return
      */
     @PostMapping("/cancelFavorites")
     @ApiOperation("取消喜爱")
-    public Map<String,Object> cancelFavorites(Favorites favorites){
-        log.info("取消喜爱"+favorites.toString());
+    public Map<String, Object> cancelFavorites(Favorites favorites) {
+        log.info("取消喜爱" + favorites.toString());
         if (StringUtils.isNotBlank(favorites.getUsername())
-                && StringUtils.isNotBlank(favorites.getExampleId())){
+                && StringUtils.isNotBlank(favorites.getExampleId())) {
             //取消喜爱
             Boolean bol = favoritesService.cancelFavorites(favorites);
-            log.info("取消喜爱-删除喜爱表中的数据----"+bol.toString());
+            log.info("取消喜爱-删除喜爱表中的数据----" + bol.toString());
             //清除缓存中的喜爱
-            if (bol){
-                redisTemplate.opsForList().remove(favorites.getUsername()+"fav", 0, favorites.getExampleId());
+            if (bol) {
+                redisTemplate.opsForList().remove(favorites.getUsername() + "fav", 0, favorites.getExampleId());
+                //更新用户喜爱数量
+                Boolean aBoolean = accountService.reduceFavorites(favorites.getUsername());
+                log.info("取消喜爱-更新用户喜爱数量----" + aBoolean.toString());
             }
-            //更新用户喜爱数量
-            Boolean aBoolean = accountService.reduceFavorites(favorites.getUsername());
-
-            log.info("取消喜爱-更新用户喜爱数量----"+aBoolean.toString());
-            return ResultMapUtils.ResultMap(bol,0,null);
-        }else {
-            return ResultMapUtils.ResultMap(false,1,null);
+            return ResultMapUtils.ResultMap(bol, 0, null);
+        } else {
+            return ResultMapUtils.ResultMap(false, 1, null);
         }
     }
 
 
     /**
      * 放入回收站
+     *
      * @param example
      * @return
      */
     @DeleteMapping("/")
     @ApiOperation("放入回收站")
-    public Map<String,Object> deleteExample(HttpServletRequest request, Example example){
+    public Map<String, Object> deleteExample(HttpServletRequest request, Example example) {
         //获取token中的用户名
         String username = JWTUtils.verify(request.getHeader("token"))
                 .getClaim("username").asString();
@@ -214,18 +215,18 @@ public class ExampleController {
         example.setUsername(username);
         //查询是否存在该实例
         Example query = exampleService.queryByIdUsername(example);
-        if (query!=null){
+        if (query != null) {
             //逻辑删除实例放入回收站中
             boolean b = exampleService.deleteById(example.getExampleId());
-            if (b){
+            if (b) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                log.info("消息接收时间:"+sdf.format(new Date())+"-------"+example.getExampleId());
+                log.info("消息接收时间:" + sdf.format(new Date()) + "-------" + example.getExampleId());
                 //发送消息到队列中
                 rabbitTemplate.convertAndSend("delete_exchange", "delete", example, new MessagePostProcessor() {
                     @Override
                     public Message postProcessMessage(Message message) throws AmqpException {
                         //设置延迟时间 7天
-                        message.getMessageProperties().setHeader("x-delay",1000*60*60*24*7);
+                        message.getMessageProperties().setHeader("x-delay", 1000 * 60 * 60 * 24 * 7);
                         return message;
                     }
                 });
@@ -233,53 +234,55 @@ public class ExampleController {
                 accountService.reduceWorks(example.getUsername());
                 //回收站数量增加
                 accountService.increaseRecycle(example.getUsername());
-                return ResultMapUtils.ResultMap(b,0,null);
-            }else {
-                return ResultMapUtils.ResultMap(b,0,null);
+                return ResultMapUtils.ResultMap(b, 0, null);
+            } else {
+                return ResultMapUtils.ResultMap(b, 0, null);
             }
-        }else {
-            return ResultMapUtils.ResultMap(false,1,"删除失败");
+        } else {
+            return ResultMapUtils.ResultMap(false, 1, "删除失败");
         }
 
     }
 
     /**
      * 恢复实例
+     *
      * @return
      */
     @PostMapping("/resume")
-    public Map<String,Object> resume(Example example){
-        log.info("恢复实例:-------"+example.getExampleId());
+    public Map<String, Object> resume(Example example) {
+        log.info("恢复实例:-------" + example.getExampleId());
         example.setDeleted(0);
         Boolean update = exampleService.resumeExample(example.getExampleId());
-        if (update){
+        if (update) {
             //减少回收站数量（恢复实例）
             accountService.reduceRecycle(example.getUsername());
             //增加作品数
             accountService.addWorks(example.getUsername());
         }
-        return ResultMapUtils.ResultMap(update,0,null);
+        return ResultMapUtils.ResultMap(update, 0, null);
     }
 
     /**
      * 立即删除回收站
+     *
      * @param example
      * @return
      */
     @DeleteMapping("/delete")
     @ApiOperation("立即删除回收站")
-    public Map<String,Object> deleteRightNow(Example example){
+    public Map<String, Object> deleteRightNow(Example example) {
         //查询该用户的回收站是否有该梳理
         Example query = exampleService.getExampleByDeleted(example);
         log.info(query.toString());
         Boolean bol = null;
-        if (query!=null) {
+        if (query != null) {
             //立即删除实例
             bol = exampleService.deleteExample(example.getExampleId());
-            String filelocation=fileLocation + query.getUsername() + "/" + query.getFileName()+".html";
-            log.info("删除的html地址"+filelocation);
-            if (bol){
-                File file = new File(fileLocation + query.getUsername() + "/" + query.getFileName()+".html");
+            String filelocation = fileLocation + query.getUsername() + "/" + query.getFileName() + ".html";
+            log.info("删除的html地址" + filelocation);
+            if (bol) {
+                File file = new File(fileLocation + query.getUsername() + "/" + query.getFileName() + ".html");
                 //删除文件
                 boolean delete = file.delete();
                 System.out.println(delete);
@@ -293,35 +296,36 @@ public class ExampleController {
                 accountService.reduceRecycle(query.getUsername());
             }
         }
-        return ResultMapUtils.ResultMap(bol,0,null);
+        return ResultMapUtils.ResultMap(bol, 0, null);
     }
 
     /**
      * 更新实例
+     *
      * @param example
      * @return
      */
     @ApiOperation("更新实例")
     @PutMapping("/")
-    public Map<String,Object> updateExample(HttpServletRequest request,Example example){
-        log.info("更新实例"+example.toString());
+    public Map<String, Object> updateExample(HttpServletRequest request, Example example) {
+        log.info("更新实例" + example.toString());
         //获取token中的用户名
         String username = JWTUtils.verify(request.getHeader("token"))
                 .getClaim("username").asString();
         //存入用户名进行查询
         example.setUsername(username);
-        Boolean update=false;
-        if (example.getIspublic()!=null && !example.getIspublic()){
+        Boolean update = false;
+        if (example.getIspublic() != null && !example.getIspublic()) {
             Integer ispublic = exampleService.getCountIspublic(username);
-            if (ispublic<5){
+            if (ispublic < 5) {
                 update = exampleService.update(example);
-            }else {
-                return ResultMapUtils.ResultMap(update,1,"私人实例已上限");
+            } else {
+                return ResultMapUtils.ResultMap(update, 1, "私人实例已上限");
             }
-        }else {
+        } else {
             update = exampleService.update(example);
         }
-        return ResultMapUtils.ResultMap(update,0,null);
+        return ResultMapUtils.ResultMap(update, 0, null);
     }
 
 }

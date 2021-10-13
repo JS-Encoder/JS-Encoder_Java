@@ -7,8 +7,8 @@ spring:
   #邮箱配置
   mail:
     host: smtp.163.com
-    username: jsencoder@163.com
-    password: IQQXAETMLUUSLACI
+    username: #用户账号
+    password: #用户密码
     port: 465
     properties.mail.smtp.starttls.enable: true
     properties.mail.smtp.starttls.required: true
@@ -22,14 +22,14 @@ dubbo:
     name: dubbo_service
   registry:
     protocol: zookeeper
-    address: zookeeper://49.235.126.19:2181
-    timeout: 600000
+    address: zookeeper://127.0.0.1:2181
+    timeout: 10000
   protocol:
     name: dubbo
     port: 20880
   consumer:
     retries: 0
-    timeout: 600000
+    timeout: 10000
   #扫描包的位置
   scan:
     base-packages: com.lzq.dubboservice.service

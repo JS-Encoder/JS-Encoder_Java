@@ -30,19 +30,16 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     public boolean addFollow(Follow follow) {
         //插入数据
         int i = baseMapper.insert(follow);
-        int i1 = 0, i2 = 0;
         if (i > 0) {
-            do {
-                //用来查询关注人
-                QueryWrapper<Account> wrapperO = new QueryWrapper<>();
-                wrapperO.eq("username", follow.getUsername());
-                //获取关注人信息
-                Account accountO = accountMapper.selectOne(wrapperO);
-                accountO.setFollowing(accountO.getFollowing() + 1);
-                //更新关注数
-                i1 = accountMapper.update(accountO, wrapperO);
-            } while (i1 == 0);
-            do {
+            //用来查询关注人
+            QueryWrapper<Account> wrapperO = new QueryWrapper<>();
+            wrapperO.eq("username", follow.getUsername());
+            //获取关注人信息
+            Account accountO = accountMapper.selectOne(wrapperO);
+            accountO.setFollowing(accountO.getFollowing() + 1);
+            //更新关注数
+            int i1 = accountMapper.update(accountO, wrapperO);
+            if (i1 > 0) {
                 //用来查询被关注人
                 QueryWrapper<Account> wrapperT = new QueryWrapper<>();
                 wrapperT.eq("username", follow.getFollowUsername());
@@ -50,9 +47,10 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                 Account accountT = accountMapper.selectOne(wrapperT);
                 accountT.setFan(accountT.getFan() + 1);
                 //更新粉丝数
-                i2 = accountMapper.update(accountT, wrapperT);
-            } while (i2 == 0);
-            return true;
+                return accountMapper.update(accountT, wrapperT) > 0 ? true : false;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -64,19 +62,16 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
         wrapper.eq("username", follow.getUsername());
         wrapper.eq("follow_username", follow.getFollowUsername());
         int delete = baseMapper.delete(wrapper);
-        int i1 = 0, i2 = 0;
         if (delete > 0) {
-            do {
-                //用来查询关注人
-                QueryWrapper<Account> wrapperO = new QueryWrapper<>();
-                wrapperO.eq("username", follow.getUsername());
-                //获取关注人信息
-                Account accountO = accountMapper.selectOne(wrapperO);
-                accountO.setFollowing(accountO.getFollowing() - 1);
-                //更新关注数
-                i1 = accountMapper.update(accountO, wrapperO);
-            } while (i1 == 0);
-            do {
+            //用来查询关注人
+            QueryWrapper<Account> wrapperO = new QueryWrapper<>();
+            wrapperO.eq("username", follow.getUsername());
+            //获取关注人信息
+            Account accountO = accountMapper.selectOne(wrapperO);
+            accountO.setFollowing(accountO.getFollowing() - 1);
+            //更新关注数
+            int i1 = accountMapper.update(accountO, wrapperO);
+            if (i1>0){
                 //用来查询被关注人
                 QueryWrapper<Account> wrapperT = new QueryWrapper<>();
                 wrapperT.eq("username", follow.getFollowUsername());
@@ -84,11 +79,26 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                 Account accountT = accountMapper.selectOne(wrapperT);
                 accountT.setFan(accountT.getFan() - 1);
                 //更新粉丝数
-                i2 = accountMapper.update(accountT, wrapperT);
-            } while (i2 == 0);
-            return true;
+                return accountMapper.update(accountT, wrapperT)>0?true:false;
+            }else {
+                return false;
+            }
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Integer getCount(String username) {
+        QueryWrapper<Follow> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",username);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    @Override
+    public Integer getFanCount(String username) {
+        QueryWrapper<Follow> wrapper = new QueryWrapper<>();
+        wrapper.eq("follow_username",username);
+        return baseMapper.selectCount(wrapper);
     }
 }

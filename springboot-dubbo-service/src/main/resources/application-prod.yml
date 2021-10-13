@@ -1,18 +1,9 @@
-qiniuyun:
-  accessKey: Z_7eMJdtj_n4lrAdSs3zVuZ8rn4wZXu75b1gYJbC
-  secretKey: QIriVPlgNKoKdjU02q166-7IBPy3z9sQTMn5Ae7R
-  bucket: js-encoder
-#qiniuyun:
-#  accessKey: fIf9nYz-wQo3HD1AlhQ5wrUrdjtygUPGe2dpuLlY
-#  secretKey: ItVUX8sAaxsuj7kgmk3IZ0ip3BHljAx61N8m922C
-#  bucket: lzqwxr
-
 spring:
   #mybatis配置
   datasource:
     username: root
     password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
-    url: jdbc:mysql://49.235.126.19:3307/onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    url: jdbc:mysql:///onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
   druid:
     #2.连接池配置
@@ -31,5 +22,5 @@ spring:
     test-on-borrow: true
     test-on-return: false
 #     是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
-    pool-prepared-statements: true
-    max-pool-prepared-statement-per-connection-size: 20
+#    pool-prepared-statements: true
+#    max-pool-prepared-statement-per-connection-size: 20

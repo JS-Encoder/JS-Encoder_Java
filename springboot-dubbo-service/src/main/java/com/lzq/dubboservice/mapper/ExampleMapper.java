@@ -27,4 +27,6 @@ public interface ExampleMapper extends BaseMapper<Example> {
     Integer getCountIspublic(@Param("username") String username);
 
     Integer addFavorites(Example example);
+
+    Integer reduceFavorites(Example example);
 }

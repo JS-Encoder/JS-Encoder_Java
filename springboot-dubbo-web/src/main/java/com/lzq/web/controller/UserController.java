@@ -76,6 +76,7 @@ public class UserController {
             data.setUserPicture(account.getUserPicture());
             map.put("data", data);
             session.setAttribute("map", map);
+            session.setMaxInactiveInterval(60*60);
             return ResultMapUtils.ResultMap(true, 0, null);
         } catch (Exception e) {
             return ResultMapUtils.ResultMap(false, 0, null);
@@ -98,7 +99,9 @@ public class UserController {
                 Account query = accountService.queryByUsername(account.getUsername());
                 Role role = roleService.queryById(query.getRoleId());
                 query.setRole(role);
-                request.getSession().setAttribute("map", ResultMapUtils.ResultMap(true, 0, query));
+                HttpSession session = request.getSession();
+                session.setAttribute("map", ResultMapUtils.ResultMap(true, 0, query));
+                session.setMaxInactiveInterval(60*60);
             }
             return ResultMapUtils.ResultMap(update, 0, null);
         } catch (Exception e) {
@@ -125,7 +128,9 @@ public class UserController {
                 Account query = accountService.queryByUsername(account.getUsername());
                 Role role = roleService.queryById(query.getRoleId());
                 query.setRole(role);
-                request.getSession().setAttribute("map", ResultMapUtils.ResultMap(true, 0, query));
+                HttpSession session = request.getSession();
+                session.setAttribute("map", ResultMapUtils.ResultMap(true, 0, query));
+                session.setMaxInactiveInterval(60*60);
             }
             return ResultMapUtils.ResultMap(update, 0, null);
         } catch (Exception e) {
