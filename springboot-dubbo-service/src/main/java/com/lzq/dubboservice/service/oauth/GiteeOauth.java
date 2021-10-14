@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class GiteeOauth implements BaseOauth {
 
-    private static final String GITEE_CLIENT_ID = "a1169e70a8897a7911997856abb65956137998c3c79ffdd05c1856150eb7504f";
-    private static final String GITEE_CLIENT_SECRET = "988f9440d692789a2a927fcc7403f1246e6a55ae3349ebb38504c9cc7e1525e2";
-    private static final String REDIRECT_URI = "https://www.lliiooiill.cn/?type=gitee";
+    private static final String GITEE_CLIENT_ID = "";
+    private static final String GITEE_CLIENT_SECRET = "";
+    private static final String REDIRECT_URI = "";
 
     @Override
     public String accessToken(String code, String state) {

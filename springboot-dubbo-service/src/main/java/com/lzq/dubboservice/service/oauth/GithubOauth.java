@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GithubOauth implements BaseOauth {
-    private static final String GITHUB_CLIENT_ID = "62c3a5b4699818b5d1c1";
-    private static final String GITHUB_CLIENT_SECRET = "609eaa8b1cf5a356b8deaa96a7d0be2f9689dec5";
+    private static final String GITHUB_CLIENT_ID = "";
+    private static final String GITHUB_CLIENT_SECRET = "";
 
     @Override
     public String accessToken(String code, String state) {
