@@ -11,9 +11,9 @@
 
 
     <modules>
-        <module>springboot-dubbo-api</module>
-        <module>springboot-dubbo-service</module>
-        <module>springboot-dubbo-web</module>
+        <module>js-encoder-api</module>
+        <module>js-encoder-service</module>
+        <module>js-encoder-web</module>
     </modules>
 
 

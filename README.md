@@ -76,7 +76,7 @@ https://github.com/JS-Encoder/JS-Encoder-Online
 
 该项目需要用到redis，rabbitmq，zookeeper等技术，用户需要提前安装好所需的环境搭配本地
 
-1. clone项目到本地 https://github.com/WxrLZQ/JS-Encoder_Java.git
+1. clone项目到本地 https://github.com/JS-Encoder/JS-Encoder_Java.git
 
 2. 创建好一个空的数据库 onlineide ,导入 onlineide.sql ,并修改项目中关于数据库的配置（ js-encoder-web 中 resource 目录下的 applicaition-dev.yml 文件）即可
 
