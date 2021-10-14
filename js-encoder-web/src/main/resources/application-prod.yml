@@ -1,0 +1,52 @@
+
+resources:
+  route: C:/Java/data/
+
+qiniuyun:
+  accessKey:
+  secretKey:
+  bucket:
+
+chorme:
+  value: C:/Java/Google/chromedriver.exe
+
+
+spring:
+  #静态资源访问
+  resources:
+    static-locations: file:${resources.route}
+  #mybatis配置
+  datasource:
+    username: root
+    password: ENC(zRASffFgNlRby/HcIEUo7OPo6PROvVBX)
+    url: jdbc:mysql:///onlineide?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  #rdis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 500
+        min-idle: 0
+    password:
+  #rabbitmq配置
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: user
+    password: wxr19980304
+
+dubbo:
+  application:
+    name: dubbo_web
+  registry:
+    protocol: zookeeper
+    address: zookeeper://127.0.0.1:2181
+    timeout: 10000
+  consumer:
+    retries: 0
+    timeout: 10000

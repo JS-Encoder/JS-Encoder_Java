@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GiteeOauth implements BaseOauth {
-
+    //gitee授权配置
     private static final String GITEE_CLIENT_ID = "";
     private static final String GITEE_CLIENT_SECRET = "";
     private static final String REDIRECT_URI = "";

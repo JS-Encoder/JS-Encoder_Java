@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    #项目名称
+    name: web
+
+
+#数据加密
+jasypt:
+  encryptor:
+    # 密钥
+    password: WXRANDLZQ1998
+    # 指定加密方式
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
+server:
+  #服务器接口
+  port: 8090
+  tomcat:
+    max-http-form-post-size: -1
+  servlet:
+    session:
+      setMaxInactiveInterval: 60*60
+
+logging:
+  config: classpath:logback.xml

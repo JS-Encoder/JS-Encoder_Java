@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GithubOauth implements BaseOauth {
+    //github授权配置
     private static final String GITHUB_CLIENT_ID = "";
     private static final String GITHUB_CLIENT_SECRET = "";
 
