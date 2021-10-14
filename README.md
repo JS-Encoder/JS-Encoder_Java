@@ -42,7 +42,7 @@ https://www.lliiooiill.cn/
 7. Mysql
 8. RabbitMq
 
-前端开源地址
+**前端开源地址**
 
 https://github.com/JS-Encoder/JS-Encoder-Online
 
@@ -84,17 +84,19 @@ https://github.com/JS-Encoder/JS-Encoder-Online
 
 4. 提前准备好 RabbitMq ,在项目中的 js-encoder-web 中 resource 目录下的 applicaition-dev.yml 文件中将 RabbitMq 配置为自己的ip
 
-5. 用户可以根据自身条件对邮箱进行配置（js-encoder-web 中 resource 目录下的 applicaition.yml ）
+5. 需要在 js-encoder-service 和 js-encoder-web 的 application-dev.yml 中配置好自己的 zookeeper  ip地址
 
-6. 用户需要准备一个七牛云仓库并进行配置（js-encoder-web 中 resource 目录下的 applicaition-dev.yml ）
+6. 用户可以根据自身条件对邮箱进行配置（js-encoder-service 中 resource 目录下的 applicaition.yml ）
 
-7. 用户想要使用第三方登录功能，需要到
+7. 用户需要准备一个七牛云仓库并进行配置（js-encoder-web 中 resource 目录下的 applicaition-dev.yml ）
+
+8. 用户想要使用第三方登录功能，需要到
 
     js-encoder-service/src/main/java/com/lzq/dubboservice/service/oauth/GiteeOauth  和 GithubOauth中进行配置的修改，配置信息可参考 gitee 和 github 的 openApi 手册，这里以gitee为例 https://gitee.com/api/v5/oauth_doc#/
 
-8. 该项目需要用户安装 chrome 版本相对于的 chromedriver 插件到本地中，用户需要根据本地的chrome版本到  **http://npm.taobao.org/mirrors/chromedriver** 下载对应的 chromedriver 插件，到 js-encoder-web 中 resource 目录下的 applicaition-dev.yml 中修改chromedriver 对应的路劲即可
+9. 该项目需要用户安装 chrome 版本相对于的 chromedriver 插件到本地中，用户需要根据本地的chrome版本到  **http://npm.taobao.org/mirrors/chromedriver** 下载对应的 chromedriver 插件，到 js-encoder-web 中 resource 目录下的 applicaition-dev.yml 中修改chromedriver 对应的路劲即可
 
-9. 在 IntelliJ IDEA 中打开项目，启动 js-encoder-service 和 js-encoder-web 模块即可，启动完后可以通过 http://localhost:8090/swagger-ui/ 来访问swagger
+10. 在 IntelliJ IDEA 中打开项目，启动 js-encoder-service 和 js-encoder-web 模块即可，启动完后可以通过 http://localhost:8090/swagger-ui/ 来访问swagger
 
 **OK，至此，项目就部署成功了**
 
@@ -104,7 +106,7 @@ https://github.com/JS-Encoder/JS-Encoder-Online
 
 1. 该项目使用到了 chromedriver 进行页面截图，而该插件需要跟本地的 chrome 版本一致 ，不然再调用时会报错
 
-2. 需要注意 zookeeper 中 curator 包 和 seleniumhq 包 中的 guava 版本，以防止包冲突导致，截图过程中报==NoSuchMethod==错误
+2. 需要注意 zookeeper 中 curator 包 和 seleniumhq 包中的 guava 版本，以防止包冲突导致截图过程中报**NoSuchMethod**错误
 
    解决办法，导入匹配的 seleniumhq 匹配的 guava 版本
 

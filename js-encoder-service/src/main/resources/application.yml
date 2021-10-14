@@ -16,23 +16,6 @@ spring:
 
 
 
-#dubbo配置
-dubbo:
-  application:
-    name: dubbo_service
-  registry:
-    protocol: zookeeper
-    address: zookeeper://127.0.0.1:2181
-    timeout: 10000
-  protocol:
-    name: dubbo
-    port: 20880
-  consumer:
-    retries: 0
-    timeout: 10000
-  #扫描包的位置
-  scan:
-    base-packages: com.lzq.dubboservice.service
 server:
   #服务器接口
   port: 8089

@@ -24,3 +24,22 @@ spring:
     # 是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
     #      pool-prepared-statements: true
     max-pool-prepared-statement-per-connection-size: 20
+
+
+#dubbo配置
+dubbo:
+  application:
+    name: dubbo_service
+  registry:
+    protocol: zookeeper
+    address: zookeeper://127.0.0.1:2181
+    timeout: 10000
+  protocol:
+    name: dubbo
+    port: 20880
+  consumer:
+    retries: 0
+    timeout: 10000
+  #扫描包的位置
+  scan:
+    base-packages: com.lzq.dubboservice.service
